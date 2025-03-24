@@ -1,7 +1,4 @@
 ---
-###
-# This template uses kramdown-rfc: https://github.com/cabo/kramdown-rfc
-###
 title: "DomainAuth: DNSSEC-based, Offline-first Authentication"
 abbrev: "DomainAuth"
 category: info

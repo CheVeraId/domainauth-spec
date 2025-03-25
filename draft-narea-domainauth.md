@@ -239,27 +239,28 @@ The protocol relies on the following DNSSEC record types:
 
 The DomainAuth protocol does not impose additional requirements beyond standard DNSSEC implementations but depends on their correct operation.
 
-## DomainAuth TXT Record Format
+## TXT Record
 
 Each organisation participating in the DomainAuth protocol MUST publish a TXT record at `_domainauth.<domain>` with the following format:
 
 ~~~~~~~
-<key-algorithm> <key-id-type> <key-id> <ttl-override> [<service-oid>]
+<version> <key-algorithm> <key-id-type> <key-id> <ttl-override> [<service-oid>]
 ~~~~~~~
 
 Where:
 
-1. **Key Algorithm** (required): An integer denoting the key algorithm:
-  - `1`: RSA-PSS with modulus 2048 bits.
-  - `2`: RSA-PSS with modulus 3072 bits.
- - `3`: RSA-PSS with modulus 4096 bits.
-2. **Key ID Type** (required): An integer denoting how the key is identified:
- - `1`: The key ID is the SHA-256 digest of the key.
- - `2`: The key ID is the SHA-384 digest of the key.
-  - `3`: The key ID is the SHA-512 digest of the key.
-3. **Key ID** (required): The Base64-encoded (unpadded) representation of the key digest, as specified by the Key ID Type.
-4. **TTL Override** (required): A positive integer representing the number of seconds for the maximum validity period of signatures. This value MUST be between 28,800 seconds (8 hours) and 2,592,000 seconds (30 days).
-5. **Service OID** (optional): An Object Identifier (in dotted decimal notation) identifying a specific service for which this record is valid. If omitted, the record applies to all services.
+1. **Version** (required): An integer denoting the version of the DomainAuth TXT record format, set to `0` (zero) for this version of the specification.
+2. **Key Algorithm** (required): An integer denoting the key algorithm:
+   - `1`: RSA-PSS with modulus 2048 bits.
+   - `2`: RSA-PSS with modulus 3072 bits.
+   - `3`: RSA-PSS with modulus 4096 bits.
+3. **Key ID Type** (required): An integer denoting how the key is identified:
+   - `1`: The key ID is the SHA-256 digest of the key.
+   - `2`: The key ID is the SHA-384 digest of the key.
+   - `3`: The key ID is the SHA-512 digest of the key.
+4. **Key ID** (required): The Base64-encoded (unpadded) representation of the key digest, as specified by the Key ID Type.
+5. **TTL Override** (required): A positive integer representing the number of seconds for the maximum validity period of signatures. This value MUST be between 28,800 seconds (8 hours) and 2,592,000 seconds (30 days).
+6. **Service OID** (optional): An Object Identifier (in dotted decimal notation) identifying a specific service for which this record is valid. If omitted, the record applies to all services.
 
 Multiple TXT records MAY be published at the same hostname to support different keys, key algorithms, or services. A domain MAY also publish service-specific records alongside a generic record (without a service OID).
 
@@ -268,7 +269,7 @@ Verifiers MUST select the appropriate TXT record based on the key information an
 Example TXT record:
 
 ~~~~~~~
-_domainauth.example.com. IN TXT "1 3 dGhpcyBpcyBub3QgYSByZWFsIGtleSBkaWdlc3Q 86400"
+_domainauth.example.com. IN TXT "0 1 3 dGhpcyBpcyBub3QgYSByZWFsIGtleSBkaWdlc3Q 86400"
 ~~~~~~~
 
 This example specifies an RSA-2048 key identified by its SHA-512 digest with a TTL override of 24 hours (86400 seconds).

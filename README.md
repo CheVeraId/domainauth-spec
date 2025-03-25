@@ -1,32 +1,26 @@
-<!-- regenerate: on (set to off if you edit this file) -->
+<!-- regenerate: off (set to off if you edit this file) -->
 
 # DomainAuth Version 1
 
-This is the working area for the individual Internet-Draft, "DomainAuth Version 1".
+This is the working area for the Internet-Draft (I-D) "DomainAuth Version 1", the protocol underpinning [VeraId](https://veraid.net/).
 
-* [Editor's Copy](https://docs.veraid.net/domainauth-spec/#go.draft-narea-domainauth.html)
-* [Datatracker Page](https://datatracker.ietf.org/doc/draft-narea-domainauth)
-* [Individual Draft](https://datatracker.ietf.org/doc/html/draft-narea-domainauth)
-* [Compare Editor's Copy to Individual Draft](https://docs.veraid.net/domainauth-spec/#go.draft-narea-domainauth.diff)
+## Conventions
 
+- British spelling and grammar are to be used (e.g. "organisation", "serialisation") for consistency with the original draft.
+- The abbreviation for "identifier" is always spelt "id", not "ID"; it's an abbreviation, not an acronym.
+
+## Usage
+
+This project is powered by [I-D Template](https://github.com/martinthomson/i-d-template), which is used via `make`.
+
+## Relevant Links
+
+* [Editor's Copy](https://docs.veraid.net/domainauth-spec/#go.draft-narea-domainauth.html).
+* [Datatracker Page](https://datatracker.ietf.org/doc/draft-narea-domainauth).
+* [Individual Draft](https://datatracker.ietf.org/doc/html/draft-narea-domainauth).
+* [Compare Editor's Copy to Individual Draft](https://docs.veraid.net/domainauth-spec/#go.draft-narea-domainauth.diff).
 
 ## Contributing
 
-See the
-[guidelines for contributions](https://github.com/CheVeraId/domainauth-spec/blob/main/CONTRIBUTING.md).
-
-Contributions can be made by creating pull requests.
-The GitHub interface supports creating pull requests using the Edit (✏) button.
-
-
-## Command Line Usage
-
-Formatted text and HTML versions of the draft can be built using `make`.
-
-```sh
-$ make
-```
-
-Command line usage requires that you have the necessary software installed.  See
-[the instructions](https://github.com/martinthomson/i-d-template/blob/main/doc/SETUP.md).
+See the [guidelines for contributions](./CONTRIBUTING.md).
 

@@ -1,6 +1,6 @@
 ---
-title: "DomainAuth Protocol Version 1"
-abbrev: "DomainAuth"
+title: "DomainAuth Version 1"
+abbrev: "DomainAuthV1"
 category: info
 
 docname: draft-narea-domainauth-latest

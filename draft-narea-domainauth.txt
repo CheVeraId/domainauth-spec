@@ -116,22 +116,25 @@ Table of Contents
      9.2.  Service-Specific Validation Rules
      9.3.  Implementation Guidelines
    10. Implementation Guidance
-     10.1.  Reference Implementations
-     10.2.  Interoperability Considerations
-     10.3.  Performance Optimisations
-     10.4.  Member vs Organisation Signatures
-       10.4.1.  Implementation Recommendations
-       10.4.2.  User Interface Recommendations
-   11. Security Considerations
-     11.1.  DNSSEC Dependency
-     11.2.  Homographic and Character Encoding Attacks
-     11.3.  Domain Ownership Changes
-     11.4.  Offline Verification Limitations
-     11.5.  Organisation Signatures and Member Attribution
-   12. IANA Considerations
-   13. References
-     13.1.  Normative References
-     13.2.  Informative References
+     10.1.  Interoperability Considerations
+     10.2.  Performance Optimisations
+     10.3.  Member vs Organisation Signatures
+       10.3.1.  Implementation Recommendations
+       10.3.2.  User Interface Recommendations
+   11. Implementation Status
+     11.1.  VeraId JavaScript Library
+     11.2.  VeraId JVM Library
+     11.3.  VeraId Authority
+   12. Security Considerations
+     12.1.  DNSSEC Dependency
+     12.2.  Homographic and Character Encoding Attacks
+     12.3.  Domain Ownership Changes
+     12.4.  Offline Verification Limitations
+     12.5.  Organisation Signatures and Member Attribution
+   13. IANA Considerations
+   14. References
+     14.1.  Normative References
+     14.2.  Informative References
    Appendix A.  ASN.1 Schemas
    Appendix B.  OID Registry
    Acknowledgements
@@ -1426,26 +1429,7 @@ _domainauth.example.com. IN TXT "0 1 3 dGhpcyBpcyBub3QgYSByZWFsIGtleSBkaWdlc3Q 8
 
 10.  Implementation Guidance
 
-10.1.  Reference Implementations
-
-   [VERAIDJS] and [VERAIDJVM] are reference implementations of the
-   DomainAuth protocol in JavaScript and Kotlin respectively.
-
-   Implementations MUST:
-
-   *  Follow all requirements in this specification.
-
-   *  Pass all tests in the test suite of the reference implementation.
-
-   *  Handle all defined error conditions appropriately.
-
-   *  Maintain backward compatibility with the reference implementation.
-
-   Implementers are encouraged to contribute improvements and
-   clarifications back to the reference implementations and this
-   specification.
-
-10.2.  Interoperability Considerations
+10.1.  Interoperability Considerations
 
    To ensure interoperability between different DomainAuth
    implementations:
@@ -1487,7 +1471,7 @@ _domainauth.example.com. IN TXT "0 1 3 dGhpcyBpcyBub3QgYSByZWFsIGtleSBkaWdlc3Q 8
    Regular interoperability testing between different implementations is
    recommended to ensure ongoing compatibility.
 
-10.3.  Performance Optimisations
+10.2.  Performance Optimisations
 
    DomainAuth implementations can benefit from several performance
    optimisations whilst maintaining security:
@@ -1525,7 +1509,7 @@ _domainauth.example.com. IN TXT "0 1 3 dGhpcyBpcyBub3QgYSByZWFsIGtleSBkaWdlc3Q 8
    code to identify bottlenecks and focus optimisation efforts
    accordingly.
 
-10.4.  Member vs Organisation Signatures
+10.3.  Member vs Organisation Signatures
 
    Developers integrating DomainAuth into their applications must decide
    whether to use member signatures or organisation signatures with
@@ -1533,7 +1517,7 @@ _domainauth.example.com. IN TXT "0 1 3 dGhpcyBpcyBub3QgYSByZWFsIGtleSBkaWdlc3Q 8
    requirements of the application and the security considerations
    outlined in Section 9.5.
 
-10.4.1.  Implementation Recommendations
+10.3.1.  Implementation Recommendations
 
    1.  *Library/SDK Design:* - DomainAuth libraries and SDKs SHOULD
        provide distinct functions for creating member signatures and
@@ -1555,7 +1539,7 @@ _domainauth.example.com. IN TXT "0 1 3 dGhpcyBpcyBub3QgYSByZWFsIGtleSBkaWdlc3Q 8
        the specific context or user role.  - In hybrid implementations,
        clear policies should govern when each signature type is used.
 
-10.4.2.  User Interface Recommendations
+10.3.2.  User Interface Recommendations
 
    1.  *Signature Type Indication:* User interfaces SHOULD clearly
        indicate whether a signature is a member signature or an
@@ -1579,9 +1563,118 @@ _domainauth.example.com. IN TXT "0 1 3 dGhpcyBpcyBub3QgYSByZWFsIGtleSBkaWdlc3Q 8
        Different error handling may be appropriate for different
        signature types, reflecting their distinct trust models.
 
-11.  Security Considerations
+11.  Implementation Status
 
-11.1.  DNSSEC Dependency
+   This section records the status of known implementations of the
+   protocol defined by this specification at the time of posting of this
+   Internet-Draft, and is based on a proposal described in [RFC7942].
+   The description of implementations in this section is intended to
+   assist the IETF in its decision processes in progressing drafts to
+   RFCs.  Please note that the listing of any individual implementation
+   here does not imply endorsement by the IETF.  Furthermore, no effort
+   has been spent to verify the information presented here that was
+   supplied by IETF contributors.  This is not intended as, and must not
+   be construed to be, a catalog of available implementations or their
+   features.  Readers are advised to note that other implementations may
+   exist.
+
+   According to [RFC7942], "this will allow reviewers and working groups
+   to assign due consideration to documents that have the benefit of
+   running code, which may serve as evidence of valuable experimentation
+   and feedback that have made the implemented protocols more mature.
+   It is up to the individual working groups to use this information as
+   they see fit".
+
+   _Note to RFC Editor: Please remove this section before publication._
+
+   DomainAuth is the successor to the VeraId protocol as defined in
+   [VERAID], which has fully-interoperable implementations as described
+   below.  DomainAuth and VeraId are functionally identical, except for
+   the following differences:
+
+   *  DNS TXT record:
+
+      -  Name: DomainAuth uses _domainauth.example.com., whilst VeraId
+         uses _veraid.example.com..
+
+      -  Value: DomainAuth requires the value to begin with the number
+         0, denoting the version of the DomainAuth TXT record format,
+         followed by a space.  This value does not have a version number
+         in VeraId.
+
+   VeraId is led by the author of this document, who intends to
+   deprecate the VeraId specification in favour of DomainAuth and update
+   the reference implementations to fully comply with this
+   specification.
+
+   All implementations listed below are undergoing independent security
+   audits as of this writing, and their respective reports are expected
+   to be published in April 2025.
+
+11.1.  VeraId JavaScript Library
+
+   *  Organisation: Relaycorp.
+
+   *  URL: https://github.com/relaycorp/veraid-js
+
+   *  Level of maturity: Used in production in the VeraId Authority
+      application (see below).
+
+   *  Coverage: The implementation covers the entire protocol as defined
+      in [VERAID].
+
+   *  Licensing: Freely distributable with acknowledgement (MIT
+      licence).
+
+   *  Contact: https://relaycorp.tech/
+
+   *  Last updated: 2025
+
+11.2.  VeraId JVM Library
+
+   *  Organisation: Relaycorp.
+
+   *  URL: https://github.com/relaycorp/veraid-jvm
+
+   *  Level of maturity: Used in production in the Android-based offline
+      messaging application [LETRO].
+
+   *  Coverage: The implementation covers the entire protocol as defined
+      in [VERAID], except for Organisation Signature Bundles.
+
+   *  Licensing: Freely distributable with acknowledgement (Apache 2.0
+      licence).
+
+   *  Contact: https://relaycorp.tech/
+
+   *  Last updated: 2025
+
+11.3.  VeraId Authority
+
+   *  Organisation: Relaycorp
+
+   *  URL: https://github.com/relaycorp/veraid-authority
+
+   *  Description: A multi-tenant, cloud-native application that allows
+      organisations to manage their members and the issuance of their
+      respective Member Id Bundles.
+
+   *  Level of maturity: Used in production in the server-side component
+      of Letro as documented in [LETRO-SERVER].
+
+   *  Coverage: The implementation leverages the VeraId JavaScript
+      Library to issue Member Id Bundles and Organisation Signature
+      Bundles.
+
+   *  Licensing: Business Source License version 1.1
+
+   *  Contact: https://relaycorp.tech/
+
+   *  Last updated: 2025
+
+12.  Security Considerations
+
+12.1.  DNSSEC Dependency
 
    DomainAuth's security model relies fundamentally on DNSSEC, which
    introduces specific security considerations:
@@ -1642,7 +1735,7 @@ _domainauth.example.com. IN TXT "0 1 3 dGhpcyBpcyBub3QgYSByZWFsIGtleSBkaWdlc3Q 8
    compared to centralised PKI models, particularly for offline
    verification scenarios.
 
-11.2.  Homographic and Character Encoding Attacks
+12.2.  Homographic and Character Encoding Attacks
 
    User-friendly identifiers like domain names and usernames are
    susceptible to visual spoofing attacks:
@@ -1701,7 +1794,7 @@ _domainauth.example.com. IN TXT "0 1 3 dGhpcyBpcyBub3QgYSByZWFsIGtleSBkaWdlc3Q 8
    is critical to help users correctly identify the source of signed
    content.
 
-11.3.  Domain Ownership Changes
+12.3.  Domain Ownership Changes
 
    Domain transfers present specific security challenges for the
    DomainAuth protocol:
@@ -1752,7 +1845,7 @@ _domainauth.example.com. IN TXT "0 1 3 dGhpcyBpcyBub3QgYSByZWFsIGtleSBkaWdlc3Q 8
    limiting the time window during which historical signatures remain
    valid.
 
-11.4.  Offline Verification Limitations
+12.4.  Offline Verification Limitations
 
    Offline verification introduces specific security considerations:
 
@@ -1815,7 +1908,7 @@ _domainauth.example.com. IN TXT "0 1 3 dGhpcyBpcyBub3QgYSByZWFsIGtleSBkaWdlc3Q 8
    DomainAuth provides a balanced approach that offers strong
    verification guarantees whilst supporting offline operation.
 
-11.5.  Organisation Signatures and Member Attribution
+12.5.  Organisation Signatures and Member Attribution
 
    Organisation signatures with member attribution introduce specific
    security considerations that implementers and developers should be
@@ -1907,13 +2000,13 @@ _domainauth.example.com. IN TXT "0 1 3 dGhpcyBpcyBub3QgYSByZWFsIGtleSBkaWdlc3Q 8
       organisation signatures with member attribution in high-security
       contexts.
 
-12.  IANA Considerations
+13.  IANA Considerations
 
    This document has no IANA actions.
 
-13.  References
+14.  References
 
-13.1.  Normative References
+14.1.  Normative References
 
    [ASN.1]    International Telecommunications Union, "Information
               Technology — ASN.1 encoding rules: Specification of Basic
@@ -1934,6 +2027,11 @@ _domainauth.example.com. IN TXT "0 1 3 dGhpcyBpcyBub3QgYSByZWFsIGtleSBkaWdlc3Q 8
               DOI 10.17487/RFC2119, March 1997,
               <https://www.rfc-editor.org/rfc/rfc2119>.
 
+   [RFC7942]  Sheffer, Y. and A. Farrel, "Improving Awareness of Running
+              Code: The Implementation Status Section", BCP 205,
+              RFC 7942, DOI 10.17487/RFC7942, July 2016,
+              <https://www.rfc-editor.org/rfc/rfc7942>.
+
    [RFC8174]  Leiba, B., "Ambiguity of Uppercase vs Lowercase in RFC
               2119 Key Words", BCP 14, RFC 8174, DOI 10.17487/RFC8174,
               May 2017, <https://www.rfc-editor.org/rfc/rfc8174>.
@@ -1944,14 +2042,16 @@ _domainauth.example.com. IN TXT "0 1 3 dGhpcyBpcyBub3QgYSByZWFsIGtleSBkaWdlc3Q 8
               (CRL) Profile", RFC 5280, DOI 10.17487/RFC5280, May 2008,
               <https://www.rfc-editor.org/rfc/rfc5280>.
 
-13.2.  Informative References
+14.2.  Informative References
 
-   [VERAIDJS] Narea, G., "VeraId JavaScript Library", 2023,
-              <https://github.com/relaycorp/veraid-js>.
+   [LETRO]    Narea, G., "Letro", 2023, <https://letro.app/en/>.
 
-   [VERAIDJVM]
-              Narea, G., "VeraId JVM Library", 2023,
-              <https://github.com/relaycorp/veraid-jvm>.
+   [LETRO-SERVER]
+              Narea, G., "Letro Server", 2023,
+              <https://docs.relaycorp.tech/letro-server/>.
+
+   [VERAID]   Narea, G., "VeraId V1 Specification", 2025,
+              <https://veraid.net/spec/>.
 
 Appendix A.  ASN.1 Schemas
 

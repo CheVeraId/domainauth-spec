@@ -1,5 +1,5 @@
 ---
-title: "DomainAuth: DNSSEC-based, Offline-first Authentication"
+title: "DomainAuth Protocol Version 1"
 abbrev: "DomainAuth"
 category: info
 

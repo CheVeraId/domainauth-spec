@@ -71,13 +71,13 @@ A DomainAuth signature bundle is a chain of trust comprising: (1) a DNSSEC chain
 
 # Introduction
 
-VeraId is a decentralised authentication protocol that securely attributes content to domain names, providing a robust mechanism for proving ownership and authorship without requiring continuous Internet connectivity. By combining the decentralised nature of DNS with established cryptographic standards, VeraId enables secure content verification in both online and offline environments.
+DomainAuth is a decentralised authentication protocol that securely attributes content to domain names, providing a robust mechanism for proving ownership and authorship without requiring continuous Internet connectivity. By combining the decentralised nature of DNS with established cryptographic standards, DomainAuth enables secure content verification in both online and offline environments.
 
 ## Purpose and Scope
 
-The purpose of VeraId is to provide a secure, decentralised authentication protocol that enables the attribution of content to domain names and their associated users. VeraId addresses the need for reliable authentication in scenarios where continuous Internet connectivity cannot be guaranteed or is undesirable.
+The purpose of DomainAuth is to provide a secure, decentralised authentication protocol that enables the attribution of content to domain names and their associated users. DomainAuth addresses the need for reliable authentication in scenarios where continuous Internet connectivity cannot be guaranteed or is undesirable.
 
-This V1 specification defines the core protocol components, data structures, cryptographic operations, and verification procedures that constitute the VeraId ecosystem. It provides the necessary information for implementers to create interoperable tools and applications that can produce and verify VeraId signatures.
+This V1 specification defines the core protocol components, data structures, cryptographic operations, and verification procedures that constitute the DomainAuth ecosystem. It provides the necessary information for implementers to create interoperable tools and applications that can produce and verify DomainAuth signatures.
 
 The scope of this specification encompasses:
 
@@ -96,11 +96,11 @@ Traditional authentication systems typically require continuous Internet connect
 3. **User-friendly identifiers:** Existing solutions like PGP rely on cryptographic fingerprints or long key identifiers that are not user-friendly and prone to human error.
 4. **Self-sovereignty:** Many authentication systems place trust in central authorities that can issue credentials for any entity, creating unnecessary trust dependencies and security risks.
 
-VeraId addresses these challenges by providing a protocol built on DNSSEC that allows content to be securely attributed to user-friendly identifiers (domain names and usernames) in a fully verifiable manner, without requiring online connectivity during verification.
+DomainAuth addresses these challenges by providing a protocol built on DNSSEC that allows content to be securely attributed to user-friendly identifiers (domain names and usernames) in a fully verifiable manner, without requiring online connectivity during verification.
 
 ## Design Goals
 
-VeraId is designed with the following primary goals:
+DomainAuth is designed with the following primary goals:
 
 1. **Decentralisation:** The protocol avoids the need for centralised authorities beyond the DNS hierarchy itself. Each domain owner has exclusive control over their domain and its associated members.
 2. **Offline verification:** All signature bundles contain sufficient information to be independently verified without requiring external network queries.
@@ -114,19 +114,19 @@ VeraId is designed with the following primary goals:
 
 ## Terminology
 
-- **Organisation:** A domain name that participates in the VeraId protocol by configuring DNSSEC and publishing the necessary VeraId TXT record.
+- **Organisation:** A domain name that participates in the DomainAuth protocol by configuring DNSSEC and publishing the necessary DomainAuth TXT record.
 - **Member:** An entity (user or bot) that acts on behalf of an organisation.
 - **User:** A specific type of member identified by a username within an organisation.
 - **Bot:** A special type of member that acts on behalf of the organisation as a whole.
-- **VeraId TXT Record:** A DNS TXT record at `_veraid.<domain>` that contains the organisation's public key information.
+- **DomainAuth TXT Record:** A DNS TXT record at `_domainauth.<domain>` that contains the organisation's public key information.
 - **Organisation Certificate:** A self-signed X.509 certificate owned by an organisation that serves as the root of trust for all signatures produced on behalf of that organisation.
 - **Member Certificate:** An X.509 certificate issued by the organisation certificate to a member.
-- **Member Id Bundle:** A data structure containing a member certificate, its issuing organisation certificate, and the DNSSEC chain proving the authenticity of the organisation's VeraId TXT record.
+- **Member Id Bundle:** A data structure containing a member certificate, its issuing organisation certificate, and the DNSSEC chain proving the authenticity of the organisation's DomainAuth TXT record.
 - **Signature Bundle:** A data structure containing a digital signature and all the information needed to verify it offline.
 - **Member Signature Bundle:** A signature bundle containing a signature produced by a member using their private key.
 - **Organisation Signature Bundle:** A signature bundle containing a signature produced directly by an organisation using its private key, with a required member attribution that assigns authorship of the content to a specific member.
 - **DNSSEC Chain:** A sequence of DNS responses that allows a verifier to cryptographically validate the authenticity of a DNS record.
-- **Service OID:** An Object Identifier (OID) that uniquely identifies a service or application context where a VeraId signature is valid.
+- **Service OID:** An Object Identifier (OID) that uniquely identifies a service or application context where a DomainAuth signature is valid.
 
 
 # Conventions and Definitions
@@ -138,7 +138,7 @@ VeraId is designed with the following primary goals:
 
 ## Architecture
 
-VeraId combines DNSSEC, X.509 certificates, and CMS signatures to create a decentralised authentication system. The architecture consists of several layered components:
+DomainAuth combines DNSSEC, X.509 certificates, and CMS signatures to create a decentralised authentication system. The architecture consists of several layered components:
 
 1. **DNS Layer:** Provides the domain name hierarchy and DNSSEC-based verification of domain ownership.
 2. **PKI Layer:** Establishes a per-organisation Public Key Infrastructure where each organisation issues certificates to its members.
@@ -146,30 +146,30 @@ VeraId combines DNSSEC, X.509 certificates, and CMS signatures to create a decen
 
 Each organisation serves as an independent trust anchor, responsible for managing its own members and certificates. The DNSSEC infrastructure provides a secure foundation for verifying the authenticity of the organisation's public key.
 
-VeraId's self-contained verification model allows signature bundles to be verified independently, without requiring connectivity to the Internet or the organisation's infrastructure.
+DomainAuth's self-contained verification model allows signature bundles to be verified independently, without requiring connectivity to the Internet or the organisation's infrastructure.
 
 ## Trust Model
 
-VeraId's trust model differs significantly from traditional PKIs such as the one used for TLS:
+DomainAuth's trust model differs significantly from traditional PKIs such as the one used for TLS:
 
-1. **Domain-specific trust roots:** Each organisation is only able to issue certificates for itself and its members. Unlike traditional PKIs where any Certificate Authority can issue certificates for any domain, VeraId enforces a strict hierarchy where domain control is the only path to certificate issuance.
+1. **Domain-specific trust roots:** Each organisation is only able to issue certificates for itself and its members. Unlike traditional PKIs where any Certificate Authority can issue certificates for any domain, DomainAuth enforces a strict hierarchy where domain control is the only path to certificate issuance.
 2. **DNSSEC as the foundation:** Trust is anchored in DNSSEC, relying on the hierarchical nature of DNS to establish domain control. The chain of trust begins with the DNS root zone and extends through each DNS subdelegation to the organisation's domain.
 3. **Self-contained verification:** Signature bundles include all necessary information (DNSSEC chains, certificates) to allow completely offline verification.
-4. **Short-lived certificates:** VeraId favours short-lived certificates over revocation mechanisms, reducing complexity and vulnerability to disconnected operation.
+4. **Short-lived certificates:** DomainAuth favours short-lived certificates over revocation mechanisms, reducing complexity and vulnerability to disconnected operation.
 5. **Two signature types with different trust models:**
  - **Member signatures:** Produced by members using their private keys, these signatures cryptographically prove that a specific member created the content. The verification chain goes from DNSSEC to the organisation certificate to the member certificate to the signature.
  - **Organisation signatures:** Produced directly by organisations using their private keys, these signatures prove that the organisation vouches for the content. When including member attribution, the organisation claims (but does not cryptographically prove) that a specific member created the content.
 
-By relying on DNSSEC, VeraId inherits its security properties and limitations. The protocol's trust is ultimately rooted in the DNS hierarchy, including the root zone and TLD operators.
+By relying on DNSSEC, DomainAuth inherits its security properties and limitations. The protocol's trust is ultimately rooted in the DNS hierarchy, including the root zone and TLD operators.
 
 ## Key Components
 
-The VeraId protocol consists of the following core components:
+The DomainAuth protocol consists of the following core components:
 
-1. **VeraId TXT Record:** A DNS TXT record at `_veraid.<domain>` containing the organisation's public key information, including key algorithm, key ID type, key ID, TTL override, and optional service OID.
+1. **DomainAuth TXT Record:** A DNS TXT record at `_domainauth.<domain>` containing the organisation's public key information, including key algorithm, key ID type, key ID, TTL override, and optional service OID.
 2. **Organisation Certificate:** A self-issued X.509 certificate containing the organisation's public key. This certificate serves as the root Certificate Authority (CA) for all certification paths and digital signatures under the organisation's domain.
 3. **Member Certificates:** X.509 certificates issued by the organisation to individual users or bots. User certificates include the username in the Common Name field, whilst bot certificates use the at sign (`@`) as their Common Name.
-4. **DNSSEC Chain:** A serialised collection of DNS responses that provide cryptographic proof of the authenticity of the organisation's VeraId TXT record.
+4. **DNSSEC Chain:** A serialised collection of DNS responses that provide cryptographic proof of the authenticity of the organisation's DomainAuth TXT record.
 5. **Member Id Bundle:** A structure containing a member certificate, the issuing organisation certificate, and the DNSSEC chain necessary to verify the organisation's authority.
 6. **Signature Bundle:** A structure containing a CMS SignedData value, the organisation certificate, and the DNSSEC chain. There are two types of bundles, which determine the signer of the SignedData value:
   - **Member Signature Bundles** are signed by a member.
@@ -179,12 +179,12 @@ These components work together to create a secure chain of trust from the DNS ro
 
 ## Workflow Summary
 
-The VeraId protocol involves the following key workflows:
+The DomainAuth protocol involves the following key workflows:
 
 1. **Organisation Setup:**
   - The organisation must have DNSSEC properly configured for its domain.
   - The organisation generates an asymmetric key pair (RSA) and self-issues an X.509 certificate.
-  - The organisation publishes a VeraId TXT record at `_veraid.<domain>` containing its key information.
+  - The organisation publishes a DomainAuth TXT record at `_domainauth.<domain>` containing its key information.
 2. **Member Registration:**
   - The organisation issues X.509 certificates to its members (users and bots).
   - For users, certificates include the username in the Common Name.
@@ -209,15 +209,15 @@ The VeraId protocol involves the following key workflows:
     - The member attribution is extracted and presented to the user.
   - Additional checks ensure the signature is valid for the intended service and time period.
 
-Each of these workflows contributes to the overall security and integrity of the VeraId ecosystem.
+Each of these workflows contributes to the overall security and integrity of the DomainAuth ecosystem.
 
 # DNS Integration
 
 ## DNSSEC Requirements
 
-DNSSEC is a fundamental component of VeraId, providing the cryptographic foundation for validating domain ownership. Participating domains MUST have DNSSEC properly configured and operational.
+DNSSEC is a fundamental component of DomainAuth, providing the cryptographic foundation for validating domain ownership. Participating domains MUST have DNSSEC properly configured and operational.
 
-Organisations implementing VeraId MUST:
+Organisations implementing DomainAuth MUST:
 
 1. Ensure their domain has a complete DNSSEC chain of trust from the root zone to their domain.
 2. Configure DNSSEC signing for all relevant zones.
@@ -228,20 +228,20 @@ Verifiers MUST:
 
 1. Have access to the DNSSEC trust anchors, particularly the root zone KSK.
 2. Implement full DNSSEC validation according to relevant RFCs.
-3. Reject any VeraId signatures where DNSSEC validation fails.
+3. Reject any DomainAuth signatures where DNSSEC validation fails.
 
 The protocol relies on the following DNSSEC record types:
 
 - DNSKEY records for public keys used for zone signing.
 - DS records for delegation signing.
 - RRSIG records providing signatures for DNS resource record sets.
-- TXT records containing the VeraId-specific data.
+- TXT records containing the DomainAuth-specific data.
 
-The VeraId protocol does not impose additional requirements beyond standard DNSSEC implementations but depends on their correct operation.
+The DomainAuth protocol does not impose additional requirements beyond standard DNSSEC implementations but depends on their correct operation.
 
-## VeraId TXT Record Format
+## DomainAuth TXT Record Format
 
-Each organisation participating in the VeraId protocol MUST publish a TXT record at `_veraid.<domain>` with the following format:
+Each organisation participating in the DomainAuth protocol MUST publish a TXT record at `_domainauth.<domain>` with the following format:
 
 ~~~~~~~
 <key-algorithm> <key-id-type> <key-id> <ttl-override> [<service-oid>]
@@ -268,20 +268,20 @@ Verifiers MUST select the appropriate TXT record based on the key information an
 Example TXT record:
 
 ~~~~~~~
-_veraid.example.com. IN TXT "1 3 dGhpcyBpcyBub3QgYSByZWFsIGtleSBkaWdlc3Q 86400"
+_domainauth.example.com. IN TXT "1 3 dGhpcyBpcyBub3QgYSByZWFsIGtleSBkaWdlc3Q 86400"
 ~~~~~~~
 
 This example specifies an RSA-2048 key identified by its SHA-512 digest with a TTL override of 24 hours (86400 seconds).
 
 ## DNSSEC Chain Serialisation
 
-The DNSSEC chain for a VeraId signature MUST be serialised in a format that allows for offline verification. The serialisation format is based on the DNS message format defined in RFC 1035, with specific requirements for VeraId:
+The DNSSEC chain for a DomainAuth signature MUST be serialised in a format that allows for offline verification. The serialisation format is based on the DNS message format defined in RFC 1035, with specific requirements for DomainAuth:
 
-1. The serialised chain MUST include all DNS responses necessary to validate the `_veraid.<domain>/TXT` record, from the targeted domain up to (but not including) the root zone.
+1. The serialised chain MUST include all DNS responses necessary to validate the `_domainauth.<domain>/TXT` record, from the targeted domain up to (but not including) the root zone.
 2. The serialised chain MUST be structured as a DNS message with the following components:
  - Header: MUST include the authenticated data (`ad`) flag set to indicate DNSSEC validation.
- - Question section: MUST contain a single question for `_veraid.<domain>/TXT`.
- - Answer section: MUST contain the RRset for `_veraid.<domain>/TXT` and its associated RRSIG records.
+ - Question section: MUST contain a single question for `_domainauth.<domain>/TXT`.
+ - Answer section: MUST contain the RRset for `_domainauth.<domain>/TXT` and its associated RRSIG records.
  - Authority section: MUST be empty.
  - Additional section: MUST contain all other records necessary for DNSSEC validation, excluding the root zone DS records (which verifiers MUST provide).
 
@@ -295,23 +295,23 @@ Implementations MUST include all necessary DNSKEY, DS, and RRSIG records require
 
 ## TTL Considerations
 
-TTL (Time-to-Live) values play a crucial role in determining the validity period of VeraId signatures. The protocol establishes the following requirements:
+TTL (Time-to-Live) values play a crucial role in determining the validity period of DomainAuth signatures. The protocol establishes the following requirements:
 
 1. Service designers MUST specify a maximum TTL for signatures in their service, which MUST be:
  - At least 8 hours (28,800 seconds), to allow sufficient time for certificate renewal during outages.
  - At most 30 days (2,592,000 seconds), to support offline, delay-tolerant networking scenarios.
-2. The age of a digital signature MUST be calculated from the time when the DNSSEC answer for the `_veraid.<domain>` TXT record was signed.
-3. The TTL override value in the VeraId TXT record represents the maximum validity period for signatures, counted from the DNSSEC signing time.
+2. The age of a digital signature MUST be calculated from the time when the DNSSEC answer for the `_domainauth.<domain>` TXT record was signed.
+3. The TTL override value in the DomainAuth TXT record represents the maximum validity period for signatures, counted from the DNSSEC signing time.
 4. Verifiers MAY enforce a TTL shorter than that required by the service, but not shorter than the 8-hour minimum.
 5. Verifiers MAY allow their end users to specify a shorter TTL (but still not shorter than 8 hours) than the one in the TXT record.
 
-VeraId favours short-lived certificates over revocation mechanisms to simplify the protocol and eliminate dependencies on online revocation checking. Service designers SHOULD specify the shortest TTL that satisfies their specific requirements.
+DomainAuth favours short-lived certificates over revocation mechanisms to simplify the protocol and eliminate dependencies on online revocation checking. Service designers SHOULD specify the shortest TTL that satisfies their specific requirements.
 
 # Cryptographic Foundation
 
 ## Supported Algorithms
 
-VeraId relies on established cryptographic algorithms to ensure security and interoperability. The protocol defines the following supported algorithms:
+DomainAuth relies on established cryptographic algorithms to ensure security and interoperability. The protocol defines the following supported algorithms:
 
 1. **Hashing Algorithms:**
   - SHA-256: Recommended for general use.
@@ -334,7 +334,7 @@ Future versions of the protocol MAY introduce additional algorithms, but this V1
 
 ## Key Management
 
-Proper key management is essential for the security of the VeraId protocol. The following requirements apply:
+Proper key management is essential for the security of the DomainAuth protocol. The following requirements apply:
 
 1. **Key Generation:**
   - Keys MUST be generated using a cryptographically secure random number generator.
@@ -346,7 +346,7 @@ Proper key management is essential for the security of the VeraId protocol. The 
   - Member private keys SHOULD be protected with appropriate measures, such as operating system security mechanisms or hardware tokens.
 3. **Key Rotation:**
   - Organisations SHOULD establish a regular schedule for rotating their keys.
-  - Key rotation SHOULD be performed by generating a new key pair and updating the VeraId TXT record.
+  - Key rotation SHOULD be performed by generating a new key pair and updating the DomainAuth TXT record.
   - During key rotation, organisations SHOULD maintain both the old and new keys in DNS for a transition period, allowing for graceful migration.
   - Member certificates issued under the old key remain valid until their expiration but SHOULD be renewed under the new key when practical.
 4. **Key Compromise:**
@@ -358,7 +358,7 @@ Implementations SHOULD provide guidance and tools to assist with secure key mana
 
 ## Certificate Structure
 
-VeraId uses X.509 certificates with specific requirements for organisations and members. All certificates MUST comply with the X.509v3 standard (RFC 5280).
+DomainAuth uses X.509 certificates with specific requirements for organisations and members. All certificates MUST comply with the X.509v3 standard (RFC 5280).
 
 ### Organisation Certificate Profile:
 
@@ -405,7 +405,7 @@ Certificates MUST NOT include extensions not specified in this profile without c
 
 ## Signature Format
 
-VeraId signatures use the Cryptographic Message Syntax (CMS) as defined in RFC 5652, with specific requirements for the VeraId protocol:
+DomainAuth signatures use the Cryptographic Message Syntax (CMS) as defined in RFC 5652, with specific requirements for the DomainAuth protocol:
 
 1. **SignedData Structure:**
   - The content type MUST be id-data (`1.2.840.113549.1.7.1`).
@@ -421,10 +421,10 @@ VeraId signatures use the Cryptographic Message Syntax (CMS) as defined in RFC 5
 3. **Signed Attributes:**
   - MUST include the content type attribute (`1.2.840.113549.1.9.3`).
   - MUST include the message digest attribute (`1.2.840.113549.1.9.4`).
-  - MUST include the VeraId signature metadata attribute (`1.3.6.1.4.1.58708.1.0`) containing:
+  - MUST include the DomainAuth signature metadata attribute (`1.3.6.1.4.1.58708.1.0`) containing:
     - Service OID: The OID of the service for which the signature is valid.
     - Validity period: The start and end dates for signature validity.
-  - For organisation signatures, MUST include the VeraId member attribution attribute (`1.3.6.1.4.1.58708.1.2`) containing:
+  - For organisation signatures, MUST include the DomainAuth member attribution attribute (`1.3.6.1.4.1.58708.1.2`) containing:
     - A UTF8String identifying the member to whom the organisation attributes the content.
 4. **Certificate Chain:**
   - For member signatures, MUST include the member's certificate.
@@ -432,27 +432,27 @@ VeraId signatures use the Cryptographic Message Syntax (CMS) as defined in RFC 5
   - MAY include intermediate certificates if applicable.
   - MUST NOT include the organisation certificate from the signature bundle.
 
-The VeraId signature metadata is encoded as an ASN.1 structure and is defined in section 7.3.
+The DomainAuth signature metadata is encoded as an ASN.1 structure and is defined in section 7.3.
 
 # Identity Model
 
 ## Organisations
 
-In the VeraId protocol, an organisation is represented by a domain name and serves as the foundational identity unit. Organisations have full control over their VeraId implementation and member management.
+In the DomainAuth protocol, an organisation is represented by a domain name and serves as the foundational identity unit. Organisations have full control over their DomainAuth implementation and member management.
 
 Organisations MUST:
 
 1. Own or control a domain name with properly configured DNSSEC.
 2. Generate and safeguard an RSA key pair for their organisation certificate.
 3. Self-issue an X.509 certificate with the domain name as the CommonName.
-4. Publish a VeraId TXT record at `_veraid.<domain>` with the appropriate key information.
+4. Publish a DomainAuth TXT record at `_domainauth.<domain>` with the appropriate key information.
 5. Manage the issuance and revocation of member certificates.
 
 The organisation is the trust anchor for all certificates and signatures within its domain. No external authority can issue valid certificates for the organisation or its members.
 
-Newly registered domains SHOULD wait at least the maximum TTL (30 days) before implementing VeraId to prevent potential attacks using DNSSEC chains from previous domain owners.
+Newly registered domains SHOULD wait at least the maximum TTL (30 days) before implementing DomainAuth to prevent potential attacks using DNSSEC chains from previous domain owners.
 
-Subdomains MAY implement VeraId separately from their parent domains, provided they have their own DNSSEC configuration. Each subdomain operates as an independent organisation within the VeraId ecosystem.
+Subdomains MAY implement DomainAuth separately from their parent domains, provided they have their own DNSSEC configuration. Each subdomain operates as an independent organisation within the DomainAuth ecosystem.
 
 ## Members
 
@@ -478,7 +478,7 @@ The protocol makes a clear distinction between users (who represent individuals)
 
 ## Naming Conventions and Restrictions
 
-VeraId imposes specific restrictions on member names to prevent phishing attacks and ensure consistent processing across implementations:
+DomainAuth imposes specific restrictions on member names to prevent phishing attacks and ensure consistent processing across implementations:
 
 1. **User Names:**
   - MUST NOT contain at signs (`@`).
@@ -503,7 +503,7 @@ Organisations SHOULD establish and enforce consistent naming policies for their 
 
 ## Organisation Certificate Issuance
 
-Organisation certificates form the foundation of the VeraId trust model and MUST be self-issued by the organisation.
+Organisation certificates form the foundation of the DomainAuth trust model and MUST be self-issued by the organisation.
 
 The process for issuing an organisation certificate is as follows:
 
@@ -513,8 +513,8 @@ The process for issuing an organisation certificate is as follows:
   - A validity period appropriate for the organisation's security policy.
   - The Basic Constraints extension with the CA flag set to TRUE.
   - Subject Key Identifier and Authority Key Identifier extensions.
-3. The organisation calculates the appropriate key identifier as specified in the VeraId TXT Record Format (section 3.2).
-4. The organisation publishes a VeraId TXT record at `_veraid.<domain>` containing the key algorithm, key ID type, key ID, TTL override, and optional service OID.
+3. The organisation calculates the appropriate key identifier as specified in the DomainAuth TXT Record Format (section 3.2).
+4. The organisation publishes a DomainAuth TXT record at `_domainauth.<domain>` containing the key algorithm, key ID type, key ID, TTL override, and optional service OID.
 5. The organisation ensures that DNSSEC is properly configured and that the TXT record is signed.
 
 The organisation certificate SHOULD be created with appropriate key management procedures, ideally using hardware security modules or similar protection mechanisms for the private key.
@@ -545,7 +545,7 @@ Service-specific extensions MAY be included in member certificates to restrict t
 
 ## Certificate Validity Periods
 
-VeraId favours short-lived certificates over complex revocation mechanisms. The following guidelines apply to certificate validity periods:
+DomainAuth favours short-lived certificates over complex revocation mechanisms. The following guidelines apply to certificate validity periods:
 
 1. **Organisation Certificates:**
   - SHOULD have a validity period aligned with the organisation's key management policy.
@@ -568,10 +568,10 @@ Short certificate lifetimes provide natural revocation through expiration, reduc
 
 ## Certificate Revocation
 
-VeraId primarily relies on short-lived certificates to manage certificate lifecycle, but situations may arise where explicit revocation is necessary.
+DomainAuth primarily relies on short-lived certificates to manage certificate lifecycle, but situations may arise where explicit revocation is necessary.
 
 1. **Organisation Certificates:**
-  - Revocation is achieved by removing or updating the VeraId TXT record.
+  - Revocation is achieved by removing or updating the DomainAuth TXT record.
   - Old signatures using the revoked certificate will no longer verify once the DNSSEC chain is refreshed.
   - In case of key compromise, immediate removal of the TXT record is essential.
 2. **Member Certificates:**
@@ -579,7 +579,7 @@ VeraId primarily relies on short-lived certificates to manage certificate lifecy
   - For urgent revocation, organisations SHOULD maintain internal revocation lists.
   - Implementations MAY provide additional revocation mechanisms appropriate to their specific needs.
 3. **Revocation Checking:**
-  - The VeraId protocol does not require online revocation checking.
+  - The DomainAuth protocol does not require online revocation checking.
   - Implementations MAY implement additional revocation checking mechanisms.
   - Any additional revocation mechanisms SHOULD be designed to work in offline scenarios.
 
@@ -603,7 +603,7 @@ MemberIdBundle ::= SEQUENCE {
 Where:
 
 - `version` is the format version (currently 0).
-- `dnssecChain` contains the serialised DNSSEC chain proving the authenticity of the organisation's VeraId TXT record.
+- `dnssecChain` contains the serialised DNSSEC chain proving the authenticity of the organisation's DomainAuth TXT record.
 - `organisationCertificate` is the organisation's self-issued X.509 certificate.
 - `memberCertificate` is the X.509 certificate issued to the member by the organisation.
 
@@ -613,7 +613,7 @@ Member Id Bundles are not inherently confidential, as they contain only public i
 
 ## Signature Bundle
 
-The Signature Bundle is the core artefact of the VeraId protocol, containing a digital signature and all the information needed to verify it offline. It is serialised using ASN.1 DER encoding with the following structure:
+The Signature Bundle is the core artefact of the DomainAuth protocol, containing a digital signature and all the information needed to verify it offline. It is serialised using ASN.1 DER encoding with the following structure:
 
 ~~~~~~~
 SignatureBundle ::= SEQUENCE {
@@ -627,20 +627,20 @@ SignatureBundle ::= SEQUENCE {
 Where:
 
 - `version` is the format version (currently 0).
-- `dnssecChain` contains the serialised DNSSEC chain proving the authenticity of the organisation's VeraId TXT record.
+- `dnssecChain` contains the serialised DNSSEC chain proving the authenticity of the organisation's DomainAuth TXT record.
 - `organisationCertificate` is the organisation's self-issued X.509 certificate.
 - `signature` is a CMS `ContentInfo` containing a `SignedData` structure.
 
-VeraId supports two types of signature bundles, which share the same structure but differ in their content and verification process:
+DomainAuth supports two types of signature bundles, which share the same structure but differ in their content and verification process:
 
 1. **Member signatures:** The `SignedData` structure contains:
   - The member certificate (and any intermediate certificates if applicable).
   - The digital signature over the content, produced using the member's private key.
-  - Signature attributes, including the VeraId signature metadata.
+  - Signature attributes, including the DomainAuth signature metadata.
   - Optionally, the signed content itself (for encapsulated signatures).
 2. **Organisation signatures:** The `SignedData` structure contains:
   - The digital signature over the content, produced using the organisation's private key.
-  - Signature attributes, including the VeraId signature metadata.
+  - Signature attributes, including the DomainAuth signature metadata.
   - The member attribution attribute identifying the member who authored the content.
   - Optionally, intermediate certificates if the organisation uses a certification path.
   - Optionally, the signed content itself (for encapsulated signatures).
@@ -653,7 +653,7 @@ The Signature Bundle is self-contained and provides all the information needed f
 
 ## Signature Metadata
 
-Each VeraId signature includes metadata that binds it to a specific service and validity period. This metadata is included as a signed attribute in the CMS `SignedData` structure, ensuring it cannot be modified without invalidating the signature.
+Each DomainAuth signature includes metadata that binds it to a specific service and validity period. This metadata is included as a signed attribute in the CMS `SignedData` structure, ensuring it cannot be modified without invalidating the signature.
 
 The signature metadata is encoded as an ASN.1 structure:
 
@@ -686,7 +686,7 @@ The validity period in the signature metadata is intersected with the validity p
 
 ## Verification Process
 
-The verification of a VeraId signature involves multiple steps that validate the entire chain of trust from the DNSSEC infrastructure to the signature itself. Implementations MUST perform the following verification steps:
+The verification of a DomainAuth signature involves multiple steps that validate the entire chain of trust from the DNSSEC infrastructure to the signature itself. Implementations MUST perform the following verification steps:
 
 1. **Parse the Signature Bundle:**
   - Extract the DNSSEC chain, organisation certificate, and CMS signature.
@@ -694,7 +694,7 @@ The verification of a VeraId signature involves multiple steps that validate the
 2. **Validate the DNSSEC chain:**
   - Verify that the chain starts from a trusted DNSSEC anchor.
   - Verify all DNSSEC signatures in the chain.
-  - Confirm that the chain leads to the `_veraid.<domain>` TXT record.
+  - Confirm that the chain leads to the `_domainauth.<domain>` TXT record.
   - Extract the organisation's public key information from the TXT record.
 3. **Validate the organisation certificate:**
   - Verify that the certificate's public key matches the key identified in the TXT record.
@@ -739,7 +739,7 @@ The verification of a VeraId signature involves multiple steps that validate the
 
 If all these steps succeed, the signature is considered valid, and the content is confirmed to originate from the identified member of the specified organisation or from the organisation itself.
 
-The verification process MUST be performed in full, without skipping any steps, to ensure the security properties of the VeraId protocol.
+The verification process MUST be performed in full, without skipping any steps, to ensure the security properties of the DomainAuth protocol.
 
 ## Member Attribution
 
@@ -764,20 +764,20 @@ Member attribution is a claim made by the organisation, not cryptographically pr
 
 ## Service OIDs
 
-VeraId uses Object Identifiers (OIDs) to uniquely identify services and applications that use the protocol. Service OIDs serve as namespaces that prevent signature reuse across different contexts.
+DomainAuth uses Object Identifiers (OIDs) to uniquely identify services and applications that use the protocol. Service OIDs serve as namespaces that prevent signature reuse across different contexts.
 
 1. **OID Structure:**
-  - The VeraId root OID is `1.3.6.1.4.1.58708.1`.
+  - The DomainAuth root OID is `1.3.6.1.4.1.58708.1`.
   - Official service OIDs MUST be allocated under this root.
   - For example, the test service OID is `1.3.6.1.4.1.58708.1.1`.
 2. **OID Allocation:**
   - Service designers MUST obtain a unique OID for their service.
   - Third-party services MUST use OIDs from their own namespace.
-  - The VeraId OID arc is reserved exclusively for official services under the VeraId project umbrella.
+  - The DomainAuth OID arc is reserved exclusively for official services under the DomainAuth project umbrella.
 3. **OID Usage:**
   - The service OID MUST be included in the signature metadata.
   - Verifiers MUST check that the OID in the signature matches the expected service.
-  - VeraId TXT records MAY specify a service OID to restrict key usage.
+  - DomainAuth TXT records MAY specify a service OID to restrict key usage.
 4. **Versioning:**
   - Service designers SHOULD include version information in their OID structure.
   - Major protocol changes SHOULD use a new OID.
@@ -787,7 +787,7 @@ Service OIDs ensure that signatures created for one service cannot be repurposed
 
 ## Service-Specific Validation Rules
 
-Services using VeraId MAY define additional validation rules beyond the core protocol requirements. These rules allow services to implement domain-specific security policies.
+Services using DomainAuth MAY define additional validation rules beyond the core protocol requirements. These rules allow services to implement domain-specific security policies.
 
 1. **TTL Constraints:**
   - Services MUST specify a maximum TTL for signatures.
@@ -806,11 +806,11 @@ Services using VeraId MAY define additional validation rules beyond the core pro
   - Such extensions SHOULD be clearly documented.
   - Verifiers MUST check for and validate any required extensions.
 
-Service designers SHOULD document their validation rules comprehensively to ensure consistent implementation across different verifiers. These rules SHOULD be designed to maintain the security properties of the VeraId protocol while addressing service-specific requirements.
+Service designers SHOULD document their validation rules comprehensively to ensure consistent implementation across different verifiers. These rules SHOULD be designed to maintain the security properties of the DomainAuth protocol while addressing service-specific requirements.
 
 ## Implementation Guidelines
 
-Service developers integrating VeraId should adhere to the following guidelines to ensure secure and consistent implementation:
+Service developers integrating DomainAuth should adhere to the following guidelines to ensure secure and consistent implementation:
 
 1. **User Interface Considerations:**
   - Clearly display the full member identifier (username and domain).
@@ -839,13 +839,13 @@ Service developers integrating VeraId should adhere to the following guidelines 
   - Test with different key sizes and algorithms.
   - Ensure verification fails as expected with tampered data.
 
-These guidelines help ensure that VeraId integrations provide consistent security properties and user experience across different implementations and platforms.
+These guidelines help ensure that DomainAuth integrations provide consistent security properties and user experience across different implementations and platforms.
 
 # Implementation Guidance
 
 ## Reference Implementations
 
-{{VERAIDJS}} and {{VERAIDJVM}} are reference implementations of the VeraId protocol in JavaScript and Kotlin respectively.
+{{VERAIDJS}} and {{VERAIDJVM}} are reference implementations of the DomainAuth protocol in JavaScript and Kotlin respectively.
 
 Implementations MUST:
 
@@ -858,7 +858,7 @@ Implementers are encouraged to contribute improvements and clarifications back t
 
 ## Interoperability Considerations
 
-To ensure interoperability between different VeraId implementations:
+To ensure interoperability between different DomainAuth implementations:
 
 1. **Strict Validation:**
   - Implementations MUST strictly validate all inputs.
@@ -874,7 +874,7 @@ To ensure interoperability between different VeraId implementations:
   - Usernames MUST be compared using case-sensitive comparison.
 4. **Time Representation:**
   - Implementations SHOULD use UTC (`Z` suffix) in all `GeneralizedTime` values, including those in X.509 certificates.
-  - When timezone information is absent from a `GeneralizedTime` value in any VeraId structure, implementations MUST interpret it as UTC.
+  - When timezone information is absent from a `GeneralizedTime` value in any DomainAuth structure, implementations MUST interpret it as UTC.
   - Implementations MUST correctly handle and compare `GeneralizedTime` values with different timezone representations.
 5. **Algorithm Support:**
   - Implementations MUST support all mandatory cryptographic algorithms.
@@ -889,7 +889,7 @@ Regular interoperability testing between different implementations is recommende
 
 ## Performance Optimisations
 
-VeraId implementations can benefit from several performance optimisations whilst maintaining security:
+DomainAuth implementations can benefit from several performance optimisations whilst maintaining security:
 
 1. **Caching Strategies:**
   - Cache parsed certificates and DNSSEC chains to avoid repeated parsing.
@@ -919,12 +919,12 @@ These optimisations MUST NOT compromise security or correctness. Performance-cri
 
 ## Member vs Organisation Signatures
 
-Developers integrating VeraId into their applications must decide whether to use member signatures or organisation signatures with member attribution. This decision should be based on the specific requirements of the application and the security considerations outlined in Section 9.5.
+Developers integrating DomainAuth into their applications must decide whether to use member signatures or organisation signatures with member attribution. This decision should be based on the specific requirements of the application and the security considerations outlined in Section 9.5.
 
 ### Implementation Recommendations
 
 1. **Library/SDK Design:**
-  - VeraId libraries and SDKs SHOULD provide distinct functions for creating member signatures and organisation signatures.
+  - DomainAuth libraries and SDKs SHOULD provide distinct functions for creating member signatures and organisation signatures.
   - Verification functions SHOULD be unified, with the signature type included in the verification output.
   - Libraries SHOULD NOT require developers to specify the signature type during verification, as this should be determined automatically from the signature bundle.
 2. **Use Case Considerations:**
@@ -945,10 +945,10 @@ Developers integrating VeraId into their applications must decide whether to use
 
 ## DNSSEC Dependency
 
-VeraId's security model relies fundamentally on DNSSEC, which introduces specific security considerations:
+DomainAuth's security model relies fundamentally on DNSSEC, which introduces specific security considerations:
 
 1. **Trust Anchors:**
-   - The VeraId protocol inherits trust from the DNSSEC root zone.
+   - The DomainAuth protocol inherits trust from the DNSSEC root zone.
    - Compromise of the root KSK would undermine the entire system.
    - Implementations MUST securely manage and update DNSSEC trust anchors.
 2. **TLD Control:**
@@ -956,11 +956,11 @@ VeraId's security model relies fundamentally on DNSSEC, which introduces specifi
    - A malicious TLD operator could theoretically issue fraudulent DNSSEC responses.
    - Organisations SHOULD consider the governance of their TLD when assessing security.
 3. **DNSSEC Implementation Vulnerabilities:**
-   - Flaws in DNSSEC implementations could affect VeraId security.
+   - Flaws in DNSSEC implementations could affect DomainAuth security.
    - Implementations SHOULD use well-tested, actively maintained DNSSEC libraries.
    - Security updates for DNSSEC components SHOULD be promptly applied.
 4. **DNSSEC Adoption:**
-   - Not all domains support DNSSEC, limiting VeraId adoption.
+   - Not all domains support DNSSEC, limiting DomainAuth adoption.
    - DNSSEC misconfiguration can lead to verification failures.
    - Organisations MUST properly maintain their DNSSEC configuration.
 5. **Key Rollovers:**
@@ -997,10 +997,10 @@ These attacks primarily affect human perception rather than cryptographic verifi
 
 ## Domain Ownership Changes
 
-Domain transfers present specific security challenges for the VeraId protocol:
+Domain transfers present specific security challenges for the DomainAuth protocol:
 
 1. **Waiting Period:**
-   - Organisations SHOULD delay implementing VeraId until at least the maximum TTL (30 days) has elapsed since the domain was registered or acquired.
+   - Organisations SHOULD delay implementing DomainAuth until at least the maximum TTL (30 days) has elapsed since the domain was registered or acquired.
    - This prevents the DNSSEC chain from the previous owner from remaining valid.
 2. **Signature Validity After Transfer:**
    - Signatures created before a domain transfer remain cryptographically valid.
@@ -1011,11 +1011,11 @@ Domain transfers present specific security challenges for the VeraId protocol:
    - Verifiers SHOULD consider domain registration date when processing signatures.
    - Signatures SHOULD NOT be trusted if the domain has changed hands since issuance.
 4. **Subdomain Delegation:**
-   - Changes in subdomain delegation may affect VeraId verification.
+   - Changes in subdomain delegation may affect DomainAuth verification.
    - Organisations SHOULD carefully manage subdomain delegation.
    - Signature verification considers the state of delegations at verification time.
 
-Domain ownership changes represent a fundamental challenge to any domain-based authentication system. VeraId's approach of using short-lived certificates and signatures helps mitigate these risks by limiting the time window during which historical signatures remain valid.
+Domain ownership changes represent a fundamental challenge to any domain-based authentication system. DomainAuth's approach of using short-lived certificates and signatures helps mitigate these risks by limiting the time window during which historical signatures remain valid.
 
 ## Offline Verification Limitations
 
@@ -1043,7 +1043,7 @@ Offline verification introduces specific security considerations:
    - Applications SHOULD track and report extended offline periods.
    - Critical operations MAY require periodic online connectivity.
 
-These limitations are inherent to any offline verification system and reflect fundamental tradeoffs between availability and security. VeraId provides a balanced approach that offers strong verification guarantees whilst supporting offline operation.
+These limitations are inherent to any offline verification system and reflect fundamental tradeoffs between availability and security. DomainAuth provides a balanced approach that offers strong verification guarantees whilst supporting offline operation.
 
 ## Organisation Signatures and Member Attribution
 
@@ -1067,10 +1067,10 @@ Organisation signatures with member attribution introduce specific security cons
    - The use of certification paths in organisation signatures introduces additional complexity and potential security vulnerabilities.
 5. **Verification Presentation:**
    - Verification interfaces MUST clearly distinguish between cryptographically proven member signatures and organisation signatures with member attribution.
-   - End users of applications implementing VeraId may need to be informed about the different trust implications of these signature types.
+   - End users of applications implementing DomainAuth may need to be informed about the different trust implications of these signature types.
    - Implementations SHOULD use distinct visual indicators or terminology to prevent confusion between the two signature types.
 
-To mitigate these risks, developers integrating VeraId SHOULD:
+To mitigate these risks, developers integrating DomainAuth SHOULD:
 
 - Prefer member signatures over organisation signatures when practical.
 - Limit the use of organisation signatures to specific use cases where certificate management for members is impractical.
@@ -1088,10 +1088,10 @@ This document has no IANA actions.
 
 # ASN.1 Schemas
 
-The following ASN.1 schemas define the data structures used in the VeraId protocol:
+The following ASN.1 schemas define the data structures used in the DomainAuth protocol:
 
 ~~~~~~~
--- Top-level schemas for VeraId components
+-- Top-level schemas for DomainAuth components
 
 -- DNSSEC chain is a set of DNS messages
 DnssecChain ::= SET OF OCTET STRING
@@ -1129,7 +1129,7 @@ DatePeriod ::= SEQUENCE {
 MemberAttribution ::= UTF8String
 ~~~~~~~
 
-All VeraId data structures MUST be encoded using ASN.1 Distinguished Encoding Rules (DER). Implementations MUST reject structures that are not valid DER.
+All DomainAuth data structures MUST be encoded using ASN.1 Distinguished Encoding Rules (DER). Implementations MUST reject structures that are not valid DER.
 
 The ASN.1 structures reference standard types from other specifications:
 
@@ -1140,22 +1140,22 @@ All implementations MUST strictly adhere to these schemas. Any deviation in stru
 
 # OID Registry
 
-The following Object Identifiers (OIDs) are defined for use in the VeraId protocol:
+The following Object Identifiers (OIDs) are defined for use in the DomainAuth protocol:
 
-1. **VeraId Base OID:**
-   - `1.3.6.1.4.1.58708.1` (iso.org.dod.internet.private.enterprise.relaycorp.veraid).
+1. **DomainAuth Base OID:**
+   - `1.3.6.1.4.1.58708.1` (iso.org.dod.internet.private.enterprise.relaycorp.domainauth).
 2. **Protocol OIDs:**
    - `1.3.6.1.4.1.58708.1.0`: Signature Metadata Attribute.
    - `1.3.6.1.4.1.58708.1.2`: Member Attribution Attribute.
 3. **Service OIDs:**
    - `1.3.6.1.4.1.58708.1.1`: Test Service.
 
-Third-party services implementing VeraId MUST register and use their own OIDs under their own arcs. The VeraId OID arc (`1.3.6.1.4.1.58708.1`) is reserved exclusively for official services and protocol components under the VeraId project umbrella.
+Third-party services implementing DomainAuth MUST register and use their own OIDs under their own arcs. The DomainAuth OID arc (`1.3.6.1.4.1.58708.1`) is reserved exclusively for official services and protocol components under the DomainAuth project umbrella.
 
 OID registration procedures:
 
-1. OIDs under the VeraId base OID are managed by the VeraId maintainers and reserved for official VeraId project purposes.
-2. Third parties MUST NOT use OIDs under the VeraId arc for their services.
+1. OIDs under the DomainAuth base OID are managed by the DomainAuth maintainers and reserved for official DomainAuth project purposes.
+2. Third parties MUST NOT use OIDs under the DomainAuth arc for their services.
 3. Third parties without their own OID arc SHOULD obtain one from their national registration authority or through IANA's Private Enterprise Number (PEN) registry.
 4. Once allocated, OIDs are never reassigned to different services.
 
@@ -1166,4 +1166,4 @@ Services SHOULD use versioning in their OID structure to manage protocol evoluti
 
 The author is grateful to the Open Technology Fund for funding the implementation of VeraId, which heavily influenced the final specification of the VeraId protocol, and therefore this document.
 
-The author would also like to thank the authors of {{DNSSEC}}, {{X.509}}, {{CMS}}, and {{ASN.1}} for their work on these standards, which underpin the present work.
+The author would also like to thank the authors of {{DNSSEC}}, {{X.509}}, {{CMS}}, and {{ASN.1}}, which underpin the present work.

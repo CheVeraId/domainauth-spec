@@ -534,8 +534,8 @@ Table of Contents
 
    5.  *TTL Override* (required): A positive integer representing the
        number of seconds for the maximum validity period of signatures.
-       This value MUST be between 28,800 seconds (8 hours) and 2,592,000
-       seconds (30 days).
+       This value MUST be between 1 second and 7,776,000 seconds (90
+       days).
 
    6.  *Service OID* (optional): An Object Identifier (in dotted decimal
        notation) identifying a specific service for which this record is
@@ -596,10 +596,13 @@ _domainauth.example.com. IN TXT "0 1 3 dGhpcyBpcyBub3QgYSByZWFsIGtleSBkaWdlc3Q 8
    the following requirements:
 
    1.  Service designers MUST specify a maximum TTL for signatures in
-       their service, which MUST be: - At least 8 hours (28,800
-       seconds), to allow sufficient time for certificate renewal during
-       outages.  - At most 30 days (2,592,000 seconds), to support
-       offline, delay-tolerant networking scenarios.
+       their service, which MUST be:
+
+       *  At least 1 second, though we recommend several minutes to
+          account for clock drift.
+
+       *  At most 90 days (7,776,000 seconds), to support offline,
+          delay-tolerant networking scenarios.
 
    2.  The age of a digital signature MUST be calculated from the time
        when the DNSSEC answer for the _domainauth.<domain> TXT record
@@ -610,10 +613,10 @@ _domainauth.example.com. IN TXT "0 1 3 dGhpcyBpcyBub3QgYSByZWFsIGtleSBkaWdlc3Q 8
        DNSSEC signing time.
 
    4.  Verifiers MAY enforce a TTL shorter than that required by the
-       service, but not shorter than the 8-hour minimum.
+       service, but not shorter than the 1-second minimum.
 
    5.  Verifiers MAY allow their end users to specify a shorter TTL (but
-       still not shorter than 8 hours) than the one in the TXT record.
+       still not shorter than 1 second) than the one in the TXT record.
 
    DomainAuth favours short-lived certificates over revocation
    mechanisms to simplify the protocol and eliminate dependencies on
@@ -737,7 +740,7 @@ _domainauth.example.com. IN TXT "0 1 3 dGhpcyBpcyBub3QgYSByZWFsIGtleSBkaWdlc3Q 8
    3.  *Issuer:* - MUST match the Subject of the issuing organisation
        certificate.
 
-   4.  *Validity:* - SHOULD be short-lived, preferably not exceeding 30
+   4.  *Validity:* - SHOULD be short-lived, preferably not exceeding 90
        days.  - MUST NOT be longer than the validity period of the
        issuing organisation certificate.
 
@@ -831,7 +834,7 @@ _domainauth.example.com. IN TXT "0 1 3 dGhpcyBpcyBub3QgYSByZWFsIGtleSBkaWdlc3Q 8
    signatures within its domain.  No external authority can issue valid
    certificates for the organisation or its members.
 
-   Newly registered domains SHOULD wait at least the maximum TTL (30
+   Newly registered domains SHOULD wait at least the maximum TTL (90
    days) before implementing DomainAuth to prevent potential attacks
    using DNSSEC chains from previous domain owners.
 
@@ -997,7 +1000,7 @@ _domainauth.example.com. IN TXT "0 1 3 dGhpcyBpcyBub3QgYSByZWFsIGtleSBkaWdlc3Q 8
        implements frequent key rotation.
 
    2.  *Member Certificates:* - SHOULD be short-lived, with validity
-       periods of 30 days or less.  - MUST NOT exceed the validity
+       periods of 90 days or less.  - MUST NOT exceed the validity
        period of the issuing organisation certificate.  - MAY be as
        short as a few hours for high-security applications.  - SHOULD
        balance security requirements with operational concerns about
@@ -1357,7 +1360,7 @@ _domainauth.example.com. IN TXT "0 1 3 dGhpcyBpcyBub3QgYSByZWFsIGtleSBkaWdlc3Q 8
    implement domain-specific security policies.
 
    1.  *TTL Constraints:* - Services MUST specify a maximum TTL for
-       signatures.  - The TTL MUST be within the range of 8 hours to 30
+       signatures.  - The TTL MUST be within the range of 1 second to 90
        days.  - Services SHOULD choose the shortest TTL that meets their
        requirements.
 
@@ -1706,7 +1709,7 @@ _domainauth.example.com. IN TXT "0 1 3 dGhpcyBpcyBub3QgYSByZWFsIGtleSBkaWdlc3Q 8
    1.  *Waiting Period:*
 
        *  Organisations SHOULD delay implementing DomainAuth until at
-          least the maximum TTL (30 days) has elapsed since the domain
+          least the maximum TTL (90 days) has elapsed since the domain
           was registered or acquired.
 
        *  This prevents the DNSSEC chain from the previous owner from

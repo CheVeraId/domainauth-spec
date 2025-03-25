@@ -43,18 +43,26 @@ normative:
     date: 1994
     seriesinfo:
       ITU-T: Recommendation X.690
+  RFC7942:
 
 informative:
-  VERAIDJS:
-    title: VeraId JavaScript Library
-    target: https://github.com/relaycorp/veraid-js
+  VERAID:
+    title: VeraId V1 Specification
+    target: https://veraid.net/spec/
+    author:
+      name: Gus Narea
+      org: Relaycorp
+    date: 2025
+  LETRO:
+    title: Letro
+    target: https://letro.app/en/
     author:
       name: Gus Narea
       org: Relaycorp
     date: 2023
-  VERAIDJVM:
-    title: VeraId JVM Library
-    target: https://github.com/relaycorp/veraid-jvm
+  LETRO-SERVER:
+    title: Letro Server
+    target: https://docs.relaycorp.tech/letro-server/
     author:
       name: Gus Narea
       org: Relaycorp
@@ -844,19 +852,6 @@ These guidelines help ensure that DomainAuth integrations provide consistent sec
 
 # Implementation Guidance
 
-## Reference Implementations
-
-{{VERAIDJS}} and {{VERAIDJVM}} are reference implementations of the DomainAuth protocol in JavaScript and Kotlin respectively.
-
-Implementations MUST:
-
-- Follow all requirements in this specification.
-- Pass all tests in the test suite of the reference implementation.
-- Handle all defined error conditions appropriately.
-- Maintain backward compatibility with the reference implementation.
-
-Implementers are encouraged to contribute improvements and clarifications back to the reference implementations and this specification.
-
 ## Interoperability Considerations
 
 To ensure interoperability between different DomainAuth implementations:
@@ -941,6 +936,55 @@ Developers integrating DomainAuth into their applications must decide whether to
 2. **Attribution Presentation:** For organisation signatures, interfaces SHOULD clearly indicate that the member attribution is a claim made by the organisation, not cryptographic proof. Example phrasing: `Signed by example.com on behalf of alice` rather than `Signed by alice of example.com`.
 3. **Verification Details:** Interfaces SHOULD provide access to detailed verification information, including the full certification path and validity periods. Advanced users SHOULD be able to view the complete verification process and results.
 4. **Error Handling:** Clear error messages SHOULD be displayed when verification fails, with appropriate guidance for users. Different error handling may be appropriate for different signature types, reflecting their distinct trust models.
+
+# Implementation Status
+
+This section records the status of known implementations of the protocol defined by this specification at the time of posting of this Internet-Draft, and is based on a proposal described in {{RFC7942}}. The description of implementations in this section is intended to assist the IETF in its decision processes in progressing drafts to RFCs. Please note that the listing of any individual implementation here does not imply endorsement by the IETF. Furthermore, no effort has been spent to verify the information presented here that was supplied by IETF contributors. This is not intended as, and must not be construed to be, a catalog of available implementations or their features. Readers are advised to note that other implementations may exist.
+
+According to {{RFC7942}}, "this will allow reviewers and working groups to assign due consideration to documents that have the benefit of running code, which may serve as evidence of valuable experimentation and feedback that have made the implemented protocols more mature. It is up to the individual working groups to use this information as they see fit".
+
+*Note to RFC Editor: Please remove this section before publication.*
+
+DomainAuth is the successor to the VeraId protocol as defined in {{VERAID}}, which has fully-interoperable implementations as described below. DomainAuth and VeraId are functionally identical, except for the following differences:
+
+- DNS TXT record:
+  - Name: DomainAuth uses `_domainauth.example.com.`, whilst VeraId uses `_veraid.example.com.`.
+  - Value: DomainAuth requires the value to begin with the number `0`, denoting the version of the DomainAuth TXT record format, followed by a space. This value does not have a version number in VeraId.
+
+VeraId is led by the author of this document, who intends to deprecate the VeraId specification in favour of DomainAuth and update the reference implementations to fully comply with this specification.
+
+All implementations listed below are undergoing independent security audits as of this writing, and their respective reports are expected to be published in April 2025.
+
+## VeraId JavaScript Library
+
+- Organisation: Relaycorp.
+- URL: https://github.com/relaycorp/veraid-js
+- Level of maturity: Used in production in the VeraId Authority application (see below).
+- Coverage: The implementation covers the entire protocol as defined in {{VERAID}}.
+- Licensing: Freely distributable with acknowledgement (MIT licence).
+- Contact: https://relaycorp.tech/
+- Last updated: 2025
+
+## VeraId JVM Library
+
+- Organisation: Relaycorp.
+- URL: https://github.com/relaycorp/veraid-jvm
+- Level of maturity: Used in production in the Android-based offline messaging application {{LETRO}}.
+- Coverage: The implementation covers the entire protocol as defined in {{VERAID}}, except for Organisation Signature Bundles.
+- Licensing: Freely distributable with acknowledgement (Apache 2.0 licence).
+- Contact: https://relaycorp.tech/
+- Last updated: 2025
+
+## VeraId Authority
+
+- Organisation: Relaycorp
+- URL: https://github.com/relaycorp/veraid-authority
+- Description: A multi-tenant, cloud-native application that allows organisations to manage their members and the issuance of their respective Member Id Bundles.
+- Level of maturity: Used in production in the server-side component of Letro as documented in {{LETRO-SERVER}}.
+- Coverage: The implementation leverages the VeraId JavaScript Library to issue Member Id Bundles and Organisation Signature Bundles.
+- Licensing: Business Source License version 1.1
+- Contact: https://relaycorp.tech/
+- Last updated: 2025
 
 # Security Considerations
 

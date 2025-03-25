@@ -4,7 +4,7 @@
 
 This is the working area for the Internet-Draft (I-D) "DomainAuth Version 1", the protocol underpinning [VeraId](https://veraid.net/).
 
-Refer to [`rationale.md`](./rationale.md) for additional context on key design decisions, and [`veraid-diff.md`](./veraid-diff.md) for a comparison with the VeraId spec.
+Refer to [`rationale.md`](./rationale.md) for additional context on key design decisions.
 
 ## Conventions
 

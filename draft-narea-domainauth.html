@@ -1189,7 +1189,7 @@ svg :is([fill="white"], [fill^="#fff"]) {
                 <p id="section-toc.1-1.4.2.1.1"><a href="#section-4.1" class="auto internal xref">4.1</a>.  <a href="#name-dnssec-requirements" class="internal xref">DNSSEC Requirements</a></p>
 </li>
               <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.4.2.2">
-                <p id="section-toc.1-1.4.2.2.1"><a href="#section-4.2" class="auto internal xref">4.2</a>.  <a href="#name-veraid-txt-record-format" class="internal xref">VeraId TXT Record Format</a></p>
+                <p id="section-toc.1-1.4.2.2.1"><a href="#section-4.2" class="auto internal xref">4.2</a>.  <a href="#name-domainauth-txt-record-forma" class="internal xref">DomainAuth TXT Record Format</a></p>
 </li>
               <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.4.2.3">
                 <p id="section-toc.1-1.4.2.3.1"><a href="#section-4.3" class="auto internal xref">4.3</a>.  <a href="#name-dnssec-chain-serialisation" class="internal xref">DNSSEC Chain Serialisation</a></p>
@@ -1369,14 +1369,14 @@ svg :is([fill="white"], [fill^="#fff"]) {
       <h2 id="name-introduction">
 <a href="#section-1" class="section-number selfRef">1. </a><a href="#name-introduction" class="section-name selfRef">Introduction</a>
       </h2>
-<p id="section-1-1">VeraId is a decentralised authentication protocol that securely attributes content to domain names, providing a robust mechanism for proving ownership and authorship without requiring continuous Internet connectivity. By combining the decentralised nature of DNS with established cryptographic standards, VeraId enables secure content verification in both online and offline environments.<a href="#section-1-1" class="pilcrow">¶</a></p>
+<p id="section-1-1">DomainAuth is a decentralised authentication protocol that securely attributes content to domain names, providing a robust mechanism for proving ownership and authorship without requiring continuous Internet connectivity. By combining the decentralised nature of DNS with established cryptographic standards, DomainAuth enables secure content verification in both online and offline environments.<a href="#section-1-1" class="pilcrow">¶</a></p>
 <div id="purpose-and-scope">
 <section id="section-1.1">
         <h3 id="name-purpose-and-scope">
 <a href="#section-1.1" class="section-number selfRef">1.1. </a><a href="#name-purpose-and-scope" class="section-name selfRef">Purpose and Scope</a>
         </h3>
-<p id="section-1.1-1">The purpose of VeraId is to provide a secure, decentralised authentication protocol that enables the attribution of content to domain names and their associated users. VeraId addresses the need for reliable authentication in scenarios where continuous Internet connectivity cannot be guaranteed or is undesirable.<a href="#section-1.1-1" class="pilcrow">¶</a></p>
-<p id="section-1.1-2">This V1 specification defines the core protocol components, data structures, cryptographic operations, and verification procedures that constitute the VeraId ecosystem. It provides the necessary information for implementers to create interoperable tools and applications that can produce and verify VeraId signatures.<a href="#section-1.1-2" class="pilcrow">¶</a></p>
+<p id="section-1.1-1">The purpose of DomainAuth is to provide a secure, decentralised authentication protocol that enables the attribution of content to domain names and their associated users. DomainAuth addresses the need for reliable authentication in scenarios where continuous Internet connectivity cannot be guaranteed or is undesirable.<a href="#section-1.1-1" class="pilcrow">¶</a></p>
+<p id="section-1.1-2">This V1 specification defines the core protocol components, data structures, cryptographic operations, and verification procedures that constitute the DomainAuth ecosystem. It provides the necessary information for implementers to create interoperable tools and applications that can produce and verify DomainAuth signatures.<a href="#section-1.1-2" class="pilcrow">¶</a></p>
 <p id="section-1.1-3">The scope of this specification encompasses:<a href="#section-1.1-3" class="pilcrow">¶</a></p>
 <ul class="normal">
 <li class="normal" id="section-1.1-4.1">
@@ -1417,7 +1417,7 @@ svg :is([fill="white"], [fill^="#fff"]) {
             <p id="section-1.2-2.4.1"><strong>Self-sovereignty:</strong> Many authentication systems place trust in central authorities that can issue credentials for any entity, creating unnecessary trust dependencies and security risks.<a href="#section-1.2-2.4.1" class="pilcrow">¶</a></p>
 </li>
         </ol>
-<p id="section-1.2-3">VeraId addresses these challenges by providing a protocol built on DNSSEC that allows content to be securely attributed to user-friendly identifiers (domain names and usernames) in a fully verifiable manner, without requiring online connectivity during verification.<a href="#section-1.2-3" class="pilcrow">¶</a></p>
+<p id="section-1.2-3">DomainAuth addresses these challenges by providing a protocol built on DNSSEC that allows content to be securely attributed to user-friendly identifiers (domain names and usernames) in a fully verifiable manner, without requiring online connectivity during verification.<a href="#section-1.2-3" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="design-goals">
@@ -1425,7 +1425,7 @@ svg :is([fill="white"], [fill^="#fff"]) {
         <h3 id="name-design-goals">
 <a href="#section-1.3" class="section-number selfRef">1.3. </a><a href="#name-design-goals" class="section-name selfRef">Design Goals</a>
         </h3>
-<p id="section-1.3-1">VeraId is designed with the following primary goals:<a href="#section-1.3-1" class="pilcrow">¶</a></p>
+<p id="section-1.3-1">DomainAuth is designed with the following primary goals:<a href="#section-1.3-1" class="pilcrow">¶</a></p>
 <ol start="1" type="1" class="normal type-1" id="section-1.3-2">
 <li id="section-1.3-2.1">
             <p id="section-1.3-2.1.1"><strong>Decentralisation:</strong> The protocol avoids the need for centralised authorities beyond the DNS hierarchy itself. Each domain owner has exclusive control over their domain and its associated members.<a href="#section-1.3-2.1.1" class="pilcrow">¶</a></p>
@@ -1466,7 +1466,7 @@ svg :is([fill="white"], [fill^="#fff"]) {
         </h3>
 <ul class="normal">
 <li class="normal" id="section-1.4-1.1">
-            <p id="section-1.4-1.1.1"><strong>Organisation:</strong> A domain name that participates in the VeraId protocol by configuring DNSSEC and publishing the necessary VeraId TXT record.<a href="#section-1.4-1.1.1" class="pilcrow">¶</a></p>
+            <p id="section-1.4-1.1.1"><strong>Organisation:</strong> A domain name that participates in the DomainAuth protocol by configuring DNSSEC and publishing the necessary DomainAuth TXT record.<a href="#section-1.4-1.1.1" class="pilcrow">¶</a></p>
 </li>
           <li class="normal" id="section-1.4-1.2">
             <p id="section-1.4-1.2.1"><strong>Member:</strong> An entity (user or bot) that acts on behalf of an organisation.<a href="#section-1.4-1.2.1" class="pilcrow">¶</a></p>
@@ -1478,7 +1478,7 @@ svg :is([fill="white"], [fill^="#fff"]) {
             <p id="section-1.4-1.4.1"><strong>Bot:</strong> A special type of member that acts on behalf of the organisation as a whole.<a href="#section-1.4-1.4.1" class="pilcrow">¶</a></p>
 </li>
           <li class="normal" id="section-1.4-1.5">
-            <p id="section-1.4-1.5.1"><strong>VeraId TXT Record:</strong> A DNS TXT record at <code>_veraid.&lt;domain&gt;</code> that contains the organisation's public key information.<a href="#section-1.4-1.5.1" class="pilcrow">¶</a></p>
+            <p id="section-1.4-1.5.1"><strong>DomainAuth TXT Record:</strong> A DNS TXT record at <code>_domainauth.&lt;domain&gt;</code> that contains the organisation's public key information.<a href="#section-1.4-1.5.1" class="pilcrow">¶</a></p>
 </li>
           <li class="normal" id="section-1.4-1.6">
             <p id="section-1.4-1.6.1"><strong>Organisation Certificate:</strong> A self-signed X.509 certificate owned by an organisation that serves as the root of trust for all signatures produced on behalf of that organisation.<a href="#section-1.4-1.6.1" class="pilcrow">¶</a></p>
@@ -1487,7 +1487,7 @@ svg :is([fill="white"], [fill^="#fff"]) {
             <p id="section-1.4-1.7.1"><strong>Member Certificate:</strong> An X.509 certificate issued by the organisation certificate to a member.<a href="#section-1.4-1.7.1" class="pilcrow">¶</a></p>
 </li>
           <li class="normal" id="section-1.4-1.8">
-            <p id="section-1.4-1.8.1"><strong>Member Id Bundle:</strong> A data structure containing a member certificate, its issuing organisation certificate, and the DNSSEC chain proving the authenticity of the organisation's VeraId TXT record.<a href="#section-1.4-1.8.1" class="pilcrow">¶</a></p>
+            <p id="section-1.4-1.8.1"><strong>Member Id Bundle:</strong> A data structure containing a member certificate, its issuing organisation certificate, and the DNSSEC chain proving the authenticity of the organisation's DomainAuth TXT record.<a href="#section-1.4-1.8.1" class="pilcrow">¶</a></p>
 </li>
           <li class="normal" id="section-1.4-1.9">
             <p id="section-1.4-1.9.1"><strong>Signature Bundle:</strong> A data structure containing a digital signature and all the information needed to verify it offline.<a href="#section-1.4-1.9.1" class="pilcrow">¶</a></p>
@@ -1502,7 +1502,7 @@ svg :is([fill="white"], [fill^="#fff"]) {
             <p id="section-1.4-1.12.1"><strong>DNSSEC Chain:</strong> A sequence of DNS responses that allows a verifier to cryptographically validate the authenticity of a DNS record.<a href="#section-1.4-1.12.1" class="pilcrow">¶</a></p>
 </li>
           <li class="normal" id="section-1.4-1.13">
-            <p id="section-1.4-1.13.1"><strong>Service OID:</strong> An Object Identifier (OID) that uniquely identifies a service or application context where a VeraId signature is valid.<a href="#section-1.4-1.13.1" class="pilcrow">¶</a></p>
+            <p id="section-1.4-1.13.1"><strong>Service OID:</strong> An Object Identifier (OID) that uniquely identifies a service or application context where a DomainAuth signature is valid.<a href="#section-1.4-1.13.1" class="pilcrow">¶</a></p>
 </li>
         </ul>
 </section>
@@ -1530,7 +1530,7 @@ appear in all capitals, as shown here.<a href="#section-2-1" class="pilcrow">¶<
         <h3 id="name-architecture">
 <a href="#section-3.1" class="section-number selfRef">3.1. </a><a href="#name-architecture" class="section-name selfRef">Architecture</a>
         </h3>
-<p id="section-3.1-1">VeraId combines DNSSEC, X.509 certificates, and CMS signatures to create a decentralised authentication system. The architecture consists of several layered components:<a href="#section-3.1-1" class="pilcrow">¶</a></p>
+<p id="section-3.1-1">DomainAuth combines DNSSEC, X.509 certificates, and CMS signatures to create a decentralised authentication system. The architecture consists of several layered components:<a href="#section-3.1-1" class="pilcrow">¶</a></p>
 <ol start="1" type="1" class="normal type-1" id="section-3.1-2">
 <li id="section-3.1-2.1">
             <p id="section-3.1-2.1.1"><strong>DNS Layer:</strong> Provides the domain name hierarchy and DNSSEC-based verification of domain ownership.<a href="#section-3.1-2.1.1" class="pilcrow">¶</a></p>
@@ -1543,7 +1543,7 @@ appear in all capitals, as shown here.<a href="#section-2-1" class="pilcrow">¶<
 </li>
         </ol>
 <p id="section-3.1-3">Each organisation serves as an independent trust anchor, responsible for managing its own members and certificates. The DNSSEC infrastructure provides a secure foundation for verifying the authenticity of the organisation's public key.<a href="#section-3.1-3" class="pilcrow">¶</a></p>
-<p id="section-3.1-4">VeraId's self-contained verification model allows signature bundles to be verified independently, without requiring connectivity to the Internet or the organisation's infrastructure.<a href="#section-3.1-4" class="pilcrow">¶</a></p>
+<p id="section-3.1-4">DomainAuth's self-contained verification model allows signature bundles to be verified independently, without requiring connectivity to the Internet or the organisation's infrastructure.<a href="#section-3.1-4" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="trust-model">
@@ -1551,10 +1551,10 @@ appear in all capitals, as shown here.<a href="#section-2-1" class="pilcrow">¶<
         <h3 id="name-trust-model">
 <a href="#section-3.2" class="section-number selfRef">3.2. </a><a href="#name-trust-model" class="section-name selfRef">Trust Model</a>
         </h3>
-<p id="section-3.2-1">VeraId's trust model differs significantly from traditional PKIs such as the one used for TLS:<a href="#section-3.2-1" class="pilcrow">¶</a></p>
+<p id="section-3.2-1">DomainAuth's trust model differs significantly from traditional PKIs such as the one used for TLS:<a href="#section-3.2-1" class="pilcrow">¶</a></p>
 <ol start="1" type="1" class="normal type-1" id="section-3.2-2">
 <li id="section-3.2-2.1">
-            <p id="section-3.2-2.1.1"><strong>Domain-specific trust roots:</strong> Each organisation is only able to issue certificates for itself and its members. Unlike traditional PKIs where any Certificate Authority can issue certificates for any domain, VeraId enforces a strict hierarchy where domain control is the only path to certificate issuance.<a href="#section-3.2-2.1.1" class="pilcrow">¶</a></p>
+            <p id="section-3.2-2.1.1"><strong>Domain-specific trust roots:</strong> Each organisation is only able to issue certificates for itself and its members. Unlike traditional PKIs where any Certificate Authority can issue certificates for any domain, DomainAuth enforces a strict hierarchy where domain control is the only path to certificate issuance.<a href="#section-3.2-2.1.1" class="pilcrow">¶</a></p>
 </li>
           <li id="section-3.2-2.2">
             <p id="section-3.2-2.2.1"><strong>DNSSEC as the foundation:</strong> Trust is anchored in DNSSEC, relying on the hierarchical nature of DNS to establish domain control. The chain of trust begins with the DNS root zone and extends through each DNS subdelegation to the organisation's domain.<a href="#section-3.2-2.2.1" class="pilcrow">¶</a></p>
@@ -1563,7 +1563,7 @@ appear in all capitals, as shown here.<a href="#section-2-1" class="pilcrow">¶<
             <p id="section-3.2-2.3.1"><strong>Self-contained verification:</strong> Signature bundles include all necessary information (DNSSEC chains, certificates) to allow completely offline verification.<a href="#section-3.2-2.3.1" class="pilcrow">¶</a></p>
 </li>
           <li id="section-3.2-2.4">
-            <p id="section-3.2-2.4.1"><strong>Short-lived certificates:</strong> VeraId favours short-lived certificates over revocation mechanisms, reducing complexity and vulnerability to disconnected operation.<a href="#section-3.2-2.4.1" class="pilcrow">¶</a></p>
+            <p id="section-3.2-2.4.1"><strong>Short-lived certificates:</strong> DomainAuth favours short-lived certificates over revocation mechanisms, reducing complexity and vulnerability to disconnected operation.<a href="#section-3.2-2.4.1" class="pilcrow">¶</a></p>
 </li>
           <li id="section-3.2-2.5">
             <p id="section-3.2-2.5.1"><strong>Two signature types with different trust models:</strong>
@@ -1571,7 +1571,7 @@ appear in all capitals, as shown here.<a href="#section-2-1" class="pilcrow">¶<
  - <strong>Organisation signatures:</strong> Produced directly by organisations using their private keys, these signatures prove that the organisation vouches for the content. When including member attribution, the organisation claims (but does not cryptographically prove) that a specific member created the content.<a href="#section-3.2-2.5.1" class="pilcrow">¶</a></p>
 </li>
         </ol>
-<p id="section-3.2-3">By relying on DNSSEC, VeraId inherits its security properties and limitations. The protocol's trust is ultimately rooted in the DNS hierarchy, including the root zone and TLD operators.<a href="#section-3.2-3" class="pilcrow">¶</a></p>
+<p id="section-3.2-3">By relying on DNSSEC, DomainAuth inherits its security properties and limitations. The protocol's trust is ultimately rooted in the DNS hierarchy, including the root zone and TLD operators.<a href="#section-3.2-3" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="key-components">
@@ -1579,10 +1579,10 @@ appear in all capitals, as shown here.<a href="#section-2-1" class="pilcrow">¶<
         <h3 id="name-key-components">
 <a href="#section-3.3" class="section-number selfRef">3.3. </a><a href="#name-key-components" class="section-name selfRef">Key Components</a>
         </h3>
-<p id="section-3.3-1">The VeraId protocol consists of the following core components:<a href="#section-3.3-1" class="pilcrow">¶</a></p>
+<p id="section-3.3-1">The DomainAuth protocol consists of the following core components:<a href="#section-3.3-1" class="pilcrow">¶</a></p>
 <ol start="1" type="1" class="normal type-1" id="section-3.3-2">
 <li id="section-3.3-2.1">
-            <p id="section-3.3-2.1.1"><strong>VeraId TXT Record:</strong> A DNS TXT record at <code>_veraid.&lt;domain&gt;</code> containing the organisation's public key information, including key algorithm, key ID type, key ID, TTL override, and optional service OID.<a href="#section-3.3-2.1.1" class="pilcrow">¶</a></p>
+            <p id="section-3.3-2.1.1"><strong>DomainAuth TXT Record:</strong> A DNS TXT record at <code>_domainauth.&lt;domain&gt;</code> containing the organisation's public key information, including key algorithm, key ID type, key ID, TTL override, and optional service OID.<a href="#section-3.3-2.1.1" class="pilcrow">¶</a></p>
 </li>
           <li id="section-3.3-2.2">
             <p id="section-3.3-2.2.1"><strong>Organisation Certificate:</strong> A self-issued X.509 certificate containing the organisation's public key. This certificate serves as the root Certificate Authority (CA) for all certification paths and digital signatures under the organisation's domain.<a href="#section-3.3-2.2.1" class="pilcrow">¶</a></p>
@@ -1591,7 +1591,7 @@ appear in all capitals, as shown here.<a href="#section-2-1" class="pilcrow">¶<
             <p id="section-3.3-2.3.1"><strong>Member Certificates:</strong> X.509 certificates issued by the organisation to individual users or bots. User certificates include the username in the Common Name field, whilst bot certificates use the at sign (<code>@</code>) as their Common Name.<a href="#section-3.3-2.3.1" class="pilcrow">¶</a></p>
 </li>
           <li id="section-3.3-2.4">
-            <p id="section-3.3-2.4.1"><strong>DNSSEC Chain:</strong> A serialised collection of DNS responses that provide cryptographic proof of the authenticity of the organisation's VeraId TXT record.<a href="#section-3.3-2.4.1" class="pilcrow">¶</a></p>
+            <p id="section-3.3-2.4.1"><strong>DNSSEC Chain:</strong> A serialised collection of DNS responses that provide cryptographic proof of the authenticity of the organisation's DomainAuth TXT record.<a href="#section-3.3-2.4.1" class="pilcrow">¶</a></p>
 </li>
           <li id="section-3.3-2.5">
             <p id="section-3.3-2.5.1"><strong>Member Id Bundle:</strong> A structure containing a member certificate, the issuing organisation certificate, and the DNSSEC chain necessary to verify the organisation's authority.<a href="#section-3.3-2.5.1" class="pilcrow">¶</a></p>
@@ -1610,13 +1610,13 @@ appear in all capitals, as shown here.<a href="#section-2-1" class="pilcrow">¶<
         <h3 id="name-workflow-summary">
 <a href="#section-3.4" class="section-number selfRef">3.4. </a><a href="#name-workflow-summary" class="section-name selfRef">Workflow Summary</a>
         </h3>
-<p id="section-3.4-1">The VeraId protocol involves the following key workflows:<a href="#section-3.4-1" class="pilcrow">¶</a></p>
+<p id="section-3.4-1">The DomainAuth protocol involves the following key workflows:<a href="#section-3.4-1" class="pilcrow">¶</a></p>
 <ol start="1" type="1" class="normal type-1" id="section-3.4-2">
 <li id="section-3.4-2.1">
             <p id="section-3.4-2.1.1"><strong>Organisation Setup:</strong>
   - The organisation must have DNSSEC properly configured for its domain.
   - The organisation generates an asymmetric key pair (RSA) and self-issues an X.509 certificate.
-  - The organisation publishes a VeraId TXT record at <code>_veraid.&lt;domain&gt;</code> containing its key information.<a href="#section-3.4-2.1.1" class="pilcrow">¶</a></p>
+  - The organisation publishes a DomainAuth TXT record at <code>_domainauth.&lt;domain&gt;</code> containing its key information.<a href="#section-3.4-2.1.1" class="pilcrow">¶</a></p>
 </li>
           <li id="section-3.4-2.2">
             <p id="section-3.4-2.2.1"><strong>Member Registration:</strong>
@@ -1670,7 +1670,7 @@ appear in all capitals, as shown here.<a href="#section-2-1" class="pilcrow">¶<
             </ul>
 </li>
         </ol>
-<p id="section-3.4-3">Each of these workflows contributes to the overall security and integrity of the VeraId ecosystem.<a href="#section-3.4-3" class="pilcrow">¶</a></p>
+<p id="section-3.4-3">Each of these workflows contributes to the overall security and integrity of the DomainAuth ecosystem.<a href="#section-3.4-3" class="pilcrow">¶</a></p>
 </section>
 </div>
 </section>
@@ -1685,8 +1685,8 @@ appear in all capitals, as shown here.<a href="#section-2-1" class="pilcrow">¶<
         <h3 id="name-dnssec-requirements">
 <a href="#section-4.1" class="section-number selfRef">4.1. </a><a href="#name-dnssec-requirements" class="section-name selfRef">DNSSEC Requirements</a>
         </h3>
-<p id="section-4.1-1">DNSSEC is a fundamental component of VeraId, providing the cryptographic foundation for validating domain ownership. Participating domains <span class="bcp14">MUST</span> have DNSSEC properly configured and operational.<a href="#section-4.1-1" class="pilcrow">¶</a></p>
-<p id="section-4.1-2">Organisations implementing VeraId <span class="bcp14">MUST</span>:<a href="#section-4.1-2" class="pilcrow">¶</a></p>
+<p id="section-4.1-1">DNSSEC is a fundamental component of DomainAuth, providing the cryptographic foundation for validating domain ownership. Participating domains <span class="bcp14">MUST</span> have DNSSEC properly configured and operational.<a href="#section-4.1-1" class="pilcrow">¶</a></p>
+<p id="section-4.1-2">Organisations implementing DomainAuth <span class="bcp14">MUST</span>:<a href="#section-4.1-2" class="pilcrow">¶</a></p>
 <ol start="1" type="1" class="normal type-1" id="section-4.1-3">
 <li id="section-4.1-3.1">
             <p id="section-4.1-3.1.1">Ensure their domain has a complete DNSSEC chain of trust from the root zone to their domain.<a href="#section-4.1-3.1.1" class="pilcrow">¶</a></p>
@@ -1710,7 +1710,7 @@ appear in all capitals, as shown here.<a href="#section-2-1" class="pilcrow">¶<
             <p id="section-4.1-5.2.1">Implement full DNSSEC validation according to relevant RFCs.<a href="#section-4.1-5.2.1" class="pilcrow">¶</a></p>
 </li>
           <li id="section-4.1-5.3">
-            <p id="section-4.1-5.3.1">Reject any VeraId signatures where DNSSEC validation fails.<a href="#section-4.1-5.3.1" class="pilcrow">¶</a></p>
+            <p id="section-4.1-5.3.1">Reject any DomainAuth signatures where DNSSEC validation fails.<a href="#section-4.1-5.3.1" class="pilcrow">¶</a></p>
 </li>
         </ol>
 <p id="section-4.1-6">The protocol relies on the following DNSSEC record types:<a href="#section-4.1-6" class="pilcrow">¶</a></p>
@@ -1725,18 +1725,18 @@ appear in all capitals, as shown here.<a href="#section-2-1" class="pilcrow">¶<
             <p id="section-4.1-7.3.1">RRSIG records providing signatures for DNS resource record sets.<a href="#section-4.1-7.3.1" class="pilcrow">¶</a></p>
 </li>
           <li class="normal" id="section-4.1-7.4">
-            <p id="section-4.1-7.4.1">TXT records containing the VeraId-specific data.<a href="#section-4.1-7.4.1" class="pilcrow">¶</a></p>
+            <p id="section-4.1-7.4.1">TXT records containing the DomainAuth-specific data.<a href="#section-4.1-7.4.1" class="pilcrow">¶</a></p>
 </li>
         </ul>
-<p id="section-4.1-8">The VeraId protocol does not impose additional requirements beyond standard DNSSEC implementations but depends on their correct operation.<a href="#section-4.1-8" class="pilcrow">¶</a></p>
+<p id="section-4.1-8">The DomainAuth protocol does not impose additional requirements beyond standard DNSSEC implementations but depends on their correct operation.<a href="#section-4.1-8" class="pilcrow">¶</a></p>
 </section>
 </div>
-<div id="veraid-txt-record-format">
+<div id="domainauth-txt-record-format">
 <section id="section-4.2">
-        <h3 id="name-veraid-txt-record-format">
-<a href="#section-4.2" class="section-number selfRef">4.2. </a><a href="#name-veraid-txt-record-format" class="section-name selfRef">VeraId TXT Record Format</a>
+        <h3 id="name-domainauth-txt-record-forma">
+<a href="#section-4.2" class="section-number selfRef">4.2. </a><a href="#name-domainauth-txt-record-forma" class="section-name selfRef">DomainAuth TXT Record Format</a>
         </h3>
-<p id="section-4.2-1">Each organisation participating in the VeraId protocol <span class="bcp14">MUST</span> publish a TXT record at <code>_veraid.&lt;domain&gt;</code> with the following format:<a href="#section-4.2-1" class="pilcrow">¶</a></p>
+<p id="section-4.2-1">Each organisation participating in the DomainAuth protocol <span class="bcp14">MUST</span> publish a TXT record at <code>_domainauth.&lt;domain&gt;</code> with the following format:<a href="#section-4.2-1" class="pilcrow">¶</a></p>
 <div class="alignLeft art-text artwork" id="section-4.2-2">
 <pre>
 &lt;key-algorithm&gt; &lt;key-id-type&gt; &lt;key-id&gt; &lt;ttl-override&gt; [&lt;service-oid&gt;]
@@ -1771,7 +1771,7 @@ appear in all capitals, as shown here.<a href="#section-2-1" class="pilcrow">¶<
 <p id="section-4.2-7">Example TXT record:<a href="#section-4.2-7" class="pilcrow">¶</a></p>
 <div class="alignLeft art-text artwork" id="section-4.2-8">
 <pre>
-_veraid.example.com. IN TXT "1 3 dGhpcyBpcyBub3QgYSByZWFsIGtleSBkaWdlc3Q 86400"
+_domainauth.example.com. IN TXT "1 3 dGhpcyBpcyBub3QgYSByZWFsIGtleSBkaWdlc3Q 86400"
 </pre><a href="#section-4.2-8" class="pilcrow">¶</a>
 </div>
 <p id="section-4.2-9">This example specifies an RSA-2048 key identified by its SHA-512 digest with a TTL override of 24 hours (86400 seconds).<a href="#section-4.2-9" class="pilcrow">¶</a></p>
@@ -1782,16 +1782,16 @@ _veraid.example.com. IN TXT "1 3 dGhpcyBpcyBub3QgYSByZWFsIGtleSBkaWdlc3Q 86400"
         <h3 id="name-dnssec-chain-serialisation">
 <a href="#section-4.3" class="section-number selfRef">4.3. </a><a href="#name-dnssec-chain-serialisation" class="section-name selfRef">DNSSEC Chain Serialisation</a>
         </h3>
-<p id="section-4.3-1">The DNSSEC chain for a VeraId signature <span class="bcp14">MUST</span> be serialised in a format that allows for offline verification. The serialisation format is based on the DNS message format defined in RFC 1035, with specific requirements for VeraId:<a href="#section-4.3-1" class="pilcrow">¶</a></p>
+<p id="section-4.3-1">The DNSSEC chain for a DomainAuth signature <span class="bcp14">MUST</span> be serialised in a format that allows for offline verification. The serialisation format is based on the DNS message format defined in RFC 1035, with specific requirements for DomainAuth:<a href="#section-4.3-1" class="pilcrow">¶</a></p>
 <ol start="1" type="1" class="normal type-1" id="section-4.3-2">
 <li id="section-4.3-2.1">
-            <p id="section-4.3-2.1.1">The serialised chain <span class="bcp14">MUST</span> include all DNS responses necessary to validate the <code>_veraid.&lt;domain&gt;/TXT</code> record, from the targeted domain up to (but not including) the root zone.<a href="#section-4.3-2.1.1" class="pilcrow">¶</a></p>
+            <p id="section-4.3-2.1.1">The serialised chain <span class="bcp14">MUST</span> include all DNS responses necessary to validate the <code>_domainauth.&lt;domain&gt;/TXT</code> record, from the targeted domain up to (but not including) the root zone.<a href="#section-4.3-2.1.1" class="pilcrow">¶</a></p>
 </li>
           <li id="section-4.3-2.2">
             <p id="section-4.3-2.2.1">The serialised chain <span class="bcp14">MUST</span> be structured as a DNS message with the following components:
  - Header: <span class="bcp14">MUST</span> include the authenticated data (<code>ad</code>) flag set to indicate DNSSEC validation.
- - Question section: <span class="bcp14">MUST</span> contain a single question for <code>_veraid.&lt;domain&gt;/TXT</code>.
- - Answer section: <span class="bcp14">MUST</span> contain the RRset for <code>_veraid.&lt;domain&gt;/TXT</code> and its associated RRSIG records.
+ - Question section: <span class="bcp14">MUST</span> contain a single question for <code>_domainauth.&lt;domain&gt;/TXT</code>.
+ - Answer section: <span class="bcp14">MUST</span> contain the RRset for <code>_domainauth.&lt;domain&gt;/TXT</code> and its associated RRSIG records.
  - Authority section: <span class="bcp14">MUST</span> be empty.
  - Additional section: <span class="bcp14">MUST</span> contain all other records necessary for DNSSEC validation, excluding the root zone DS records (which verifiers <span class="bcp14">MUST</span> provide).<a href="#section-4.3-2.2.1" class="pilcrow">¶</a></p>
 </li>
@@ -1810,7 +1810,7 @@ DnssecChain ::= SET OF OCTET STRING
         <h3 id="name-ttl-considerations">
 <a href="#section-4.4" class="section-number selfRef">4.4. </a><a href="#name-ttl-considerations" class="section-name selfRef">TTL Considerations</a>
         </h3>
-<p id="section-4.4-1">TTL (Time-to-Live) values play a crucial role in determining the validity period of VeraId signatures. The protocol establishes the following requirements:<a href="#section-4.4-1" class="pilcrow">¶</a></p>
+<p id="section-4.4-1">TTL (Time-to-Live) values play a crucial role in determining the validity period of DomainAuth signatures. The protocol establishes the following requirements:<a href="#section-4.4-1" class="pilcrow">¶</a></p>
 <ol start="1" type="1" class="normal type-1" id="section-4.4-2">
 <li id="section-4.4-2.1">
             <p id="section-4.4-2.1.1">Service designers <span class="bcp14">MUST</span> specify a maximum TTL for signatures in their service, which <span class="bcp14">MUST</span> be:
@@ -1818,10 +1818,10 @@ DnssecChain ::= SET OF OCTET STRING
  - At most 30 days (2,592,000 seconds), to support offline, delay-tolerant networking scenarios.<a href="#section-4.4-2.1.1" class="pilcrow">¶</a></p>
 </li>
           <li id="section-4.4-2.2">
-            <p id="section-4.4-2.2.1">The age of a digital signature <span class="bcp14">MUST</span> be calculated from the time when the DNSSEC answer for the <code>_veraid.&lt;domain&gt;</code> TXT record was signed.<a href="#section-4.4-2.2.1" class="pilcrow">¶</a></p>
+            <p id="section-4.4-2.2.1">The age of a digital signature <span class="bcp14">MUST</span> be calculated from the time when the DNSSEC answer for the <code>_domainauth.&lt;domain&gt;</code> TXT record was signed.<a href="#section-4.4-2.2.1" class="pilcrow">¶</a></p>
 </li>
           <li id="section-4.4-2.3">
-            <p id="section-4.4-2.3.1">The TTL override value in the VeraId TXT record represents the maximum validity period for signatures, counted from the DNSSEC signing time.<a href="#section-4.4-2.3.1" class="pilcrow">¶</a></p>
+            <p id="section-4.4-2.3.1">The TTL override value in the DomainAuth TXT record represents the maximum validity period for signatures, counted from the DNSSEC signing time.<a href="#section-4.4-2.3.1" class="pilcrow">¶</a></p>
 </li>
           <li id="section-4.4-2.4">
             <p id="section-4.4-2.4.1">Verifiers <span class="bcp14">MAY</span> enforce a TTL shorter than that required by the service, but not shorter than the 8-hour minimum.<a href="#section-4.4-2.4.1" class="pilcrow">¶</a></p>
@@ -1830,7 +1830,7 @@ DnssecChain ::= SET OF OCTET STRING
             <p id="section-4.4-2.5.1">Verifiers <span class="bcp14">MAY</span> allow their end users to specify a shorter TTL (but still not shorter than 8 hours) than the one in the TXT record.<a href="#section-4.4-2.5.1" class="pilcrow">¶</a></p>
 </li>
         </ol>
-<p id="section-4.4-3">VeraId favours short-lived certificates over revocation mechanisms to simplify the protocol and eliminate dependencies on online revocation checking. Service designers <span class="bcp14">SHOULD</span> specify the shortest TTL that satisfies their specific requirements.<a href="#section-4.4-3" class="pilcrow">¶</a></p>
+<p id="section-4.4-3">DomainAuth favours short-lived certificates over revocation mechanisms to simplify the protocol and eliminate dependencies on online revocation checking. Service designers <span class="bcp14">SHOULD</span> specify the shortest TTL that satisfies their specific requirements.<a href="#section-4.4-3" class="pilcrow">¶</a></p>
 </section>
 </div>
 </section>
@@ -1845,7 +1845,7 @@ DnssecChain ::= SET OF OCTET STRING
         <h3 id="name-supported-algorithms">
 <a href="#section-5.1" class="section-number selfRef">5.1. </a><a href="#name-supported-algorithms" class="section-name selfRef">Supported Algorithms</a>
         </h3>
-<p id="section-5.1-1">VeraId relies on established cryptographic algorithms to ensure security and interoperability. The protocol defines the following supported algorithms:<a href="#section-5.1-1" class="pilcrow">¶</a></p>
+<p id="section-5.1-1">DomainAuth relies on established cryptographic algorithms to ensure security and interoperability. The protocol defines the following supported algorithms:<a href="#section-5.1-1" class="pilcrow">¶</a></p>
 <ol start="1" type="1" class="normal type-1" id="section-5.1-2">
 <li id="section-5.1-2.1">
             <p id="section-5.1-2.1.1"><strong>Hashing Algorithms:</strong>
@@ -1881,7 +1881,7 @@ DnssecChain ::= SET OF OCTET STRING
         <h3 id="name-key-management">
 <a href="#section-5.2" class="section-number selfRef">5.2. </a><a href="#name-key-management" class="section-name selfRef">Key Management</a>
         </h3>
-<p id="section-5.2-1">Proper key management is essential for the security of the VeraId protocol. The following requirements apply:<a href="#section-5.2-1" class="pilcrow">¶</a></p>
+<p id="section-5.2-1">Proper key management is essential for the security of the DomainAuth protocol. The following requirements apply:<a href="#section-5.2-1" class="pilcrow">¶</a></p>
 <ol start="1" type="1" class="normal type-1" id="section-5.2-2">
 <li id="section-5.2-2.1">
             <p id="section-5.2-2.1.1"><strong>Key Generation:</strong>
@@ -1898,7 +1898,7 @@ DnssecChain ::= SET OF OCTET STRING
           <li id="section-5.2-2.3">
             <p id="section-5.2-2.3.1"><strong>Key Rotation:</strong>
   - Organisations <span class="bcp14">SHOULD</span> establish a regular schedule for rotating their keys.
-  - Key rotation <span class="bcp14">SHOULD</span> be performed by generating a new key pair and updating the VeraId TXT record.
+  - Key rotation <span class="bcp14">SHOULD</span> be performed by generating a new key pair and updating the DomainAuth TXT record.
   - During key rotation, organisations <span class="bcp14">SHOULD</span> maintain both the old and new keys in DNS for a transition period, allowing for graceful migration.
   - Member certificates issued under the old key remain valid until their expiration but <span class="bcp14">SHOULD</span> be renewed under the new key when practical.<a href="#section-5.2-2.3.1" class="pilcrow">¶</a></p>
 </li>
@@ -1917,7 +1917,7 @@ DnssecChain ::= SET OF OCTET STRING
         <h3 id="name-certificate-structure">
 <a href="#section-5.3" class="section-number selfRef">5.3. </a><a href="#name-certificate-structure" class="section-name selfRef">Certificate Structure</a>
         </h3>
-<p id="section-5.3-1">VeraId uses X.509 certificates with specific requirements for organisations and members. All certificates <span class="bcp14">MUST</span> comply with the X.509v3 standard (RFC 5280).<a href="#section-5.3-1" class="pilcrow">¶</a></p>
+<p id="section-5.3-1">DomainAuth uses X.509 certificates with specific requirements for organisations and members. All certificates <span class="bcp14">MUST</span> comply with the X.509v3 standard (RFC 5280).<a href="#section-5.3-1" class="pilcrow">¶</a></p>
 <div id="organisation-certificate-profile">
 <section id="section-5.3.1">
           <h4 id="name-organisation-certificate-pr">
@@ -2023,7 +2023,7 @@ DnssecChain ::= SET OF OCTET STRING
         <h3 id="name-signature-format">
 <a href="#section-5.4" class="section-number selfRef">5.4. </a><a href="#name-signature-format" class="section-name selfRef">Signature Format</a>
         </h3>
-<p id="section-5.4-1">VeraId signatures use the Cryptographic Message Syntax (CMS) as defined in RFC 5652, with specific requirements for the VeraId protocol:<a href="#section-5.4-1" class="pilcrow">¶</a></p>
+<p id="section-5.4-1">DomainAuth signatures use the Cryptographic Message Syntax (CMS) as defined in RFC 5652, with specific requirements for the DomainAuth protocol:<a href="#section-5.4-1" class="pilcrow">¶</a></p>
 <ol start="1" type="1" class="normal type-1" id="section-5.4-2">
 <li id="section-5.4-2.1">
             <p id="section-5.4-2.1.1"><strong>SignedData Structure:</strong>
@@ -2044,14 +2044,14 @@ DnssecChain ::= SET OF OCTET STRING
             <p id="section-5.4-2.3.1"><strong>Signed Attributes:</strong>
   - <span class="bcp14">MUST</span> include the content type attribute (<code>1.2.840.113549.1.9.3</code>).
   - <span class="bcp14">MUST</span> include the message digest attribute (<code>1.2.840.113549.1.9.4</code>).
-  - <span class="bcp14">MUST</span> include the VeraId signature metadata attribute (<code>1.3.6.1.4.1.58708.1.0</code>) containing:<a href="#section-5.4-2.3.1" class="pilcrow">¶</a></p>
+  - <span class="bcp14">MUST</span> include the DomainAuth signature metadata attribute (<code>1.3.6.1.4.1.58708.1.0</code>) containing:<a href="#section-5.4-2.3.1" class="pilcrow">¶</a></p>
 <ul class="normal">
 <li class="normal" id="section-5.4-2.3.2.1">
                 <p id="section-5.4-2.3.2.1.1">Service OID: The OID of the service for which the signature is valid.<a href="#section-5.4-2.3.2.1.1" class="pilcrow">¶</a></p>
 </li>
               <li class="normal" id="section-5.4-2.3.2.2">
                 <p id="section-5.4-2.3.2.2.1">Validity period: The start and end dates for signature validity.
-      - For organisation signatures, <span class="bcp14">MUST</span> include the VeraId member attribution attribute (<code>1.3.6.1.4.1.58708.1.2</code>) containing:<a href="#section-5.4-2.3.2.2.1" class="pilcrow">¶</a></p>
+      - For organisation signatures, <span class="bcp14">MUST</span> include the DomainAuth member attribution attribute (<code>1.3.6.1.4.1.58708.1.2</code>) containing:<a href="#section-5.4-2.3.2.2.1" class="pilcrow">¶</a></p>
 </li>
               <li class="normal" id="section-5.4-2.3.2.3">
                 <p id="section-5.4-2.3.2.3.1">A UTF8String identifying the member to whom the organisation attributes the content.<a href="#section-5.4-2.3.2.3.1" class="pilcrow">¶</a></p>
@@ -2066,7 +2066,7 @@ DnssecChain ::= SET OF OCTET STRING
   - <span class="bcp14">MUST NOT</span> include the organisation certificate from the signature bundle.<a href="#section-5.4-2.4.1" class="pilcrow">¶</a></p>
 </li>
         </ol>
-<p id="section-5.4-3">The VeraId signature metadata is encoded as an ASN.1 structure and is defined in section 7.3.<a href="#section-5.4-3" class="pilcrow">¶</a></p>
+<p id="section-5.4-3">The DomainAuth signature metadata is encoded as an ASN.1 structure and is defined in section 7.3.<a href="#section-5.4-3" class="pilcrow">¶</a></p>
 </section>
 </div>
 </section>
@@ -2081,7 +2081,7 @@ DnssecChain ::= SET OF OCTET STRING
         <h3 id="name-organisations">
 <a href="#section-6.1" class="section-number selfRef">6.1. </a><a href="#name-organisations" class="section-name selfRef">Organisations</a>
         </h3>
-<p id="section-6.1-1">In the VeraId protocol, an organisation is represented by a domain name and serves as the foundational identity unit. Organisations have full control over their VeraId implementation and member management.<a href="#section-6.1-1" class="pilcrow">¶</a></p>
+<p id="section-6.1-1">In the DomainAuth protocol, an organisation is represented by a domain name and serves as the foundational identity unit. Organisations have full control over their DomainAuth implementation and member management.<a href="#section-6.1-1" class="pilcrow">¶</a></p>
 <p id="section-6.1-2">Organisations <span class="bcp14">MUST</span>:<a href="#section-6.1-2" class="pilcrow">¶</a></p>
 <ol start="1" type="1" class="normal type-1" id="section-6.1-3">
 <li id="section-6.1-3.1">
@@ -2094,15 +2094,15 @@ DnssecChain ::= SET OF OCTET STRING
             <p id="section-6.1-3.3.1">Self-issue an X.509 certificate with the domain name as the CommonName.<a href="#section-6.1-3.3.1" class="pilcrow">¶</a></p>
 </li>
           <li id="section-6.1-3.4">
-            <p id="section-6.1-3.4.1">Publish a VeraId TXT record at <code>_veraid.&lt;domain&gt;</code> with the appropriate key information.<a href="#section-6.1-3.4.1" class="pilcrow">¶</a></p>
+            <p id="section-6.1-3.4.1">Publish a DomainAuth TXT record at <code>_domainauth.&lt;domain&gt;</code> with the appropriate key information.<a href="#section-6.1-3.4.1" class="pilcrow">¶</a></p>
 </li>
           <li id="section-6.1-3.5">
             <p id="section-6.1-3.5.1">Manage the issuance and revocation of member certificates.<a href="#section-6.1-3.5.1" class="pilcrow">¶</a></p>
 </li>
         </ol>
 <p id="section-6.1-4">The organisation is the trust anchor for all certificates and signatures within its domain. No external authority can issue valid certificates for the organisation or its members.<a href="#section-6.1-4" class="pilcrow">¶</a></p>
-<p id="section-6.1-5">Newly registered domains <span class="bcp14">SHOULD</span> wait at least the maximum TTL (30 days) before implementing VeraId to prevent potential attacks using DNSSEC chains from previous domain owners.<a href="#section-6.1-5" class="pilcrow">¶</a></p>
-<p id="section-6.1-6">Subdomains <span class="bcp14">MAY</span> implement VeraId separately from their parent domains, provided they have their own DNSSEC configuration. Each subdomain operates as an independent organisation within the VeraId ecosystem.<a href="#section-6.1-6" class="pilcrow">¶</a></p>
+<p id="section-6.1-5">Newly registered domains <span class="bcp14">SHOULD</span> wait at least the maximum TTL (30 days) before implementing DomainAuth to prevent potential attacks using DNSSEC chains from previous domain owners.<a href="#section-6.1-5" class="pilcrow">¶</a></p>
+<p id="section-6.1-6">Subdomains <span class="bcp14">MAY</span> implement DomainAuth separately from their parent domains, provided they have their own DNSSEC configuration. Each subdomain operates as an independent organisation within the DomainAuth ecosystem.<a href="#section-6.1-6" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="members">
@@ -2150,7 +2150,7 @@ DnssecChain ::= SET OF OCTET STRING
         <h3 id="name-naming-conventions-and-rest">
 <a href="#section-6.3" class="section-number selfRef">6.3. </a><a href="#name-naming-conventions-and-rest" class="section-name selfRef">Naming Conventions and Restrictions</a>
         </h3>
-<p id="section-6.3-1">VeraId imposes specific restrictions on member names to prevent phishing attacks and ensure consistent processing across implementations:<a href="#section-6.3-1" class="pilcrow">¶</a></p>
+<p id="section-6.3-1">DomainAuth imposes specific restrictions on member names to prevent phishing attacks and ensure consistent processing across implementations:<a href="#section-6.3-1" class="pilcrow">¶</a></p>
 <ol start="1" type="1" class="normal type-1" id="section-6.3-2">
 <li id="section-6.3-2.1">
             <p id="section-6.3-2.1.1"><strong>User Names:</strong>
@@ -2192,7 +2192,7 @@ DnssecChain ::= SET OF OCTET STRING
         <h3 id="name-organisation-certificate-is">
 <a href="#section-7.1" class="section-number selfRef">7.1. </a><a href="#name-organisation-certificate-is" class="section-name selfRef">Organisation Certificate Issuance</a>
         </h3>
-<p id="section-7.1-1">Organisation certificates form the foundation of the VeraId trust model and <span class="bcp14">MUST</span> be self-issued by the organisation.<a href="#section-7.1-1" class="pilcrow">¶</a></p>
+<p id="section-7.1-1">Organisation certificates form the foundation of the DomainAuth trust model and <span class="bcp14">MUST</span> be self-issued by the organisation.<a href="#section-7.1-1" class="pilcrow">¶</a></p>
 <p id="section-7.1-2">The process for issuing an organisation certificate is as follows:<a href="#section-7.1-2" class="pilcrow">¶</a></p>
 <ol start="1" type="1" class="normal type-1" id="section-7.1-3">
 <li id="section-7.1-3.1">
@@ -2206,10 +2206,10 @@ DnssecChain ::= SET OF OCTET STRING
   - Subject Key Identifier and Authority Key Identifier extensions.<a href="#section-7.1-3.2.1" class="pilcrow">¶</a></p>
 </li>
           <li id="section-7.1-3.3">
-            <p id="section-7.1-3.3.1">The organisation calculates the appropriate key identifier as specified in the VeraId TXT Record Format (section 3.2).<a href="#section-7.1-3.3.1" class="pilcrow">¶</a></p>
+            <p id="section-7.1-3.3.1">The organisation calculates the appropriate key identifier as specified in the DomainAuth TXT Record Format (section 3.2).<a href="#section-7.1-3.3.1" class="pilcrow">¶</a></p>
 </li>
           <li id="section-7.1-3.4">
-            <p id="section-7.1-3.4.1">The organisation publishes a VeraId TXT record at <code>_veraid.&lt;domain&gt;</code> containing the key algorithm, key ID type, key ID, TTL override, and optional service OID.<a href="#section-7.1-3.4.1" class="pilcrow">¶</a></p>
+            <p id="section-7.1-3.4.1">The organisation publishes a DomainAuth TXT record at <code>_domainauth.&lt;domain&gt;</code> containing the key algorithm, key ID type, key ID, TTL override, and optional service OID.<a href="#section-7.1-3.4.1" class="pilcrow">¶</a></p>
 </li>
           <li id="section-7.1-3.5">
             <p id="section-7.1-3.5.1">The organisation ensures that DNSSEC is properly configured and that the TXT record is signed.<a href="#section-7.1-3.5.1" class="pilcrow">¶</a></p>
@@ -2258,7 +2258,7 @@ DnssecChain ::= SET OF OCTET STRING
         <h3 id="name-certificate-validity-period">
 <a href="#section-7.3" class="section-number selfRef">7.3. </a><a href="#name-certificate-validity-period" class="section-name selfRef">Certificate Validity Periods</a>
         </h3>
-<p id="section-7.3-1">VeraId favours short-lived certificates over complex revocation mechanisms. The following guidelines apply to certificate validity periods:<a href="#section-7.3-1" class="pilcrow">¶</a></p>
+<p id="section-7.3-1">DomainAuth favours short-lived certificates over complex revocation mechanisms. The following guidelines apply to certificate validity periods:<a href="#section-7.3-1" class="pilcrow">¶</a></p>
 <ol start="1" type="1" class="normal type-1" id="section-7.3-2">
 <li id="section-7.3-2.1">
             <p id="section-7.3-2.1.1"><strong>Organisation Certificates:</strong>
@@ -2301,11 +2301,11 @@ DnssecChain ::= SET OF OCTET STRING
         <h3 id="name-certificate-revocation">
 <a href="#section-7.4" class="section-number selfRef">7.4. </a><a href="#name-certificate-revocation" class="section-name selfRef">Certificate Revocation</a>
         </h3>
-<p id="section-7.4-1">VeraId primarily relies on short-lived certificates to manage certificate lifecycle, but situations may arise where explicit revocation is necessary.<a href="#section-7.4-1" class="pilcrow">¶</a></p>
+<p id="section-7.4-1">DomainAuth primarily relies on short-lived certificates to manage certificate lifecycle, but situations may arise where explicit revocation is necessary.<a href="#section-7.4-1" class="pilcrow">¶</a></p>
 <ol start="1" type="1" class="normal type-1" id="section-7.4-2">
 <li id="section-7.4-2.1">
             <p id="section-7.4-2.1.1"><strong>Organisation Certificates:</strong>
-  - Revocation is achieved by removing or updating the VeraId TXT record.
+  - Revocation is achieved by removing or updating the DomainAuth TXT record.
   - Old signatures using the revoked certificate will no longer verify once the DNSSEC chain is refreshed.
   - In case of key compromise, immediate removal of the TXT record is essential.<a href="#section-7.4-2.1.1" class="pilcrow">¶</a></p>
 </li>
@@ -2317,7 +2317,7 @@ DnssecChain ::= SET OF OCTET STRING
 </li>
           <li id="section-7.4-2.3">
             <p id="section-7.4-2.3.1"><strong>Revocation Checking:</strong>
-  - The VeraId protocol does not require online revocation checking.
+  - The DomainAuth protocol does not require online revocation checking.
   - Implementations <span class="bcp14">MAY</span> implement additional revocation checking mechanisms.
   - Any additional revocation mechanisms <span class="bcp14">SHOULD</span> be designed to work in offline scenarios.<a href="#section-7.4-2.3.1" class="pilcrow">¶</a></p>
 </li>
@@ -2354,7 +2354,7 @@ MemberIdBundle ::= SEQUENCE {
             <p id="section-8.1-4.1.1"><code>version</code> is the format version (currently 0).<a href="#section-8.1-4.1.1" class="pilcrow">¶</a></p>
 </li>
           <li class="normal" id="section-8.1-4.2">
-            <p id="section-8.1-4.2.1"><code>dnssecChain</code> contains the serialised DNSSEC chain proving the authenticity of the organisation's VeraId TXT record.<a href="#section-8.1-4.2.1" class="pilcrow">¶</a></p>
+            <p id="section-8.1-4.2.1"><code>dnssecChain</code> contains the serialised DNSSEC chain proving the authenticity of the organisation's DomainAuth TXT record.<a href="#section-8.1-4.2.1" class="pilcrow">¶</a></p>
 </li>
           <li class="normal" id="section-8.1-4.3">
             <p id="section-8.1-4.3.1"><code>organisationCertificate</code> is the organisation's self-issued X.509 certificate.<a href="#section-8.1-4.3.1" class="pilcrow">¶</a></p>
@@ -2372,7 +2372,7 @@ MemberIdBundle ::= SEQUENCE {
         <h3 id="name-signature-bundle">
 <a href="#section-8.2" class="section-number selfRef">8.2. </a><a href="#name-signature-bundle" class="section-name selfRef">Signature Bundle</a>
         </h3>
-<p id="section-8.2-1">The Signature Bundle is the core artefact of the VeraId protocol, containing a digital signature and all the information needed to verify it offline. It is serialised using ASN.1 DER encoding with the following structure:<a href="#section-8.2-1" class="pilcrow">¶</a></p>
+<p id="section-8.2-1">The Signature Bundle is the core artefact of the DomainAuth protocol, containing a digital signature and all the information needed to verify it offline. It is serialised using ASN.1 DER encoding with the following structure:<a href="#section-8.2-1" class="pilcrow">¶</a></p>
 <div class="alignLeft art-text artwork" id="section-8.2-2">
 <pre>
 SignatureBundle ::= SEQUENCE {
@@ -2389,7 +2389,7 @@ SignatureBundle ::= SEQUENCE {
             <p id="section-8.2-4.1.1"><code>version</code> is the format version (currently 0).<a href="#section-8.2-4.1.1" class="pilcrow">¶</a></p>
 </li>
           <li class="normal" id="section-8.2-4.2">
-            <p id="section-8.2-4.2.1"><code>dnssecChain</code> contains the serialised DNSSEC chain proving the authenticity of the organisation's VeraId TXT record.<a href="#section-8.2-4.2.1" class="pilcrow">¶</a></p>
+            <p id="section-8.2-4.2.1"><code>dnssecChain</code> contains the serialised DNSSEC chain proving the authenticity of the organisation's DomainAuth TXT record.<a href="#section-8.2-4.2.1" class="pilcrow">¶</a></p>
 </li>
           <li class="normal" id="section-8.2-4.3">
             <p id="section-8.2-4.3.1"><code>organisationCertificate</code> is the organisation's self-issued X.509 certificate.<a href="#section-8.2-4.3.1" class="pilcrow">¶</a></p>
@@ -2398,19 +2398,19 @@ SignatureBundle ::= SEQUENCE {
             <p id="section-8.2-4.4.1"><code>signature</code> is a CMS <code>ContentInfo</code> containing a <code>SignedData</code> structure.<a href="#section-8.2-4.4.1" class="pilcrow">¶</a></p>
 </li>
         </ul>
-<p id="section-8.2-5">VeraId supports two types of signature bundles, which share the same structure but differ in their content and verification process:<a href="#section-8.2-5" class="pilcrow">¶</a></p>
+<p id="section-8.2-5">DomainAuth supports two types of signature bundles, which share the same structure but differ in their content and verification process:<a href="#section-8.2-5" class="pilcrow">¶</a></p>
 <ol start="1" type="1" class="normal type-1" id="section-8.2-6">
 <li id="section-8.2-6.1">
             <p id="section-8.2-6.1.1"><strong>Member signatures:</strong> The <code>SignedData</code> structure contains:
   - The member certificate (and any intermediate certificates if applicable).
   - The digital signature over the content, produced using the member's private key.
-  - Signature attributes, including the VeraId signature metadata.
+  - Signature attributes, including the DomainAuth signature metadata.
   - Optionally, the signed content itself (for encapsulated signatures).<a href="#section-8.2-6.1.1" class="pilcrow">¶</a></p>
 </li>
           <li id="section-8.2-6.2">
             <p id="section-8.2-6.2.1"><strong>Organisation signatures:</strong> The <code>SignedData</code> structure contains:
   - The digital signature over the content, produced using the organisation's private key.
-  - Signature attributes, including the VeraId signature metadata.
+  - Signature attributes, including the DomainAuth signature metadata.
   - The member attribution attribute identifying the member who authored the content.
   - Optionally, intermediate certificates if the organisation uses a certification path.
   - Optionally, the signed content itself (for encapsulated signatures).<a href="#section-8.2-6.2.1" class="pilcrow">¶</a></p>
@@ -2426,7 +2426,7 @@ SignatureBundle ::= SEQUENCE {
         <h3 id="name-signature-metadata">
 <a href="#section-8.3" class="section-number selfRef">8.3. </a><a href="#name-signature-metadata" class="section-name selfRef">Signature Metadata</a>
         </h3>
-<p id="section-8.3-1">Each VeraId signature includes metadata that binds it to a specific service and validity period. This metadata is included as a signed attribute in the CMS <code>SignedData</code> structure, ensuring it cannot be modified without invalidating the signature.<a href="#section-8.3-1" class="pilcrow">¶</a></p>
+<p id="section-8.3-1">Each DomainAuth signature includes metadata that binds it to a specific service and validity period. This metadata is included as a signed attribute in the CMS <code>SignedData</code> structure, ensuring it cannot be modified without invalidating the signature.<a href="#section-8.3-1" class="pilcrow">¶</a></p>
 <p id="section-8.3-2">The signature metadata is encoded as an ASN.1 structure:<a href="#section-8.3-2" class="pilcrow">¶</a></p>
 <div class="alignLeft art-text artwork" id="section-8.3-3">
 <pre>
@@ -2471,7 +2471,7 @@ DatePeriod ::= SEQUENCE {
         <h3 id="name-verification-process">
 <a href="#section-8.4" class="section-number selfRef">8.4. </a><a href="#name-verification-process" class="section-name selfRef">Verification Process</a>
         </h3>
-<p id="section-8.4-1">The verification of a VeraId signature involves multiple steps that validate the entire chain of trust from the DNSSEC infrastructure to the signature itself. Implementations <span class="bcp14">MUST</span> perform the following verification steps:<a href="#section-8.4-1" class="pilcrow">¶</a></p>
+<p id="section-8.4-1">The verification of a DomainAuth signature involves multiple steps that validate the entire chain of trust from the DNSSEC infrastructure to the signature itself. Implementations <span class="bcp14">MUST</span> perform the following verification steps:<a href="#section-8.4-1" class="pilcrow">¶</a></p>
 <ol start="1" type="1" class="normal type-1" id="section-8.4-2">
 <li id="section-8.4-2.1">
             <p id="section-8.4-2.1.1"><strong>Parse the Signature Bundle:</strong>
@@ -2482,7 +2482,7 @@ DatePeriod ::= SEQUENCE {
             <p id="section-8.4-2.2.1"><strong>Validate the DNSSEC chain:</strong>
   - Verify that the chain starts from a trusted DNSSEC anchor.
   - Verify all DNSSEC signatures in the chain.
-  - Confirm that the chain leads to the <code>_veraid.&lt;domain&gt;</code> TXT record.
+  - Confirm that the chain leads to the <code>_domainauth.&lt;domain&gt;</code> TXT record.
   - Extract the organisation's public key information from the TXT record.<a href="#section-8.4-2.2.1" class="pilcrow">¶</a></p>
 </li>
           <li id="section-8.4-2.3">
@@ -2567,7 +2567,7 @@ DatePeriod ::= SEQUENCE {
 </li>
         </ol>
 <p id="section-8.4-3">If all these steps succeed, the signature is considered valid, and the content is confirmed to originate from the identified member of the specified organisation or from the organisation itself.<a href="#section-8.4-3" class="pilcrow">¶</a></p>
-<p id="section-8.4-4">The verification process <span class="bcp14">MUST</span> be performed in full, without skipping any steps, to ensure the security properties of the VeraId protocol.<a href="#section-8.4-4" class="pilcrow">¶</a></p>
+<p id="section-8.4-4">The verification process <span class="bcp14">MUST</span> be performed in full, without skipping any steps, to ensure the security properties of the DomainAuth protocol.<a href="#section-8.4-4" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="member-attribution">
@@ -2612,11 +2612,11 @@ MemberAttribution ::= UTF8String
         <h3 id="name-service-oids">
 <a href="#section-9.1" class="section-number selfRef">9.1. </a><a href="#name-service-oids" class="section-name selfRef">Service OIDs</a>
         </h3>
-<p id="section-9.1-1">VeraId uses Object Identifiers (OIDs) to uniquely identify services and applications that use the protocol. Service OIDs serve as namespaces that prevent signature reuse across different contexts.<a href="#section-9.1-1" class="pilcrow">¶</a></p>
+<p id="section-9.1-1">DomainAuth uses Object Identifiers (OIDs) to uniquely identify services and applications that use the protocol. Service OIDs serve as namespaces that prevent signature reuse across different contexts.<a href="#section-9.1-1" class="pilcrow">¶</a></p>
 <ol start="1" type="1" class="normal type-1" id="section-9.1-2">
 <li id="section-9.1-2.1">
             <p id="section-9.1-2.1.1"><strong>OID Structure:</strong>
-  - The VeraId root OID is <code>1.3.6.1.4.1.58708.1</code>.
+  - The DomainAuth root OID is <code>1.3.6.1.4.1.58708.1</code>.
   - Official service OIDs <span class="bcp14">MUST</span> be allocated under this root.
   - For example, the test service OID is <code>1.3.6.1.4.1.58708.1.1</code>.<a href="#section-9.1-2.1.1" class="pilcrow">¶</a></p>
 </li>
@@ -2624,13 +2624,13 @@ MemberAttribution ::= UTF8String
             <p id="section-9.1-2.2.1"><strong>OID Allocation:</strong>
   - Service designers <span class="bcp14">MUST</span> obtain a unique OID for their service.
   - Third-party services <span class="bcp14">MUST</span> use OIDs from their own namespace.
-  - The VeraId OID arc is reserved exclusively for official services under the VeraId project umbrella.<a href="#section-9.1-2.2.1" class="pilcrow">¶</a></p>
+  - The DomainAuth OID arc is reserved exclusively for official services under the DomainAuth project umbrella.<a href="#section-9.1-2.2.1" class="pilcrow">¶</a></p>
 </li>
           <li id="section-9.1-2.3">
             <p id="section-9.1-2.3.1"><strong>OID Usage:</strong>
   - The service OID <span class="bcp14">MUST</span> be included in the signature metadata.
   - Verifiers <span class="bcp14">MUST</span> check that the OID in the signature matches the expected service.
-  - VeraId TXT records <span class="bcp14">MAY</span> specify a service OID to restrict key usage.<a href="#section-9.1-2.3.1" class="pilcrow">¶</a></p>
+  - DomainAuth TXT records <span class="bcp14">MAY</span> specify a service OID to restrict key usage.<a href="#section-9.1-2.3.1" class="pilcrow">¶</a></p>
 </li>
           <li id="section-9.1-2.4">
             <p id="section-9.1-2.4.1"><strong>Versioning:</strong>
@@ -2647,7 +2647,7 @@ MemberAttribution ::= UTF8String
         <h3 id="name-service-specific-validation">
 <a href="#section-9.2" class="section-number selfRef">9.2. </a><a href="#name-service-specific-validation" class="section-name selfRef">Service-Specific Validation Rules</a>
         </h3>
-<p id="section-9.2-1">Services using VeraId <span class="bcp14">MAY</span> define additional validation rules beyond the core protocol requirements. These rules allow services to implement domain-specific security policies.<a href="#section-9.2-1" class="pilcrow">¶</a></p>
+<p id="section-9.2-1">Services using DomainAuth <span class="bcp14">MAY</span> define additional validation rules beyond the core protocol requirements. These rules allow services to implement domain-specific security policies.<a href="#section-9.2-1" class="pilcrow">¶</a></p>
 <ol start="1" type="1" class="normal type-1" id="section-9.2-2">
 <li id="section-9.2-2.1">
             <p id="section-9.2-2.1.1"><strong>TTL Constraints:</strong>
@@ -2674,7 +2674,7 @@ MemberAttribution ::= UTF8String
   - Verifiers <span class="bcp14">MUST</span> check for and validate any required extensions.<a href="#section-9.2-2.4.1" class="pilcrow">¶</a></p>
 </li>
         </ol>
-<p id="section-9.2-3">Service designers <span class="bcp14">SHOULD</span> document their validation rules comprehensively to ensure consistent implementation across different verifiers. These rules <span class="bcp14">SHOULD</span> be designed to maintain the security properties of the VeraId protocol while addressing service-specific requirements.<a href="#section-9.2-3" class="pilcrow">¶</a></p>
+<p id="section-9.2-3">Service designers <span class="bcp14">SHOULD</span> document their validation rules comprehensively to ensure consistent implementation across different verifiers. These rules <span class="bcp14">SHOULD</span> be designed to maintain the security properties of the DomainAuth protocol while addressing service-specific requirements.<a href="#section-9.2-3" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="implementation-guidelines">
@@ -2682,7 +2682,7 @@ MemberAttribution ::= UTF8String
         <h3 id="name-implementation-guidelines">
 <a href="#section-9.3" class="section-number selfRef">9.3. </a><a href="#name-implementation-guidelines" class="section-name selfRef">Implementation Guidelines</a>
         </h3>
-<p id="section-9.3-1">Service developers integrating VeraId should adhere to the following guidelines to ensure secure and consistent implementation:<a href="#section-9.3-1" class="pilcrow">¶</a></p>
+<p id="section-9.3-1">Service developers integrating DomainAuth should adhere to the following guidelines to ensure secure and consistent implementation:<a href="#section-9.3-1" class="pilcrow">¶</a></p>
 <ol start="1" type="1" class="normal type-1" id="section-9.3-2">
 <li id="section-9.3-2.1">
             <p id="section-9.3-2.1.1"><strong>User Interface Considerations:</strong>
@@ -2721,7 +2721,7 @@ MemberAttribution ::= UTF8String
   - Ensure verification fails as expected with tampered data.<a href="#section-9.3-2.5.1" class="pilcrow">¶</a></p>
 </li>
         </ol>
-<p id="section-9.3-3">These guidelines help ensure that VeraId integrations provide consistent security properties and user experience across different implementations and platforms.<a href="#section-9.3-3" class="pilcrow">¶</a></p>
+<p id="section-9.3-3">These guidelines help ensure that DomainAuth integrations provide consistent security properties and user experience across different implementations and platforms.<a href="#section-9.3-3" class="pilcrow">¶</a></p>
 </section>
 </div>
 </section>
@@ -2736,7 +2736,7 @@ MemberAttribution ::= UTF8String
         <h3 id="name-reference-implementations">
 <a href="#section-10.1" class="section-number selfRef">10.1. </a><a href="#name-reference-implementations" class="section-name selfRef">Reference Implementations</a>
         </h3>
-<p id="section-10.1-1"><span>[<a href="#VERAIDJS" class="cite xref">VERAIDJS</a>]</span> and <span>[<a href="#VERAIDJVM" class="cite xref">VERAIDJVM</a>]</span> are reference implementations of the VeraId protocol in JavaScript and Kotlin respectively.<a href="#section-10.1-1" class="pilcrow">¶</a></p>
+<p id="section-10.1-1"><span>[<a href="#VERAIDJS" class="cite xref">VERAIDJS</a>]</span> and <span>[<a href="#VERAIDJVM" class="cite xref">VERAIDJVM</a>]</span> are reference implementations of the DomainAuth protocol in JavaScript and Kotlin respectively.<a href="#section-10.1-1" class="pilcrow">¶</a></p>
 <p id="section-10.1-2">Implementations <span class="bcp14">MUST</span>:<a href="#section-10.1-2" class="pilcrow">¶</a></p>
 <ul class="normal">
 <li class="normal" id="section-10.1-3.1">
@@ -2760,7 +2760,7 @@ MemberAttribution ::= UTF8String
         <h3 id="name-interoperability-considerat">
 <a href="#section-10.2" class="section-number selfRef">10.2. </a><a href="#name-interoperability-considerat" class="section-name selfRef">Interoperability Considerations</a>
         </h3>
-<p id="section-10.2-1">To ensure interoperability between different VeraId implementations:<a href="#section-10.2-1" class="pilcrow">¶</a></p>
+<p id="section-10.2-1">To ensure interoperability between different DomainAuth implementations:<a href="#section-10.2-1" class="pilcrow">¶</a></p>
 <ol start="1" type="1" class="normal type-1" id="section-10.2-2">
 <li id="section-10.2-2.1">
             <p id="section-10.2-2.1.1"><strong>Strict Validation:</strong>
@@ -2783,7 +2783,7 @@ MemberAttribution ::= UTF8String
           <li id="section-10.2-2.4">
             <p id="section-10.2-2.4.1"><strong>Time Representation:</strong>
   - Implementations <span class="bcp14">SHOULD</span> use UTC (<code>Z</code> suffix) in all <code>GeneralizedTime</code> values, including those in X.509 certificates.
-  - When timezone information is absent from a <code>GeneralizedTime</code> value in any VeraId structure, implementations <span class="bcp14">MUST</span> interpret it as UTC.
+  - When timezone information is absent from a <code>GeneralizedTime</code> value in any DomainAuth structure, implementations <span class="bcp14">MUST</span> interpret it as UTC.
   - Implementations <span class="bcp14">MUST</span> correctly handle and compare <code>GeneralizedTime</code> values with different timezone representations.<a href="#section-10.2-2.4.1" class="pilcrow">¶</a></p>
 </li>
           <li id="section-10.2-2.5">
@@ -2807,7 +2807,7 @@ MemberAttribution ::= UTF8String
         <h3 id="name-performance-optimisations">
 <a href="#section-10.3" class="section-number selfRef">10.3. </a><a href="#name-performance-optimisations" class="section-name selfRef">Performance Optimisations</a>
         </h3>
-<p id="section-10.3-1">VeraId implementations can benefit from several performance optimisations whilst maintaining security:<a href="#section-10.3-1" class="pilcrow">¶</a></p>
+<p id="section-10.3-1">DomainAuth implementations can benefit from several performance optimisations whilst maintaining security:<a href="#section-10.3-1" class="pilcrow">¶</a></p>
 <ol start="1" type="1" class="normal type-1" id="section-10.3-2">
 <li id="section-10.3-2.1">
             <p id="section-10.3-2.1.1"><strong>Caching Strategies:</strong>
@@ -2851,7 +2851,7 @@ MemberAttribution ::= UTF8String
         <h3 id="name-member-vs-organisation-sign">
 <a href="#section-10.4" class="section-number selfRef">10.4. </a><a href="#name-member-vs-organisation-sign" class="section-name selfRef">Member vs Organisation Signatures</a>
         </h3>
-<p id="section-10.4-1">Developers integrating VeraId into their applications must decide whether to use member signatures or organisation signatures with member attribution. This decision should be based on the specific requirements of the application and the security considerations outlined in Section 9.5.<a href="#section-10.4-1" class="pilcrow">¶</a></p>
+<p id="section-10.4-1">Developers integrating DomainAuth into their applications must decide whether to use member signatures or organisation signatures with member attribution. This decision should be based on the specific requirements of the application and the security considerations outlined in Section 9.5.<a href="#section-10.4-1" class="pilcrow">¶</a></p>
 <div id="implementation-recommendations">
 <section id="section-10.4.1">
           <h4 id="name-implementation-recommendati">
@@ -2860,7 +2860,7 @@ MemberAttribution ::= UTF8String
 <ol start="1" type="1" class="normal type-1" id="section-10.4.1-1">
 <li id="section-10.4.1-1.1">
               <p id="section-10.4.1-1.1.1"><strong>Library/SDK Design:</strong>
-  - VeraId libraries and SDKs <span class="bcp14">SHOULD</span> provide distinct functions for creating member signatures and organisation signatures.
+  - DomainAuth libraries and SDKs <span class="bcp14">SHOULD</span> provide distinct functions for creating member signatures and organisation signatures.
   - Verification functions <span class="bcp14">SHOULD</span> be unified, with the signature type included in the verification output.
   - Libraries <span class="bcp14">SHOULD NOT</span> require developers to specify the signature type during verification, as this should be determined automatically from the signature bundle.<a href="#section-10.4.1-1.1.1" class="pilcrow">¶</a></p>
 </li>
@@ -2912,13 +2912,13 @@ MemberAttribution ::= UTF8String
         <h3 id="name-dnssec-dependency">
 <a href="#section-11.1" class="section-number selfRef">11.1. </a><a href="#name-dnssec-dependency" class="section-name selfRef">DNSSEC Dependency</a>
         </h3>
-<p id="section-11.1-1">VeraId's security model relies fundamentally on DNSSEC, which introduces specific security considerations:<a href="#section-11.1-1" class="pilcrow">¶</a></p>
+<p id="section-11.1-1">DomainAuth's security model relies fundamentally on DNSSEC, which introduces specific security considerations:<a href="#section-11.1-1" class="pilcrow">¶</a></p>
 <ol start="1" type="1" class="normal type-1" id="section-11.1-2">
 <li id="section-11.1-2.1">
             <p id="section-11.1-2.1.1"><strong>Trust Anchors:</strong><a href="#section-11.1-2.1.1" class="pilcrow">¶</a></p>
 <ul class="normal">
 <li class="normal" id="section-11.1-2.1.2.1">
-                <p id="section-11.1-2.1.2.1.1">The VeraId protocol inherits trust from the DNSSEC root zone.<a href="#section-11.1-2.1.2.1.1" class="pilcrow">¶</a></p>
+                <p id="section-11.1-2.1.2.1.1">The DomainAuth protocol inherits trust from the DNSSEC root zone.<a href="#section-11.1-2.1.2.1.1" class="pilcrow">¶</a></p>
 </li>
               <li class="normal" id="section-11.1-2.1.2.2">
                 <p id="section-11.1-2.1.2.2.1">Compromise of the root KSK would undermine the entire system.<a href="#section-11.1-2.1.2.2.1" class="pilcrow">¶</a></p>
@@ -2946,7 +2946,7 @@ MemberAttribution ::= UTF8String
             <p id="section-11.1-2.3.1"><strong>DNSSEC Implementation Vulnerabilities:</strong><a href="#section-11.1-2.3.1" class="pilcrow">¶</a></p>
 <ul class="normal">
 <li class="normal" id="section-11.1-2.3.2.1">
-                <p id="section-11.1-2.3.2.1.1">Flaws in DNSSEC implementations could affect VeraId security.<a href="#section-11.1-2.3.2.1.1" class="pilcrow">¶</a></p>
+                <p id="section-11.1-2.3.2.1.1">Flaws in DNSSEC implementations could affect DomainAuth security.<a href="#section-11.1-2.3.2.1.1" class="pilcrow">¶</a></p>
 </li>
               <li class="normal" id="section-11.1-2.3.2.2">
                 <p id="section-11.1-2.3.2.2.1">Implementations <span class="bcp14">SHOULD</span> use well-tested, actively maintained DNSSEC libraries.<a href="#section-11.1-2.3.2.2.1" class="pilcrow">¶</a></p>
@@ -2960,7 +2960,7 @@ MemberAttribution ::= UTF8String
             <p id="section-11.1-2.4.1"><strong>DNSSEC Adoption:</strong><a href="#section-11.1-2.4.1" class="pilcrow">¶</a></p>
 <ul class="normal">
 <li class="normal" id="section-11.1-2.4.2.1">
-                <p id="section-11.1-2.4.2.1.1">Not all domains support DNSSEC, limiting VeraId adoption.<a href="#section-11.1-2.4.2.1.1" class="pilcrow">¶</a></p>
+                <p id="section-11.1-2.4.2.1.1">Not all domains support DNSSEC, limiting DomainAuth adoption.<a href="#section-11.1-2.4.2.1.1" class="pilcrow">¶</a></p>
 </li>
               <li class="normal" id="section-11.1-2.4.2.2">
                 <p id="section-11.1-2.4.2.2.1">DNSSEC misconfiguration can lead to verification failures.<a href="#section-11.1-2.4.2.2.1" class="pilcrow">¶</a></p>
@@ -3066,13 +3066,13 @@ MemberAttribution ::= UTF8String
         <h3 id="name-domain-ownership-changes">
 <a href="#section-11.3" class="section-number selfRef">11.3. </a><a href="#name-domain-ownership-changes" class="section-name selfRef">Domain Ownership Changes</a>
         </h3>
-<p id="section-11.3-1">Domain transfers present specific security challenges for the VeraId protocol:<a href="#section-11.3-1" class="pilcrow">¶</a></p>
+<p id="section-11.3-1">Domain transfers present specific security challenges for the DomainAuth protocol:<a href="#section-11.3-1" class="pilcrow">¶</a></p>
 <ol start="1" type="1" class="normal type-1" id="section-11.3-2">
 <li id="section-11.3-2.1">
             <p id="section-11.3-2.1.1"><strong>Waiting Period:</strong><a href="#section-11.3-2.1.1" class="pilcrow">¶</a></p>
 <ul class="normal">
 <li class="normal" id="section-11.3-2.1.2.1">
-                <p id="section-11.3-2.1.2.1.1">Organisations <span class="bcp14">SHOULD</span> delay implementing VeraId until at least the maximum TTL (30 days) has elapsed since the domain was registered or acquired.<a href="#section-11.3-2.1.2.1.1" class="pilcrow">¶</a></p>
+                <p id="section-11.3-2.1.2.1.1">Organisations <span class="bcp14">SHOULD</span> delay implementing DomainAuth until at least the maximum TTL (30 days) has elapsed since the domain was registered or acquired.<a href="#section-11.3-2.1.2.1.1" class="pilcrow">¶</a></p>
 </li>
               <li class="normal" id="section-11.3-2.1.2.2">
                 <p id="section-11.3-2.1.2.2.1">This prevents the DNSSEC chain from the previous owner from remaining valid.<a href="#section-11.3-2.1.2.2.1" class="pilcrow">¶</a></p>
@@ -3111,7 +3111,7 @@ MemberAttribution ::= UTF8String
             <p id="section-11.3-2.4.1"><strong>Subdomain Delegation:</strong><a href="#section-11.3-2.4.1" class="pilcrow">¶</a></p>
 <ul class="normal">
 <li class="normal" id="section-11.3-2.4.2.1">
-                <p id="section-11.3-2.4.2.1.1">Changes in subdomain delegation may affect VeraId verification.<a href="#section-11.3-2.4.2.1.1" class="pilcrow">¶</a></p>
+                <p id="section-11.3-2.4.2.1.1">Changes in subdomain delegation may affect DomainAuth verification.<a href="#section-11.3-2.4.2.1.1" class="pilcrow">¶</a></p>
 </li>
               <li class="normal" id="section-11.3-2.4.2.2">
                 <p id="section-11.3-2.4.2.2.1">Organisations <span class="bcp14">SHOULD</span> carefully manage subdomain delegation.<a href="#section-11.3-2.4.2.2.1" class="pilcrow">¶</a></p>
@@ -3122,7 +3122,7 @@ MemberAttribution ::= UTF8String
             </ul>
 </li>
         </ol>
-<p id="section-11.3-3">Domain ownership changes represent a fundamental challenge to any domain-based authentication system. VeraId's approach of using short-lived certificates and signatures helps mitigate these risks by limiting the time window during which historical signatures remain valid.<a href="#section-11.3-3" class="pilcrow">¶</a></p>
+<p id="section-11.3-3">Domain ownership changes represent a fundamental challenge to any domain-based authentication system. DomainAuth's approach of using short-lived certificates and signatures helps mitigate these risks by limiting the time window during which historical signatures remain valid.<a href="#section-11.3-3" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="offline-verification-limitations">
@@ -3206,7 +3206,7 @@ MemberAttribution ::= UTF8String
             </ul>
 </li>
         </ol>
-<p id="section-11.4-3">These limitations are inherent to any offline verification system and reflect fundamental tradeoffs between availability and security. VeraId provides a balanced approach that offers strong verification guarantees whilst supporting offline operation.<a href="#section-11.4-3" class="pilcrow">¶</a></p>
+<p id="section-11.4-3">These limitations are inherent to any offline verification system and reflect fundamental tradeoffs between availability and security. DomainAuth provides a balanced approach that offers strong verification guarantees whilst supporting offline operation.<a href="#section-11.4-3" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="organisation-signatures-and-member-attribution">
@@ -3279,7 +3279,7 @@ MemberAttribution ::= UTF8String
                 <p id="section-11.5-2.5.2.1.1">Verification interfaces <span class="bcp14">MUST</span> clearly distinguish between cryptographically proven member signatures and organisation signatures with member attribution.<a href="#section-11.5-2.5.2.1.1" class="pilcrow">¶</a></p>
 </li>
               <li class="normal" id="section-11.5-2.5.2.2">
-                <p id="section-11.5-2.5.2.2.1">End users of applications implementing VeraId may need to be informed about the different trust implications of these signature types.<a href="#section-11.5-2.5.2.2.1" class="pilcrow">¶</a></p>
+                <p id="section-11.5-2.5.2.2.1">End users of applications implementing DomainAuth may need to be informed about the different trust implications of these signature types.<a href="#section-11.5-2.5.2.2.1" class="pilcrow">¶</a></p>
 </li>
               <li class="normal" id="section-11.5-2.5.2.3">
                 <p id="section-11.5-2.5.2.3.1">Implementations <span class="bcp14">SHOULD</span> use distinct visual indicators or terminology to prevent confusion between the two signature types.<a href="#section-11.5-2.5.2.3.1" class="pilcrow">¶</a></p>
@@ -3287,7 +3287,7 @@ MemberAttribution ::= UTF8String
             </ul>
 </li>
         </ol>
-<p id="section-11.5-3">To mitigate these risks, developers integrating VeraId <span class="bcp14">SHOULD</span>:<a href="#section-11.5-3" class="pilcrow">¶</a></p>
+<p id="section-11.5-3">To mitigate these risks, developers integrating DomainAuth <span class="bcp14">SHOULD</span>:<a href="#section-11.5-3" class="pilcrow">¶</a></p>
 <ul class="normal">
 <li class="normal" id="section-11.5-4.1">
             <p id="section-11.5-4.1.1">Prefer member signatures over organisation signatures when practical.<a href="#section-11.5-4.1.1" class="pilcrow">¶</a></p>
@@ -3379,10 +3379,10 @@ MemberAttribution ::= UTF8String
       <h2 id="name-asn1-schemas">
 <a href="#appendix-A" class="section-number selfRef">Appendix A. </a><a href="#name-asn1-schemas" class="section-name selfRef">ASN.1 Schemas</a>
       </h2>
-<p id="appendix-A-1">The following ASN.1 schemas define the data structures used in the VeraId protocol:<a href="#appendix-A-1" class="pilcrow">¶</a></p>
+<p id="appendix-A-1">The following ASN.1 schemas define the data structures used in the DomainAuth protocol:<a href="#appendix-A-1" class="pilcrow">¶</a></p>
 <div class="alignLeft art-text artwork" id="appendix-A-2">
 <pre>
--- Top-level schemas for VeraId components
+-- Top-level schemas for DomainAuth components
 
 -- DNSSEC chain is a set of DNS messages
 DnssecChain ::= SET OF OCTET STRING
@@ -3420,7 +3420,7 @@ DatePeriod ::= SEQUENCE {
 MemberAttribution ::= UTF8String
 </pre><a href="#appendix-A-2" class="pilcrow">¶</a>
 </div>
-<p id="appendix-A-3">All VeraId data structures <span class="bcp14">MUST</span> be encoded using ASN.1 Distinguished Encoding Rules (DER). Implementations <span class="bcp14">MUST</span> reject structures that are not valid DER.<a href="#appendix-A-3" class="pilcrow">¶</a></p>
+<p id="appendix-A-3">All DomainAuth data structures <span class="bcp14">MUST</span> be encoded using ASN.1 Distinguished Encoding Rules (DER). Implementations <span class="bcp14">MUST</span> reject structures that are not valid DER.<a href="#appendix-A-3" class="pilcrow">¶</a></p>
 <p id="appendix-A-4">The ASN.1 structures reference standard types from other specifications:<a href="#appendix-A-4" class="pilcrow">¶</a></p>
 <ul class="normal">
 <li class="normal" id="appendix-A-5.1">
@@ -3438,13 +3438,13 @@ MemberAttribution ::= UTF8String
       <h2 id="name-oid-registry">
 <a href="#appendix-B" class="section-number selfRef">Appendix B. </a><a href="#name-oid-registry" class="section-name selfRef">OID Registry</a>
       </h2>
-<p id="appendix-B-1">The following Object Identifiers (OIDs) are defined for use in the VeraId protocol:<a href="#appendix-B-1" class="pilcrow">¶</a></p>
+<p id="appendix-B-1">The following Object Identifiers (OIDs) are defined for use in the DomainAuth protocol:<a href="#appendix-B-1" class="pilcrow">¶</a></p>
 <ol start="1" type="1" class="normal type-1" id="appendix-B-2">
 <li id="appendix-B-2.1">
-          <p id="appendix-B-2.1.1"><strong>VeraId Base OID:</strong><a href="#appendix-B-2.1.1" class="pilcrow">¶</a></p>
+          <p id="appendix-B-2.1.1"><strong>DomainAuth Base OID:</strong><a href="#appendix-B-2.1.1" class="pilcrow">¶</a></p>
 <ul class="normal">
 <li class="normal" id="appendix-B-2.1.2.1">
-              <p id="appendix-B-2.1.2.1.1"><code>1.3.6.1.4.1.58708.1</code> (iso.org.dod.internet.private.enterprise.relaycorp.veraid).<a href="#appendix-B-2.1.2.1.1" class="pilcrow">¶</a></p>
+              <p id="appendix-B-2.1.2.1.1"><code>1.3.6.1.4.1.58708.1</code> (iso.org.dod.internet.private.enterprise.relaycorp.domainauth).<a href="#appendix-B-2.1.2.1.1" class="pilcrow">¶</a></p>
 </li>
           </ul>
 </li>
@@ -3468,14 +3468,14 @@ MemberAttribution ::= UTF8String
           </ul>
 </li>
       </ol>
-<p id="appendix-B-3">Third-party services implementing VeraId <span class="bcp14">MUST</span> register and use their own OIDs under their own arcs. The VeraId OID arc (<code>1.3.6.1.4.1.58708.1</code>) is reserved exclusively for official services and protocol components under the VeraId project umbrella.<a href="#appendix-B-3" class="pilcrow">¶</a></p>
+<p id="appendix-B-3">Third-party services implementing DomainAuth <span class="bcp14">MUST</span> register and use their own OIDs under their own arcs. The DomainAuth OID arc (<code>1.3.6.1.4.1.58708.1</code>) is reserved exclusively for official services and protocol components under the DomainAuth project umbrella.<a href="#appendix-B-3" class="pilcrow">¶</a></p>
 <p id="appendix-B-4">OID registration procedures:<a href="#appendix-B-4" class="pilcrow">¶</a></p>
 <ol start="1" type="1" class="normal type-1" id="appendix-B-5">
 <li id="appendix-B-5.1">
-          <p id="appendix-B-5.1.1">OIDs under the VeraId base OID are managed by the VeraId maintainers and reserved for official VeraId project purposes.<a href="#appendix-B-5.1.1" class="pilcrow">¶</a></p>
+          <p id="appendix-B-5.1.1">OIDs under the DomainAuth base OID are managed by the DomainAuth maintainers and reserved for official DomainAuth project purposes.<a href="#appendix-B-5.1.1" class="pilcrow">¶</a></p>
 </li>
         <li id="appendix-B-5.2">
-          <p id="appendix-B-5.2.1">Third parties <span class="bcp14">MUST NOT</span> use OIDs under the VeraId arc for their services.<a href="#appendix-B-5.2.1" class="pilcrow">¶</a></p>
+          <p id="appendix-B-5.2.1">Third parties <span class="bcp14">MUST NOT</span> use OIDs under the DomainAuth arc for their services.<a href="#appendix-B-5.2.1" class="pilcrow">¶</a></p>
 </li>
         <li id="appendix-B-5.3">
           <p id="appendix-B-5.3.1">Third parties without their own OID arc <span class="bcp14">SHOULD</span> obtain one from their national registration authority or through IANA's Private Enterprise Number (PEN) registry.<a href="#appendix-B-5.3.1" class="pilcrow">¶</a></p>
@@ -3492,8 +3492,8 @@ MemberAttribution ::= UTF8String
       <h2 id="name-acknowledgments">
 <a href="#name-acknowledgments" class="section-name selfRef">Acknowledgments</a>
       </h2>
-<p id="appendix-C-1">The author is grateful to the Open Technology Fund for funding the implementation of VeraId, which heavily influenced the final specification of the VeraId protocol, and therefore this document.<a href="#appendix-C-1" class="pilcrow">¶</a></p>
-<p id="appendix-C-2">The author would also like to thank the authors of <span>[<a href="#DNSSEC" class="cite xref">DNSSEC</a>]</span>, <span>[<a href="#X.509" class="cite xref">X.509</a>]</span>, <span>[<a href="#CMS" class="cite xref">CMS</a>]</span>, and <span>[<a href="#ASN.1" class="cite xref">ASN.1</a>]</span> for their work on these standards, which underpin the present work.<a href="#appendix-C-2" class="pilcrow">¶</a></p>
+<p id="appendix-C-1">The author is grateful to the Open Technology Fund for funding the implementation of VeraId, which heavily influenced the final specification of the VeraId protocol, and therefore this document as its successor.<a href="#appendix-C-1" class="pilcrow">¶</a></p>
+<p id="appendix-C-2">The author would also like to thank the authors of <span>[<a href="#DNSSEC" class="cite xref">DNSSEC</a>]</span>, <span>[<a href="#X.509" class="cite xref">X.509</a>]</span>, <span>[<a href="#CMS" class="cite xref">CMS</a>]</span>, and <span>[<a href="#ASN.1" class="cite xref">ASN.1</a>]</span>, which underpin the present work.<a href="#appendix-C-2" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="authors-addresses">

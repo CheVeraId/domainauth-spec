@@ -26,7 +26,7 @@ venue:
 author:
  -
     fullname: Gus Narea
-    organization: Relaycorp, Inc.
+    organization: Relaycorp
     email: gus@relaycorp.tech
 
 normative:

@@ -1,8 +1,8 @@
 <!-- regenerate: on (set to off if you edit this file) -->
 
-# DomainAuth: DNSSEC-based, Offline-first Authentication
+# DomainAuth Protocol Version 1
 
-This is the working area for the individual Internet-Draft, "DomainAuth: DNSSEC-based, Offline-first Authentication".
+This is the working area for the individual Internet-Draft, "DomainAuth Protocol Version 1".
 
 * [Editor's Copy](https://CheVeraId.github.io/domainauth-spec/#go.draft-narea-domainauth.html)
 * [Datatracker Page](https://datatracker.ietf.org/doc/draft-narea-domainauth)

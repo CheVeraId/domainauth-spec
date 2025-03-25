@@ -1,20 +1,20 @@
 ---
 title: "DomainAuth Version 1"
 abbrev: "DomainAuthV1"
-category: info
+category: std
 
 docname: draft-narea-domainauth-latest
-submissiontype: IETF  # also: "independent", "editorial", "IAB", or "IRTF"
-number:
+submissiontype: IETF
 date:
 consensus: true
 v: 3
-# area: AREA
+area: sec
 # workgroup: WG Working Group
 keyword:
- - next generation
- - unicorn
- - sparkling distributed ledger
+ - dnssec
+ - x509
+ - cms
+ - authentication
 venue:
 #  group: WG
 #  type: Working Group
@@ -30,20 +30,23 @@ author:
     email: gus@relaycorp.tech
 
 normative:
+  DNSSEC: RFC9364
 
 informative:
 
 
 --- abstract
 
-TODO Abstract
+This document defines DomainAuth, a protocol to attribute digital signatures to domain names, or members of a domain name (e.g. "alice" of "example.com"), in such a way that every _signature bundle_ contains sufficient data to verify the signature entirely offline without a prior distribution of public keys.
+
+A DomainAuth signature bundle is a chain of trust comprising: (1) a DNSSEC chain from the DNSSEC root to a TXT record containing a reference to the signing key, (2) a X.509 certificate chain from the signing key to the signer, and (3) a CMS SignedData structure that may optionally embed the plaintext.
 
 
 --- middle
 
 # Introduction
 
-TODO Introduction
+We use {{DNSSEC}} to authenticate the DomainAuth protocol.
 
 
 # Conventions and Definitions

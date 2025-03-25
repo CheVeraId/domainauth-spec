@@ -4,9 +4,11 @@
 
 This is the working area for the Internet-Draft (I-D) "DomainAuth Version 1", the protocol underpinning [VeraId](https://veraid.net/).
 
+Refer to [`rationale.md`](./rationale.md) for additional context on key design decisions, and [`veraid-diff.md`](./veraid-diff.md) for a comparison with the VeraId spec.
+
 ## Conventions
 
-- British spelling and grammar are to be used (e.g. "organisation", "serialisation") for consistency with the original draft.
+- British spelling is to be used (e.g. "organisation", "serialisation") for consistency with the original draft.
 - The abbreviation for "identifier" is always spelt "id", not "ID"; it's an abbreviation, not an acronym.
 
 ## Usage

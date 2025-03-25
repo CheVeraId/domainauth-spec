@@ -1164,6 +1164,6 @@ Services SHOULD use versioning in their OID structure to manage protocol evoluti
 # Acknowledgments
 {:numbered="false"}
 
-The author is grateful to the Open Technology Fund for funding the implementation of VeraId, which heavily influenced the final specification of the VeraId protocol, and therefore this document.
+The author is grateful to the Open Technology Fund for funding the implementation of VeraId, which heavily influenced the final specification of the VeraId protocol, and therefore this document as its successor.
 
 The author would also like to thank the authors of {{DNSSEC}}, {{X.509}}, {{CMS}}, and {{ASN.1}}, which underpin the present work.

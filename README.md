@@ -4,10 +4,10 @@
 
 This is the working area for the individual Internet-Draft, "DomainAuth Version 1".
 
-* [Editor's Copy](https://CheVeraId.github.io/domainauth-spec/#go.draft-narea-domainauth.html)
+* [Editor's Copy](https://docs.veraid.net/domainauth-spec/#go.draft-narea-domainauth.html)
 * [Datatracker Page](https://datatracker.ietf.org/doc/draft-narea-domainauth)
 * [Individual Draft](https://datatracker.ietf.org/doc/html/draft-narea-domainauth)
-* [Compare Editor's Copy to Individual Draft](https://CheVeraId.github.io/domainauth-spec/#go.draft-narea-domainauth.diff)
+* [Compare Editor's Copy to Individual Draft](https://docs.veraid.net/domainauth-spec/#go.draft-narea-domainauth.diff)
 
 
 ## Contributing

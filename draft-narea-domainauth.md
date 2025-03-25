@@ -21,7 +21,7 @@ venue:
 #  mail: WG@example.com
 #  arch: https://example.com/WG
   github: "CheVeraId/domainauth-spec"
-  latest: "https://CheVeraId.github.io/domainauth-spec/draft-narea-domainauth.html"
+  latest: "https://docs.veraid.net/domainauth-spec/draft-narea-domainauth.html"
 
 author:
  -

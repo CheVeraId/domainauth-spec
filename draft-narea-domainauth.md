@@ -1161,7 +1161,7 @@ OID registration procedures:
 
 Services SHOULD use versioning in their OID structure to manage protocol evolution. Major, incompatible changes SHOULD use a new OID, whilst minor, backward-compatible changes MAY use the same OID.
 
-# Acknowledgments
+# Acknowledgements
 {:numbered="false"}
 
 The author is grateful to the Open Technology Fund for funding the implementation of VeraId, which heavily influenced the final specification of the VeraId protocol, and therefore this document as its successor.

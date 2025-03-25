@@ -174,7 +174,7 @@ By relying on DNSSEC, DomainAuth inherits its security properties and limitation
 
 The DomainAuth protocol consists of the following core components:
 
-1. **DomainAuth TXT Record:** A DNS TXT record at `_domainauth.<domain>` containing the organisation's public key information, including key algorithm, key ID type, key ID, TTL override, and optional service OID.
+1. **DomainAuth TXT Record:** A DNS TXT record at `_domainauth.<domain>` containing the organisation's public key information, including key algorithm, key id type, key id, TTL override, and optional service OID.
 2. **Organisation Certificate:** A self-issued X.509 certificate containing the organisation's public key. This certificate serves as the root Certificate Authority (CA) for all certification paths and digital signatures under the organisation's domain.
 3. **Member Certificates:** X.509 certificates issued by the organisation to individual users or bots. User certificates include the username in the Common Name field, whilst bot certificates use the at sign (`@`) as their Common Name.
 4. **DNSSEC Chain:** A serialised collection of DNS responses that provide cryptographic proof of the authenticity of the organisation's DomainAuth TXT record.
@@ -262,11 +262,11 @@ Where:
    - `1`: RSA-PSS with modulus 2048 bits.
    - `2`: RSA-PSS with modulus 3072 bits.
    - `3`: RSA-PSS with modulus 4096 bits.
-3. **Key ID Type** (required): An integer denoting how the key is identified:
-   - `1`: The key ID is the SHA-256 digest of the key.
-   - `2`: The key ID is the SHA-384 digest of the key.
-   - `3`: The key ID is the SHA-512 digest of the key.
-4. **Key ID** (required): The Base64-encoded (unpadded) representation of the key digest, as specified by the Key ID Type.
+3. **Key Id Type** (required): An integer denoting how the key is identified:
+   - `1`: The key id is the SHA-256 digest of the key.
+   - `2`: The key id is the SHA-384 digest of the key.
+   - `3`: The key id is the SHA-512 digest of the key.
+4. **Key Id** (required): The Base64-encoded (unpadded) representation of the key digest, as specified by the Key Id Type.
 5. **TTL Override** (required): A positive integer representing the number of seconds for the maximum validity period of signatures. This value MUST be between 1 second and 7,776,000 seconds (90 days).
 6. **Service OID** (optional): An Object Identifier (in dotted decimal notation) identifying a specific service for which this record is valid. If omitted, the record applies to all services.
 
@@ -523,7 +523,7 @@ The process for issuing an organisation certificate is as follows:
   - The Basic Constraints extension with the CA flag set to TRUE.
   - Subject Key Identifier and Authority Key Identifier extensions.
 3. The organisation calculates the appropriate key identifier as specified in the DomainAuth TXT Record Format (section 3.2).
-4. The organisation publishes a DomainAuth TXT record at `_domainauth.<domain>` containing the key algorithm, key ID type, key ID, TTL override, and optional service OID.
+4. The organisation publishes a DomainAuth TXT record at `_domainauth.<domain>` containing the key algorithm, key id type, key id, TTL override, and optional service OID.
 5. The organisation ensures that DNSSEC is properly configured and that the TXT record is signed.
 
 The organisation certificate SHOULD be created with appropriate key management procedures, ideally using hardware security modules or similar protection mechanisms for the private key.

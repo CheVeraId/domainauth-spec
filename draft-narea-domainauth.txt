@@ -3,7 +3,7 @@
 
 
 Network Working Group                                           G. Narea
-Internet-Draft                                           Relaycorp, Inc.
+Internet-Draft                                                 Relaycorp
 Intended status: Informational                             25 March 2025
 Expires: 26 September 2025
 
@@ -106,5 +106,5 @@ Acknowledgments
 Author's Address
 
    Gus Narea
-   Relaycorp, Inc.
+   Relaycorp
    Email: gus@relaycorp.tech

@@ -4,7 +4,7 @@
 
 Network Working Group                                           G. Narea
 Internet-Draft                                                 Relaycorp
-Intended status: Informational                             25 March 2025
+Intended status: Standards Track                           25 March 2025
 Expires: 26 September 2025
 
 
@@ -13,16 +13,26 @@ Expires: 26 September 2025
 
 Abstract
 
-   TODO Abstract
+   This document defines DomainAuth, a protocol to attribute digital
+   signatures to domain names, or members of a domain name (e.g. "alice"
+   of "example.com"), in such a way that every _signature bundle_
+   contains sufficient data to verify the signature entirely offline
+   without a prior distribution of public keys.
+
+   A DomainAuth signature bundle is a chain of trust comprising: (1) a
+   DNSSEC chain from the DNSSEC root to a TXT record containing a
+   reference to the signing key, (2) a X.509 certificate chain from the
+   signing key to the signer, and (3) a CMS SignedData structure that
+   may optionally embed the plaintext.
 
 About This Document
 
    This note is to be removed before publishing as an RFC.
 
    The latest revision of this draft can be found at
-   https://CheVeraId.github.io/domainauth-spec/draft-narea-
-   domainauth.html.  Status information for this document may be found
-   at https://datatracker.ietf.org/doc/draft-narea-domainauth/.
+   https://docs.veraid.net/domainauth-spec/draft-narea-domainauth.html.
+   Status information for this document may be found at
+   https://datatracker.ietf.org/doc/draft-narea-domainauth/.
 
    Source for this draft and an issue tracker can be found at
    https://github.com/CheVeraId/domainauth-spec.
@@ -70,7 +80,7 @@ Table of Contents
 
 1.  Introduction
 
-   TODO Introduction
+   We use [DNSSEC] to authenticate the DomainAuth protocol.
 
 2.  Conventions and Definitions
 
@@ -89,6 +99,10 @@ Table of Contents
    This document has no IANA actions.
 
 5.  Normative References
+
+   [DNSSEC]   Hoffman, P., "DNS Security Extensions (DNSSEC)", BCP 237,
+              RFC 9364, DOI 10.17487/RFC9364, February 2023,
+              <https://www.rfc-editor.org/rfc/rfc9364>.
 
    [RFC2119]  Bradner, S., "Key words for use in RFCs to Indicate
               Requirement Levels", BCP 14, RFC 2119,

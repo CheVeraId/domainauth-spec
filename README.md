@@ -9,7 +9,7 @@ Refer to [`rationale.md`](./rationale.md) for additional context on key design d
 ## Conventions
 
 - British spelling is to be used (e.g. "organisation", "serialisation") for consistency with the original draft.
-- The abbreviation for "identifier" is always spelt "id", not "ID"; it's an abbreviation, not an acronym.
+- The abbreviation for "identifier" is spelt "id", not "ID"; it's an abbreviation, not an acronym.
 
 ## Usage
 

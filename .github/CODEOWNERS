@@ -1,3 +1,1 @@
-# Automatically generated CODEOWNERS
-# Regenerate with `make update-codeowners`
-draft-narea-domainauth.md gus@relaycorp.tech
+draft-narea-domainauth.md @gnarea

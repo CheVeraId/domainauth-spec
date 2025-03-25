@@ -7,8 +7,8 @@
 <title>DomainAuth Version 1</title>
 <meta content="Gus Narea" name="author">
 <meta content='
-       This document defines DomainAuth, a protocol to attribute digital signatures to domain names, or members of a domain name (e.g. "alice" of "example.com"), in such a way that every  signature bundle  contains sufficient data to verify the signature entirely offline without a prior distribution of public keys. 
-       A DomainAuth signature bundle is a chain of trust comprising: (1) a DNSSEC chain from the DNSSEC root to a TXT record containing a reference to the signing key, (2) a X.509 certificate chain from the signing key to the signer, and (3) a CMS SignedData structure that may optionally embed the plaintext. 
+       This document defines DomainAuth, a protocol to attribute digital signatures to domain names or their users (e.g. "alice" of "example.com"), in such a way that every  signature bundle  contains sufficient data to verify the signature entirely offline without a prior distribution of public keys. 
+       A DomainAuth signature bundle is a chain of trust comprising: (1) a DNSSEC chain from the DNSSEC root to a TXT record containing a public key or its digest, (2) a X.509 certificate chain from the root certificate to the signing key, and (3) a CMS SignedData structure that may optionally encapsulate the plaintext. The public key or digest in the TXT record corresponds to the root certificate that anchors the X.509 certificate chain, thereby establishing cryptographic continuity from the DNSSEC root to the signer. 
     ' name="description">
 <meta content="xml2rfc 3.28.0" name="generator">
 <meta content="dnssec" name="keyword">
@@ -1083,8 +1083,8 @@ svg :is([fill="white"], [fill^="#fff"]) {
 <h1 id="title">DomainAuth Version 1</h1>
 <section id="section-abstract">
       <h2 id="abstract"><a href="#abstract" class="selfRef">Abstract</a></h2>
-<p id="section-abstract-1">This document defines DomainAuth, a protocol to attribute digital signatures to domain names, or members of a domain name (e.g. "alice" of "example.com"), in such a way that every <em>signature bundle</em> contains sufficient data to verify the signature entirely offline without a prior distribution of public keys.<a href="#section-abstract-1" class="pilcrow">¶</a></p>
-<p id="section-abstract-2">A DomainAuth signature bundle is a chain of trust comprising: (1) a DNSSEC chain from the DNSSEC root to a TXT record containing a reference to the signing key, (2) a X.509 certificate chain from the signing key to the signer, and (3) a CMS SignedData structure that may optionally embed the plaintext.<a href="#section-abstract-2" class="pilcrow">¶</a></p>
+<p id="section-abstract-1">This document defines DomainAuth, a protocol to attribute digital signatures to domain names or their users (e.g. "alice" of "example.com"), in such a way that every <em>signature bundle</em> contains sufficient data to verify the signature entirely offline without a prior distribution of public keys.<a href="#section-abstract-1" class="pilcrow">¶</a></p>
+<p id="section-abstract-2">A DomainAuth signature bundle is a chain of trust comprising: (1) a DNSSEC chain from the DNSSEC root to a TXT record containing a public key or its digest, (2) a X.509 certificate chain from the root certificate to the signing key, and (3) a CMS SignedData structure that may optionally encapsulate the plaintext. The public key or digest in the TXT record corresponds to the root certificate that anchors the X.509 certificate chain, thereby establishing cryptographic continuity from the DNSSEC root to the signer.<a href="#section-abstract-2" class="pilcrow">¶</a></p>
 </section>
 <section class="note rfcEditorRemove" id="section-note.1">
       <h2 id="name-about-this-document">

@@ -1189,7 +1189,7 @@ svg :is([fill="white"], [fill^="#fff"]) {
                 <p id="section-toc.1-1.4.2.1.1"><a href="#section-4.1" class="auto internal xref">4.1</a>.  <a href="#name-dnssec-requirements" class="internal xref">DNSSEC Requirements</a></p>
 </li>
               <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.4.2.2">
-                <p id="section-toc.1-1.4.2.2.1"><a href="#section-4.2" class="auto internal xref">4.2</a>.  <a href="#name-domainauth-txt-record-forma" class="internal xref">DomainAuth TXT Record Format</a></p>
+                <p id="section-toc.1-1.4.2.2.1"><a href="#section-4.2" class="auto internal xref">4.2</a>.  <a href="#name-txt-record" class="internal xref">TXT Record</a></p>
 </li>
               <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.4.2.3">
                 <p id="section-toc.1-1.4.2.3.1"><a href="#section-4.3" class="auto internal xref">4.3</a>.  <a href="#name-dnssec-chain-serialisation" class="internal xref">DNSSEC Chain Serialisation</a></p>
@@ -1731,39 +1731,58 @@ appear in all capitals, as shown here.<a href="#section-2-1" class="pilcrow">¶<
 <p id="section-4.1-8">The DomainAuth protocol does not impose additional requirements beyond standard DNSSEC implementations but depends on their correct operation.<a href="#section-4.1-8" class="pilcrow">¶</a></p>
 </section>
 </div>
-<div id="domainauth-txt-record-format">
+<div id="txt-record">
 <section id="section-4.2">
-        <h3 id="name-domainauth-txt-record-forma">
-<a href="#section-4.2" class="section-number selfRef">4.2. </a><a href="#name-domainauth-txt-record-forma" class="section-name selfRef">DomainAuth TXT Record Format</a>
+        <h3 id="name-txt-record">
+<a href="#section-4.2" class="section-number selfRef">4.2. </a><a href="#name-txt-record" class="section-name selfRef">TXT Record</a>
         </h3>
 <p id="section-4.2-1">Each organisation participating in the DomainAuth protocol <span class="bcp14">MUST</span> publish a TXT record at <code>_domainauth.&lt;domain&gt;</code> with the following format:<a href="#section-4.2-1" class="pilcrow">¶</a></p>
 <div class="alignLeft art-text artwork" id="section-4.2-2">
 <pre>
-&lt;key-algorithm&gt; &lt;key-id-type&gt; &lt;key-id&gt; &lt;ttl-override&gt; [&lt;service-oid&gt;]
+&lt;version&gt; &lt;key-algorithm&gt; &lt;key-id-type&gt; &lt;key-id&gt; &lt;ttl-override&gt; [&lt;service-oid&gt;]
 </pre><a href="#section-4.2-2" class="pilcrow">¶</a>
 </div>
 <p id="section-4.2-3">Where:<a href="#section-4.2-3" class="pilcrow">¶</a></p>
 <ol start="1" type="1" class="normal type-1" id="section-4.2-4">
 <li id="section-4.2-4.1">
-            <p id="section-4.2-4.1.1"><strong>Key Algorithm</strong> (required): An integer denoting the key algorithm:
-  - <code>1</code>: RSA-PSS with modulus 2048 bits.
-  - <code>2</code>: RSA-PSS with modulus 3072 bits.
- - <code>3</code>: RSA-PSS with modulus 4096 bits.<a href="#section-4.2-4.1.1" class="pilcrow">¶</a></p>
+            <p id="section-4.2-4.1.1"><strong>Version</strong> (required): An integer denoting the version of the DomainAuth TXT record format, set to <code>0</code> (zero) for this version of the specification.<a href="#section-4.2-4.1.1" class="pilcrow">¶</a></p>
 </li>
           <li id="section-4.2-4.2">
-            <p id="section-4.2-4.2.1"><strong>Key ID Type</strong> (required): An integer denoting how the key is identified:
- - <code>1</code>: The key ID is the SHA-256 digest of the key.
- - <code>2</code>: The key ID is the SHA-384 digest of the key.
-  - <code>3</code>: The key ID is the SHA-512 digest of the key.<a href="#section-4.2-4.2.1" class="pilcrow">¶</a></p>
+            <p id="section-4.2-4.2.1"><strong>Key Algorithm</strong> (required): An integer denoting the key algorithm:<a href="#section-4.2-4.2.1" class="pilcrow">¶</a></p>
+<ul class="normal">
+<li class="normal" id="section-4.2-4.2.2.1">
+                <p id="section-4.2-4.2.2.1.1"><code>1</code>: RSA-PSS with modulus 2048 bits.<a href="#section-4.2-4.2.2.1.1" class="pilcrow">¶</a></p>
+</li>
+              <li class="normal" id="section-4.2-4.2.2.2">
+                <p id="section-4.2-4.2.2.2.1"><code>2</code>: RSA-PSS with modulus 3072 bits.<a href="#section-4.2-4.2.2.2.1" class="pilcrow">¶</a></p>
+</li>
+              <li class="normal" id="section-4.2-4.2.2.3">
+                <p id="section-4.2-4.2.2.3.1"><code>3</code>: RSA-PSS with modulus 4096 bits.<a href="#section-4.2-4.2.2.3.1" class="pilcrow">¶</a></p>
+</li>
+            </ul>
 </li>
           <li id="section-4.2-4.3">
-            <p id="section-4.2-4.3.1"><strong>Key ID</strong> (required): The Base64-encoded (unpadded) representation of the key digest, as specified by the Key ID Type.<a href="#section-4.2-4.3.1" class="pilcrow">¶</a></p>
+            <p id="section-4.2-4.3.1"><strong>Key ID Type</strong> (required): An integer denoting how the key is identified:<a href="#section-4.2-4.3.1" class="pilcrow">¶</a></p>
+<ul class="normal">
+<li class="normal" id="section-4.2-4.3.2.1">
+                <p id="section-4.2-4.3.2.1.1"><code>1</code>: The key ID is the SHA-256 digest of the key.<a href="#section-4.2-4.3.2.1.1" class="pilcrow">¶</a></p>
+</li>
+              <li class="normal" id="section-4.2-4.3.2.2">
+                <p id="section-4.2-4.3.2.2.1"><code>2</code>: The key ID is the SHA-384 digest of the key.<a href="#section-4.2-4.3.2.2.1" class="pilcrow">¶</a></p>
+</li>
+              <li class="normal" id="section-4.2-4.3.2.3">
+                <p id="section-4.2-4.3.2.3.1"><code>3</code>: The key ID is the SHA-512 digest of the key.<a href="#section-4.2-4.3.2.3.1" class="pilcrow">¶</a></p>
+</li>
+            </ul>
 </li>
           <li id="section-4.2-4.4">
-            <p id="section-4.2-4.4.1"><strong>TTL Override</strong> (required): A positive integer representing the number of seconds for the maximum validity period of signatures. This value <span class="bcp14">MUST</span> be between 28,800 seconds (8 hours) and 2,592,000 seconds (30 days).<a href="#section-4.2-4.4.1" class="pilcrow">¶</a></p>
+            <p id="section-4.2-4.4.1"><strong>Key ID</strong> (required): The Base64-encoded (unpadded) representation of the key digest, as specified by the Key ID Type.<a href="#section-4.2-4.4.1" class="pilcrow">¶</a></p>
 </li>
           <li id="section-4.2-4.5">
-            <p id="section-4.2-4.5.1"><strong>Service OID</strong> (optional): An Object Identifier (in dotted decimal notation) identifying a specific service for which this record is valid. If omitted, the record applies to all services.<a href="#section-4.2-4.5.1" class="pilcrow">¶</a></p>
+            <p id="section-4.2-4.5.1"><strong>TTL Override</strong> (required): A positive integer representing the number of seconds for the maximum validity period of signatures. This value <span class="bcp14">MUST</span> be between 28,800 seconds (8 hours) and 2,592,000 seconds (30 days).<a href="#section-4.2-4.5.1" class="pilcrow">¶</a></p>
+</li>
+          <li id="section-4.2-4.6">
+            <p id="section-4.2-4.6.1"><strong>Service OID</strong> (optional): An Object Identifier (in dotted decimal notation) identifying a specific service for which this record is valid. If omitted, the record applies to all services.<a href="#section-4.2-4.6.1" class="pilcrow">¶</a></p>
 </li>
         </ol>
 <p id="section-4.2-5">Multiple TXT records <span class="bcp14">MAY</span> be published at the same hostname to support different keys, key algorithms, or services. A domain <span class="bcp14">MAY</span> also publish service-specific records alongside a generic record (without a service OID).<a href="#section-4.2-5" class="pilcrow">¶</a></p>
@@ -1771,7 +1790,7 @@ appear in all capitals, as shown here.<a href="#section-2-1" class="pilcrow">¶<
 <p id="section-4.2-7">Example TXT record:<a href="#section-4.2-7" class="pilcrow">¶</a></p>
 <div class="alignLeft art-text artwork" id="section-4.2-8">
 <pre>
-_domainauth.example.com. IN TXT "1 3 dGhpcyBpcyBub3QgYSByZWFsIGtleSBkaWdlc3Q 86400"
+_domainauth.example.com. IN TXT "0 1 3 dGhpcyBpcyBub3QgYSByZWFsIGtleSBkaWdlc3Q 86400"
 </pre><a href="#section-4.2-8" class="pilcrow">¶</a>
 </div>
 <p id="section-4.2-9">This example specifies an RSA-2048 key identified by its SHA-512 digest with a TTL override of 24 hours (86400 seconds).<a href="#section-4.2-9" class="pilcrow">¶</a></p>

@@ -344,7 +344,7 @@ Implementations SHOULD provide guidance and tools to assist with secure key mana
 
 DomainAuth uses X.509 certificates with specific requirements for organisations and members. All certificates MUST comply with the X.509v3 standard (RFC 5280).
 
-### Organisation Certificate Profile:
+### Organisation Certificate Profile
 
 1. **Version:** MUST be v3 (value = 2).
 2. **Subject:** CommonName (CN) MUST contain the organisation's domain name.
@@ -363,7 +363,7 @@ DomainAuth uses X.509 certificates with specific requirements for organisations 
   - Subject Key Identifier: MUST be present.
   - Authority Key Identifier: MUST be present and match the Subject Key Identifier.
 
-### Member Certificate Profile:
+### Member Certificate Profile
 
 1. **Version:** MUST be v3 (value = 2).
 2. **Subject:**

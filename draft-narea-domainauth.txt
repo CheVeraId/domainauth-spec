@@ -227,7 +227,7 @@ Table of Contents
 
    3.  *User-friendly identifiers:* Identities are based on familiar,
        human-readable domain names and usernames rather than
-       cryptographic digests.
+       cryptographically-derived values.
 
    4.  *Build upon well-established standards:*
 

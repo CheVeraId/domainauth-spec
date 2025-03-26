@@ -4,8 +4,8 @@
 
 Network Working Group                                           G. Narea
 Internet-Draft                                                 Relaycorp
-Intended status: Standards Track                           25 March 2025
-Expires: 26 September 2025
+Intended status: Standards Track                           26 March 2025
+Expires: 27 September 2025
 
 
                           DomainAuth Version 1
@@ -14,19 +14,18 @@ Expires: 26 September 2025
 Abstract
 
    This document defines DomainAuth, a protocol to attribute digital
-   signatures to domain names or their users (e.g. "alice" of
-   "example.com"), in such a way that every _signature bundle_ contains
-   sufficient data to verify the signature entirely offline without a
-   prior distribution of public keys.
+   signatures to domain names in such a way that every _signature
+   bundle_ contains sufficient data to verify the signature entirely
+   offline without a prior distribution of public keys.
 
-   A DomainAuth signature bundle is a chain of trust comprising: (1) a
-   DNSSEC chain from the DNSSEC root to a TXT record containing a public
-   key or its digest, (2) a X.509 certificate chain from the root
-   certificate to the signing key, and (3) a CMS SignedData structure
-   that may optionally encapsulate the plaintext.  The public key or
-   digest in the TXT record corresponds to the root certificate that
-   anchors the X.509 certificate chain, thereby establishing
-   cryptographic continuity from the DNSSEC root to the signer.
+   A signature bundle is a chain of trust comprising: (1) a DNSSEC chain
+   from the IANA-managed root to a TXT record containing a public key or
+   its digest, (2) a X.509 certificate chain from the key specified in
+   the TXT record to the final signing key, and (3) the digital
+   signature as a CMS SignedData structure.
+
+   Signatures can also be attributed to specific users, such as "alice"
+   of "example.com".
 
 About This Document
 
@@ -55,7 +54,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 26 September 2025.
+   This Internet-Draft will expire on 27 September 2025.
 
 Copyright Notice
 

@@ -72,9 +72,9 @@ informative:
 
 This document defines DomainAuth, a protocol to attribute digital signatures to domain names in such a way that every _signature bundle_ contains sufficient data to verify the signature entirely offline without a prior distribution of public keys.
 
-A signature bundle is a chain of trust comprising: (1) a DNSSEC chain from the IANA-managed root to a TXT record containing a public key or its digest, (2) a X.509 certificate chain from the key specified in the TXT record to the final signing key, and (3) the digital signature as a CMS SignedData structure.
+A signature bundle is a chain of trust comprising: (1) a DNSSEC chain from the root to a TXT record containing a public key or its digest, (2) a X.509 certificate chain from the key specified in the TXT record to the final signing key, and (3) the digital signature in the form of a CMS SignedData structure.
 
-Signatures can also be attributed to specific users, such as "alice" of "example.com".
+Finally, signatures can also be attributed to specific users, such as "alice" of "example.com".
 
 
 --- middle

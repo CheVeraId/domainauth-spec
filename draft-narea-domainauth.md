@@ -118,7 +118,7 @@ DomainAuth is designed with the following primary goals:
 
 1. **Decentralisation:** The protocol avoids the need for centralised authorities beyond the DNS hierarchy itself. Each domain owner has exclusive control over their domain and its associated members.
 2. **Offline verification:** All signature bundles contain sufficient information to be independently verified without requiring external network queries.
-3. **User-friendly identifiers:** Identities are based on familiar, human-readable domain names and usernames rather than cryptographic digests.
+3. **User-friendly identifiers:** Identities are based on familiar, human-readable domain names and usernames rather than cryptographically-derived values.
 4. **Build upon well-established standards:**
    - DNSSEC for securing DNS responses.
    - X.509 for certificate management.

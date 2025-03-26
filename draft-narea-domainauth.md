@@ -98,15 +98,15 @@ This specification defines the protocol components, data structures, and verific
 
 ## Problem Statement
 
-The protocol was initially designed and implemented to provide users of the offline messaging application {{LETRO}} with identifiers that are customisable, user friendly, universally unique, and verifiable.
+The protocol was initially designed and implemented to provide users of the offline messaging application Letro {{LETRO}} with identifiers that are customisable, user friendly, universally unique, and verifiable.
 
-Letro is powered by the delay-tolerant network {{AWALA}}, which offers an end-to-end encrypted sneakernet to transport data between a region disconnected from the Internet and a location with access to the Internet. In the most extreme cases, this physical transport may take a short number of months. Consequently, users should be able to produce and verify digital signatures during that time period without relying on online services.
+Letro is powered by the delay-tolerant network Awala {{AWALA}}, which offers an end-to-end encrypted sneakernet to transport data between a region disconnected from the Internet and a location with access to the Internet. In the most extreme cases, this physical transport may take a short number of months. Consequently, users should be able to produce and verify digital signatures during that time period without relying on online services.
 
 Attacks by powerful adversaries, such as nation-state actors, are part of the threat model, given that Awala and Letro explicitly target people disconnected from the Internet due to conflict or government-sponsored censorship.
 
 Despite its origin in delay-tolerant networking, DomainAuth has broader applicability and can be useful when the Internet is available, such as the following use cases:
 
-- Client authentication. A client could prove its identity to its server by sending a short-lived token signed with DomainAuth; this would be analogous to using a JSON Web Token ({{JWT}}), except that it can be verified without a prior distribution of public keys or remote operations. Alternatively, the client could sign each message sent to the server.
+- Client authentication. A client could prove its identity to its server by sending a short-lived token signed with DomainAuth; this would be analogous to using a JSON Web Token {{JWT}}, except that it can be verified without a prior distribution of public keys or remote operations. Alternatively, the client could sign each message sent to the server.
 - Artefact signing. Documents, applications, libraries, and other files could be signed on behalf of a domain name, without vendor-specific gatekeeping mechanisms. This could unlock further use cases, such as enabling users to share original content whilst proving authenticity and integrity, instead of sharing URLs to resources that could be blocked at the network level.
 - Peer-to-peer web hosting. A next-generation of websites could be hosted on a peer-to-peer network, with files reliably attributed to their respective domain names.
 

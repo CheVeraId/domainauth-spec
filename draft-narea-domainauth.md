@@ -30,6 +30,7 @@ author:
     email: gus@relaycorp.tech
 
 normative:
+  DNS: RFC1035
   DNSSEC: RFC9364
   X.509: RFC5280
   CMS: RFC5652
@@ -237,41 +238,13 @@ For more detailed information on the verification process, particularly regardin
 
 # DNS Integration
 
-## DNSSEC Requirements
+## DNSSEC Configuration
 
-DNSSEC is a fundamental component of DomainAuth, providing the cryptographic foundation for validating domain ownership. Participating domains MUST have DNSSEC properly configured and operational.
-
-Organisations implementing DomainAuth MUST:
-
-1. Ensure their domain has a complete DNSSEC chain of trust from the root zone to their domain.
-2. Configure DNSSEC signing for all relevant zones.
-3. Maintain valid and current DNSSEC signatures.
-4. Properly manage DNSSEC key rollovers.
-
-Verifiers MUST:
-
-1. Have access to the DNSSEC trust anchors, particularly the root zone KSK.
-2. Implement full DNSSEC validation according to relevant RFCs.
-3. Reject any DomainAuth signatures where DNSSEC validation fails.
-
-The protocol relies on the following DNSSEC record types:
-
-- DNSKEY records for public keys used for zone signing.
-- DS records for delegation signing.
-- RRSIG records providing signatures for DNS resource record sets.
-- TXT records containing the DomainAuth-specific data.
-
-The DomainAuth protocol does not impose additional requirements beyond standard DNSSEC implementations but depends on their correct operation.
+Participating domains MUST have a complete DNSSEC chain of trust from the root zone to the DomainAuth TXT record.
 
 ## TXT Record
 
-Each organisation participating in the DomainAuth protocol MUST publish a TXT record at `_domainauth.<domain>` with the following format:
-
-~~~~~~~
-<version> <key-algorithm> <key-id-type> <key-id> <ttl-override> [<service-oid>]
-~~~~~~~
-
-Where:
+Each organisation participating in the DomainAuth protocol MUST publish a TXT record at `_domainauth.<domain>` with the following fields separated by simple spaces:
 
 1. **Version** (required): An integer denoting the version of the DomainAuth TXT record format, set to `0` (zero) for this version of the specification.
 2. **Key Algorithm** (required): An integer denoting the key algorithm:
@@ -284,53 +257,39 @@ Where:
    - `3`: The key id is the SHA-512 digest of the key.
 4. **Key Id** (required): The Base64-encoded (unpadded) representation of the key digest, as specified by the Key Id Type.
 5. **TTL Override** (required): A positive integer representing the number of seconds for the maximum validity period of signatures. This value MUST be between 1 second and 7,776,000 seconds (90 days).
-6. **Service OID** (optional): An Object Identifier (in dotted decimal notation) identifying a specific service for which this record is valid. If omitted, the record applies to all services.
+6. **Service OID** (optional): An Object Identifier (in dotted decimal notation) binding the key to a specific service. If omitted, the key is valid for any service.
 
-Multiple TXT records MAY be published at the same hostname to support different keys, key algorithms, or services. A domain MAY also publish service-specific records alongside a generic record (without a service OID).
+Multiple TXT records MAY be published at the same zone to support different keys, key algorithms, or services.
 
 Verifiers MUST select the appropriate TXT record based on the key information and service OID in the signature being verified.
 
-Example TXT record:
+For example, the following TXT record specifies an RSA-2048 key identified by its SHA-512 digest with a TTL override of 24 hours (86400 seconds) and no service binding:
 
 ~~~~~~~
 _domainauth.example.com. IN TXT "0 1 3 dGhpcyBpcyBub3QgYSByZWFsIGtleSBkaWdlc3Q 86400"
 ~~~~~~~
 
-This example specifies an RSA-2048 key identified by its SHA-512 digest with a TTL override of 24 hours (86400 seconds).
+## TTL Override
+
+The TTL override field in the DomainAuth TXT record enables verification of DNS records and DNSSEC signatures for longer periods than their respective specifications would allow, which is essential for delay-tolerant use cases where users may be offline for extended periods.
+
+DNS records and DNSSEC signatures typically have TTL values that may be as short as a few minutes or hours. The TTL override mechanism allows the DNSSEC chain to remain verifiable for up to 90 days, regardless of the TTL in such records.
+
+During verification, the TTL override creates a restricted time window that extends backwards from the end of the requested verification period by the specified number of seconds. Verification will succeed if the DNSSEC records were valid at any point during this window, even if the standard DNS TTLs would have expired.
+
+For example, if a DNS record has a standard TTL of 3600 seconds (1 hour) but the DomainAuth TXT record specifies a TTL override of 604,800 seconds (7 days), a signature can still be verified up to 7 days after creation, even when offline. If a verifier attempts to verify a signature 5 days after it was created, the verification would succeed with the TTL override, whereas it would fail with only the standard 1-hour TTL.
 
 ## DNSSEC Chain Serialisation
 
-The DNSSEC chain for a DomainAuth signature MUST be serialised in a format that allows for offline verification. The serialisation format is based on the DNS message format defined in RFC 1035, with specific requirements for DomainAuth:
-
-1. The serialised chain MUST include all DNS responses necessary to validate the `_domainauth.<domain>/TXT` record, from the targeted domain up to (but not including) the root zone.
-2. The serialised chain MUST be structured as a DNS message with the following components:
- - Header: MUST include the authenticated data (`ad`) flag set to indicate DNSSEC validation.
- - Question section: MUST contain a single question for `_domainauth.<domain>/TXT`.
- - Answer section: MUST contain the RRset for `_domainauth.<domain>/TXT` and its associated RRSIG records.
- - Authority section: MUST be empty.
- - Additional section: MUST contain all other records necessary for DNSSEC validation, excluding the root zone DS records (which verifiers MUST provide).
-
-The serialised chain is encoded as an ASN.1 SET OF OCTET STRING, where each OCTET STRING contains a complete DNS message contributing to the validation chain.
+The serialised chain MUST be encoded as the ASN.1 `DnssecChain` structure below, where each `OCTET STRING` contains a complete DNS message as defined in {{DNS}}:
 
 ~~~~~~~
 DnssecChain ::= SET OF OCTET STRING
 ~~~~~~~
 
-Implementations MUST include all necessary DNSKEY, DS, and RRSIG records required for validating the chain. The serialisation SHOULD be optimised to minimise redundancy and size while ensuring completeness for offline validation.
+This chain MUST include all DNSSEC responses necessary to validate the `_domainauth.<domain>/TXT` record from the trust anchor. However, the root zone DS records SHOULD be omitted, since they will be ignored by verifiers as described in {{verification-process}}.
 
-## TTL Considerations
-
-TTL (Time-to-Live) values play a crucial role in determining the validity period of DomainAuth signatures. The protocol establishes the following requirements:
-
-1. Service designers MUST specify a maximum TTL for signatures in their service, which MUST be:
-   - At least 1 second, though we recommend several minutes to account for clock drift.
-   - At most 90 days (7,776,000 seconds), to support offline, delay-tolerant networking scenarios.
-2. The age of a digital signature MUST be calculated from the time when the DNSSEC answer for the `_domainauth.<domain>` TXT record was signed.
-3. The TTL override value in the DomainAuth TXT record represents the maximum validity period for signatures, counted from the DNSSEC signing time.
-4. Verifiers MAY enforce a TTL shorter than that required by the service, but not shorter than the 1-second minimum.
-5. Verifiers MAY allow their end users to specify a shorter TTL (but still not shorter than 1 second) than the one in the TXT record.
-
-DomainAuth favours short-lived certificates over revocation mechanisms to simplify the protocol and eliminate dependencies on online revocation checking. Service designers SHOULD specify the shortest TTL that satisfies their specific requirements.
+Implementations SHOULD optimise the serialisation to minimise redundancy and size whilst ensuring completeness for offline verification.
 
 # Cryptographic Foundation
 
@@ -724,6 +683,7 @@ The verification of a DomainAuth signature involves multiple steps that validate
    - Validate the structure of each component.
 3. **Validate the DNSSEC chain:**
    - Verify that the chain starts from a trusted DNSSEC anchor.
+   - The root zone DS records MUST be provided by the verifier. Any root zone DS records included in the DNSSEC chain MUST be ignored.
    - Verify all DNSSEC signatures in the chain.
    - Confirm that the chain leads to the `_domainauth.<domain>` TXT record.
    - Extract the organisation's public key information from the TXT record.
@@ -755,7 +715,9 @@ The verification of a DomainAuth signature involves multiple steps that validate
    - Calculate the intersection of:
      - The validity periods of all certificates in the certification path, from the organisation certificate to the signer's certificate (if different).
      - The signature metadata validity period.
-     - The DNSSEC record validity period (using the TTL override).
+     - The DNSSEC chain validity period, applying the TTL override from {{ttl-override}}.
+   - Verifiers MAY enforce a TTL shorter than that required by the service, but not shorter than the 1-second minimum.
+   - Verifiers MAY allow their end users to specify a shorter TTL (but still not shorter than 1 second) than the one in the TXT record.
    - Verify that the verification time falls within this intersection.
 9. **Verify the digital signature:**
    - Use the signer's public key to verify the signature over the content.
@@ -823,6 +785,7 @@ Services using DomainAuth MAY define additional validation rules beyond the core
 1. **TTL Constraints:**
   - Services MUST specify a maximum TTL for signatures.
   - The TTL MUST be within the range of 1 second to 90 days.
+  - For the minimum TTL, several minutes is recommended to account for clock drift.
   - Services SHOULD choose the shortest TTL that meets their requirements.
 2. **Content Type Restrictions:**
   - Services MAY restrict the types of content that can be signed.
@@ -1231,6 +1194,6 @@ Services SHOULD use versioning in their OID structure to manage protocol evoluti
 # Acknowledgements
 {:numbered="false"}
 
-The author is grateful to the Open Technology Fund for funding the implementation of VeraId, which heavily influenced the final specification of the VeraId protocol, and therefore this document as its successor.
+The author is grateful to the Open Technology Fund for funding the implementation of VeraId, which heavily influenced the final specification of the VeraId protocol, and therefore DomainAuth as its successor.
 
-The author would also like to thank the authors of {{DNSSEC}}, {{X.509}}, {{CMS}}, and {{ASN.1}}, which underpin the present work.
+The author would also like to thank the authors of {{DNS}}, {{DNSSEC}}, {{X.509}}, {{CMS}}, and {{ASN.1}}, which underpin the present protocol.

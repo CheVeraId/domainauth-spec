@@ -1196,16 +1196,16 @@ svg :is([fill="white"], [fill^="#fff"]) {
             <p id="section-toc.1-1.3.1"><a href="#section-3" class="auto internal xref">3</a>.  <a href="#name-dns-integration" class="internal xref">DNS Integration</a></p>
 <ul class="compact toc ulBare ulEmpty">
 <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.3.2.1">
-                <p id="section-toc.1-1.3.2.1.1"><a href="#section-3.1" class="auto internal xref">3.1</a>.  <a href="#name-dnssec-requirements" class="internal xref">DNSSEC Requirements</a></p>
+                <p id="section-toc.1-1.3.2.1.1"><a href="#section-3.1" class="auto internal xref">3.1</a>.  <a href="#name-dnssec-configuration" class="internal xref">DNSSEC Configuration</a></p>
 </li>
               <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.3.2.2">
                 <p id="section-toc.1-1.3.2.2.1"><a href="#section-3.2" class="auto internal xref">3.2</a>.  <a href="#name-txt-record" class="internal xref">TXT Record</a></p>
 </li>
               <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.3.2.3">
-                <p id="section-toc.1-1.3.2.3.1"><a href="#section-3.3" class="auto internal xref">3.3</a>.  <a href="#name-dnssec-chain-serialisation" class="internal xref">DNSSEC Chain Serialisation</a></p>
+                <p id="section-toc.1-1.3.2.3.1"><a href="#section-3.3" class="auto internal xref">3.3</a>.  <a href="#name-ttl-override" class="internal xref">TTL Override</a></p>
 </li>
               <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.3.2.4">
-                <p id="section-toc.1-1.3.2.4.1"><a href="#section-3.4" class="auto internal xref">3.4</a>.  <a href="#name-ttl-considerations" class="internal xref">TTL Considerations</a></p>
+                <p id="section-toc.1-1.3.2.4.1"><a href="#section-3.4" class="auto internal xref">3.4</a>.  <a href="#name-dnssec-chain-serialisation" class="internal xref">DNSSEC Chain Serialisation</a></p>
 </li>
             </ul>
 </li>
@@ -1699,55 +1699,12 @@ appear in all capitals, as shown here.<a href="#section-1.3-1" class="pilcrow">�
       <h2 id="name-dns-integration">
 <a href="#section-3" class="section-number selfRef">3. </a><a href="#name-dns-integration" class="section-name selfRef">DNS Integration</a>
       </h2>
-<div id="dnssec-requirements">
+<div id="dnssec-configuration">
 <section id="section-3.1">
-        <h3 id="name-dnssec-requirements">
-<a href="#section-3.1" class="section-number selfRef">3.1. </a><a href="#name-dnssec-requirements" class="section-name selfRef">DNSSEC Requirements</a>
+        <h3 id="name-dnssec-configuration">
+<a href="#section-3.1" class="section-number selfRef">3.1. </a><a href="#name-dnssec-configuration" class="section-name selfRef">DNSSEC Configuration</a>
         </h3>
-<p id="section-3.1-1">DNSSEC is a fundamental component of DomainAuth, providing the cryptographic foundation for validating domain ownership. Participating domains <span class="bcp14">MUST</span> have DNSSEC properly configured and operational.<a href="#section-3.1-1" class="pilcrow">¶</a></p>
-<p id="section-3.1-2">Organisations implementing DomainAuth <span class="bcp14">MUST</span>:<a href="#section-3.1-2" class="pilcrow">¶</a></p>
-<ol start="1" type="1" class="normal type-1" id="section-3.1-3">
-<li id="section-3.1-3.1">
-            <p id="section-3.1-3.1.1">Ensure their domain has a complete DNSSEC chain of trust from the root zone to their domain.<a href="#section-3.1-3.1.1" class="pilcrow">¶</a></p>
-</li>
-          <li id="section-3.1-3.2">
-            <p id="section-3.1-3.2.1">Configure DNSSEC signing for all relevant zones.<a href="#section-3.1-3.2.1" class="pilcrow">¶</a></p>
-</li>
-          <li id="section-3.1-3.3">
-            <p id="section-3.1-3.3.1">Maintain valid and current DNSSEC signatures.<a href="#section-3.1-3.3.1" class="pilcrow">¶</a></p>
-</li>
-          <li id="section-3.1-3.4">
-            <p id="section-3.1-3.4.1">Properly manage DNSSEC key rollovers.<a href="#section-3.1-3.4.1" class="pilcrow">¶</a></p>
-</li>
-        </ol>
-<p id="section-3.1-4">Verifiers <span class="bcp14">MUST</span>:<a href="#section-3.1-4" class="pilcrow">¶</a></p>
-<ol start="1" type="1" class="normal type-1" id="section-3.1-5">
-<li id="section-3.1-5.1">
-            <p id="section-3.1-5.1.1">Have access to the DNSSEC trust anchors, particularly the root zone KSK.<a href="#section-3.1-5.1.1" class="pilcrow">¶</a></p>
-</li>
-          <li id="section-3.1-5.2">
-            <p id="section-3.1-5.2.1">Implement full DNSSEC validation according to relevant RFCs.<a href="#section-3.1-5.2.1" class="pilcrow">¶</a></p>
-</li>
-          <li id="section-3.1-5.3">
-            <p id="section-3.1-5.3.1">Reject any DomainAuth signatures where DNSSEC validation fails.<a href="#section-3.1-5.3.1" class="pilcrow">¶</a></p>
-</li>
-        </ol>
-<p id="section-3.1-6">The protocol relies on the following DNSSEC record types:<a href="#section-3.1-6" class="pilcrow">¶</a></p>
-<ul class="normal">
-<li class="normal" id="section-3.1-7.1">
-            <p id="section-3.1-7.1.1">DNSKEY records for public keys used for zone signing.<a href="#section-3.1-7.1.1" class="pilcrow">¶</a></p>
-</li>
-          <li class="normal" id="section-3.1-7.2">
-            <p id="section-3.1-7.2.1">DS records for delegation signing.<a href="#section-3.1-7.2.1" class="pilcrow">¶</a></p>
-</li>
-          <li class="normal" id="section-3.1-7.3">
-            <p id="section-3.1-7.3.1">RRSIG records providing signatures for DNS resource record sets.<a href="#section-3.1-7.3.1" class="pilcrow">¶</a></p>
-</li>
-          <li class="normal" id="section-3.1-7.4">
-            <p id="section-3.1-7.4.1">TXT records containing the DomainAuth-specific data.<a href="#section-3.1-7.4.1" class="pilcrow">¶</a></p>
-</li>
-        </ul>
-<p id="section-3.1-8">The DomainAuth protocol does not impose additional requirements beyond standard DNSSEC implementations but depends on their correct operation.<a href="#section-3.1-8" class="pilcrow">¶</a></p>
+<p id="section-3.1-1">Participating domains <span class="bcp14">MUST</span> have a complete DNSSEC chain of trust from the root zone to the DomainAuth TXT record.<a href="#section-3.1-1" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="txt-record">
@@ -1755,126 +1712,83 @@ appear in all capitals, as shown here.<a href="#section-1.3-1" class="pilcrow">�
         <h3 id="name-txt-record">
 <a href="#section-3.2" class="section-number selfRef">3.2. </a><a href="#name-txt-record" class="section-name selfRef">TXT Record</a>
         </h3>
-<p id="section-3.2-1">Each organisation participating in the DomainAuth protocol <span class="bcp14">MUST</span> publish a TXT record at <code>_domainauth.&lt;domain&gt;</code> with the following format:<a href="#section-3.2-1" class="pilcrow">¶</a></p>
-<div class="alignLeft art-text artwork" id="section-3.2-2">
-<pre>
-&lt;version&gt; &lt;key-algorithm&gt; &lt;key-id-type&gt; &lt;key-id&gt; &lt;ttl-override&gt; [&lt;service-oid&gt;]
-</pre><a href="#section-3.2-2" class="pilcrow">¶</a>
-</div>
-<p id="section-3.2-3">Where:<a href="#section-3.2-3" class="pilcrow">¶</a></p>
-<ol start="1" type="1" class="normal type-1" id="section-3.2-4">
-<li id="section-3.2-4.1">
-            <p id="section-3.2-4.1.1"><strong>Version</strong> (required): An integer denoting the version of the DomainAuth TXT record format, set to <code>0</code> (zero) for this version of the specification.<a href="#section-3.2-4.1.1" class="pilcrow">¶</a></p>
+<p id="section-3.2-1">Each organisation participating in the DomainAuth protocol <span class="bcp14">MUST</span> publish a TXT record at <code>_domainauth.&lt;domain&gt;</code> with the following fields separated by simple spaces:<a href="#section-3.2-1" class="pilcrow">¶</a></p>
+<ol start="1" type="1" class="normal type-1" id="section-3.2-2">
+<li id="section-3.2-2.1">
+            <p id="section-3.2-2.1.1"><strong>Version</strong> (required): An integer denoting the version of the DomainAuth TXT record format, set to <code>0</code> (zero) for this version of the specification.<a href="#section-3.2-2.1.1" class="pilcrow">¶</a></p>
 </li>
-          <li id="section-3.2-4.2">
-            <p id="section-3.2-4.2.1"><strong>Key Algorithm</strong> (required): An integer denoting the key algorithm:<a href="#section-3.2-4.2.1" class="pilcrow">¶</a></p>
+          <li id="section-3.2-2.2">
+            <p id="section-3.2-2.2.1"><strong>Key Algorithm</strong> (required): An integer denoting the key algorithm:<a href="#section-3.2-2.2.1" class="pilcrow">¶</a></p>
 <ul class="normal">
-<li class="normal" id="section-3.2-4.2.2.1">
-                <p id="section-3.2-4.2.2.1.1"><code>1</code>: RSA-PSS with modulus 2048 bits.<a href="#section-3.2-4.2.2.1.1" class="pilcrow">¶</a></p>
+<li class="normal" id="section-3.2-2.2.2.1">
+                <p id="section-3.2-2.2.2.1.1"><code>1</code>: RSA-PSS with modulus 2048 bits.<a href="#section-3.2-2.2.2.1.1" class="pilcrow">¶</a></p>
 </li>
-              <li class="normal" id="section-3.2-4.2.2.2">
-                <p id="section-3.2-4.2.2.2.1"><code>2</code>: RSA-PSS with modulus 3072 bits.<a href="#section-3.2-4.2.2.2.1" class="pilcrow">¶</a></p>
+              <li class="normal" id="section-3.2-2.2.2.2">
+                <p id="section-3.2-2.2.2.2.1"><code>2</code>: RSA-PSS with modulus 3072 bits.<a href="#section-3.2-2.2.2.2.1" class="pilcrow">¶</a></p>
 </li>
-              <li class="normal" id="section-3.2-4.2.2.3">
-                <p id="section-3.2-4.2.2.3.1"><code>3</code>: RSA-PSS with modulus 4096 bits.<a href="#section-3.2-4.2.2.3.1" class="pilcrow">¶</a></p>
+              <li class="normal" id="section-3.2-2.2.2.3">
+                <p id="section-3.2-2.2.2.3.1"><code>3</code>: RSA-PSS with modulus 4096 bits.<a href="#section-3.2-2.2.2.3.1" class="pilcrow">¶</a></p>
 </li>
             </ul>
 </li>
-          <li id="section-3.2-4.3">
-            <p id="section-3.2-4.3.1"><strong>Key Id Type</strong> (required): An integer denoting how the key is identified:<a href="#section-3.2-4.3.1" class="pilcrow">¶</a></p>
+          <li id="section-3.2-2.3">
+            <p id="section-3.2-2.3.1"><strong>Key Id Type</strong> (required): An integer denoting how the key is identified:<a href="#section-3.2-2.3.1" class="pilcrow">¶</a></p>
 <ul class="normal">
-<li class="normal" id="section-3.2-4.3.2.1">
-                <p id="section-3.2-4.3.2.1.1"><code>1</code>: The key id is the SHA-256 digest of the key.<a href="#section-3.2-4.3.2.1.1" class="pilcrow">¶</a></p>
+<li class="normal" id="section-3.2-2.3.2.1">
+                <p id="section-3.2-2.3.2.1.1"><code>1</code>: The key id is the SHA-256 digest of the key.<a href="#section-3.2-2.3.2.1.1" class="pilcrow">¶</a></p>
 </li>
-              <li class="normal" id="section-3.2-4.3.2.2">
-                <p id="section-3.2-4.3.2.2.1"><code>2</code>: The key id is the SHA-384 digest of the key.<a href="#section-3.2-4.3.2.2.1" class="pilcrow">¶</a></p>
+              <li class="normal" id="section-3.2-2.3.2.2">
+                <p id="section-3.2-2.3.2.2.1"><code>2</code>: The key id is the SHA-384 digest of the key.<a href="#section-3.2-2.3.2.2.1" class="pilcrow">¶</a></p>
 </li>
-              <li class="normal" id="section-3.2-4.3.2.3">
-                <p id="section-3.2-4.3.2.3.1"><code>3</code>: The key id is the SHA-512 digest of the key.<a href="#section-3.2-4.3.2.3.1" class="pilcrow">¶</a></p>
+              <li class="normal" id="section-3.2-2.3.2.3">
+                <p id="section-3.2-2.3.2.3.1"><code>3</code>: The key id is the SHA-512 digest of the key.<a href="#section-3.2-2.3.2.3.1" class="pilcrow">¶</a></p>
 </li>
             </ul>
 </li>
-          <li id="section-3.2-4.4">
-            <p id="section-3.2-4.4.1"><strong>Key Id</strong> (required): The Base64-encoded (unpadded) representation of the key digest, as specified by the Key Id Type.<a href="#section-3.2-4.4.1" class="pilcrow">¶</a></p>
+          <li id="section-3.2-2.4">
+            <p id="section-3.2-2.4.1"><strong>Key Id</strong> (required): The Base64-encoded (unpadded) representation of the key digest, as specified by the Key Id Type.<a href="#section-3.2-2.4.1" class="pilcrow">¶</a></p>
 </li>
-          <li id="section-3.2-4.5">
-            <p id="section-3.2-4.5.1"><strong>TTL Override</strong> (required): A positive integer representing the number of seconds for the maximum validity period of signatures. This value <span class="bcp14">MUST</span> be between 1 second and 7,776,000 seconds (90 days).<a href="#section-3.2-4.5.1" class="pilcrow">¶</a></p>
+          <li id="section-3.2-2.5">
+            <p id="section-3.2-2.5.1"><strong>TTL Override</strong> (required): A positive integer representing the number of seconds for the maximum validity period of signatures. This value <span class="bcp14">MUST</span> be between 1 second and 7,776,000 seconds (90 days).<a href="#section-3.2-2.5.1" class="pilcrow">¶</a></p>
 </li>
-          <li id="section-3.2-4.6">
-            <p id="section-3.2-4.6.1"><strong>Service OID</strong> (optional): An Object Identifier (in dotted decimal notation) identifying a specific service for which this record is valid. If omitted, the record applies to all services.<a href="#section-3.2-4.6.1" class="pilcrow">¶</a></p>
+          <li id="section-3.2-2.6">
+            <p id="section-3.2-2.6.1"><strong>Service OID</strong> (optional): An Object Identifier (in dotted decimal notation) binding the key to a specific service. If omitted, the key is valid for any service.<a href="#section-3.2-2.6.1" class="pilcrow">¶</a></p>
 </li>
         </ol>
-<p id="section-3.2-5">Multiple TXT records <span class="bcp14">MAY</span> be published at the same hostname to support different keys, key algorithms, or services. A domain <span class="bcp14">MAY</span> also publish service-specific records alongside a generic record (without a service OID).<a href="#section-3.2-5" class="pilcrow">¶</a></p>
-<p id="section-3.2-6">Verifiers <span class="bcp14">MUST</span> select the appropriate TXT record based on the key information and service OID in the signature being verified.<a href="#section-3.2-6" class="pilcrow">¶</a></p>
-<p id="section-3.2-7">Example TXT record:<a href="#section-3.2-7" class="pilcrow">¶</a></p>
-<div class="alignLeft art-text artwork" id="section-3.2-8">
+<p id="section-3.2-3">Multiple TXT records <span class="bcp14">MAY</span> be published at the same zone to support different keys, key algorithms, or services.<a href="#section-3.2-3" class="pilcrow">¶</a></p>
+<p id="section-3.2-4">Verifiers <span class="bcp14">MUST</span> select the appropriate TXT record based on the key information and service OID in the signature being verified.<a href="#section-3.2-4" class="pilcrow">¶</a></p>
+<p id="section-3.2-5">For example, the following TXT record specifies an RSA-2048 key identified by its SHA-512 digest with a TTL override of 24 hours (86400 seconds) and no service binding:<a href="#section-3.2-5" class="pilcrow">¶</a></p>
+<div class="alignLeft art-text artwork" id="section-3.2-6">
 <pre>
 _domainauth.example.com. IN TXT "0 1 3 dGhpcyBpcyBub3QgYSByZWFsIGtleSBkaWdlc3Q 86400"
-</pre><a href="#section-3.2-8" class="pilcrow">¶</a>
+</pre><a href="#section-3.2-6" class="pilcrow">¶</a>
 </div>
-<p id="section-3.2-9">This example specifies an RSA-2048 key identified by its SHA-512 digest with a TTL override of 24 hours (86400 seconds).<a href="#section-3.2-9" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="ttl-override">
+<section id="section-3.3">
+        <h3 id="name-ttl-override">
+<a href="#section-3.3" class="section-number selfRef">3.3. </a><a href="#name-ttl-override" class="section-name selfRef">TTL Override</a>
+        </h3>
+<p id="section-3.3-1">The TTL override field in the DomainAuth TXT record enables verification of DNS records and DNSSEC signatures for longer periods than their respective specifications would allow, which is essential for delay-tolerant use cases where users may be offline for extended periods.<a href="#section-3.3-1" class="pilcrow">¶</a></p>
+<p id="section-3.3-2">DNS records and DNSSEC signatures typically have TTL values that may be as short as a few minutes or hours. The TTL override mechanism allows the DNSSEC chain to remain verifiable for up to 90 days, regardless of the TTL in such records.<a href="#section-3.3-2" class="pilcrow">¶</a></p>
+<p id="section-3.3-3">During verification, the TTL override creates a restricted time window that extends backwards from the end of the requested verification period by the specified number of seconds. Verification will succeed if the DNSSEC records were valid at any point during this window, even if the standard DNS TTLs would have expired.<a href="#section-3.3-3" class="pilcrow">¶</a></p>
+<p id="section-3.3-4">For example, if a DNS record has a standard TTL of 3600 seconds (1 hour) but the DomainAuth TXT record specifies a TTL override of 604,800 seconds (7 days), a signature can still be verified up to 7 days after creation, even when offline. If a verifier attempts to verify a signature 5 days after it was created, the verification would succeed with the TTL override, whereas it would fail with only the standard 1-hour TTL.<a href="#section-3.3-4" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="dnssec-chain-serialisation">
-<section id="section-3.3">
+<section id="section-3.4">
         <h3 id="name-dnssec-chain-serialisation">
-<a href="#section-3.3" class="section-number selfRef">3.3. </a><a href="#name-dnssec-chain-serialisation" class="section-name selfRef">DNSSEC Chain Serialisation</a>
+<a href="#section-3.4" class="section-number selfRef">3.4. </a><a href="#name-dnssec-chain-serialisation" class="section-name selfRef">DNSSEC Chain Serialisation</a>
         </h3>
-<p id="section-3.3-1">The DNSSEC chain for a DomainAuth signature <span class="bcp14">MUST</span> be serialised in a format that allows for offline verification. The serialisation format is based on the DNS message format defined in RFC 1035, with specific requirements for DomainAuth:<a href="#section-3.3-1" class="pilcrow">¶</a></p>
-<ol start="1" type="1" class="normal type-1" id="section-3.3-2">
-<li id="section-3.3-2.1">
-            <p id="section-3.3-2.1.1">The serialised chain <span class="bcp14">MUST</span> include all DNS responses necessary to validate the <code>_domainauth.&lt;domain&gt;/TXT</code> record, from the targeted domain up to (but not including) the root zone.<a href="#section-3.3-2.1.1" class="pilcrow">¶</a></p>
-</li>
-          <li id="section-3.3-2.2">
-            <p id="section-3.3-2.2.1">The serialised chain <span class="bcp14">MUST</span> be structured as a DNS message with the following components:
- - Header: <span class="bcp14">MUST</span> include the authenticated data (<code>ad</code>) flag set to indicate DNSSEC validation.
- - Question section: <span class="bcp14">MUST</span> contain a single question for <code>_domainauth.&lt;domain&gt;/TXT</code>.
- - Answer section: <span class="bcp14">MUST</span> contain the RRset for <code>_domainauth.&lt;domain&gt;/TXT</code> and its associated RRSIG records.
- - Authority section: <span class="bcp14">MUST</span> be empty.
- - Additional section: <span class="bcp14">MUST</span> contain all other records necessary for DNSSEC validation, excluding the root zone DS records (which verifiers <span class="bcp14">MUST</span> provide).<a href="#section-3.3-2.2.1" class="pilcrow">¶</a></p>
-</li>
-        </ol>
-<p id="section-3.3-3">The serialised chain is encoded as an ASN.1 SET OF OCTET STRING, where each OCTET STRING contains a complete DNS message contributing to the validation chain.<a href="#section-3.3-3" class="pilcrow">¶</a></p>
-<div class="alignLeft art-text artwork" id="section-3.3-4">
+<p id="section-3.4-1">The serialised chain <span class="bcp14">MUST</span> be encoded as the ASN.1 <code>DnssecChain</code> structure below, where each <code>OCTET STRING</code> contains a complete DNS message as defined in <span>[<a href="#DNS" class="cite xref">DNS</a>]</span>:<a href="#section-3.4-1" class="pilcrow">¶</a></p>
+<div class="alignLeft art-text artwork" id="section-3.4-2">
 <pre>
 DnssecChain ::= SET OF OCTET STRING
-</pre><a href="#section-3.3-4" class="pilcrow">¶</a>
+</pre><a href="#section-3.4-2" class="pilcrow">¶</a>
 </div>
-<p id="section-3.3-5">Implementations <span class="bcp14">MUST</span> include all necessary DNSKEY, DS, and RRSIG records required for validating the chain. The serialisation <span class="bcp14">SHOULD</span> be optimised to minimise redundancy and size while ensuring completeness for offline validation.<a href="#section-3.3-5" class="pilcrow">¶</a></p>
-</section>
-</div>
-<div id="ttl-considerations">
-<section id="section-3.4">
-        <h3 id="name-ttl-considerations">
-<a href="#section-3.4" class="section-number selfRef">3.4. </a><a href="#name-ttl-considerations" class="section-name selfRef">TTL Considerations</a>
-        </h3>
-<p id="section-3.4-1">TTL (Time-to-Live) values play a crucial role in determining the validity period of DomainAuth signatures. The protocol establishes the following requirements:<a href="#section-3.4-1" class="pilcrow">¶</a></p>
-<ol start="1" type="1" class="normal type-1" id="section-3.4-2">
-<li id="section-3.4-2.1">
-            <p id="section-3.4-2.1.1">Service designers <span class="bcp14">MUST</span> specify a maximum TTL for signatures in their service, which <span class="bcp14">MUST</span> be:<a href="#section-3.4-2.1.1" class="pilcrow">¶</a></p>
-<ul class="normal">
-<li class="normal" id="section-3.4-2.1.2.1">
-                <p id="section-3.4-2.1.2.1.1">At least 1 second, though we recommend several minutes to account for clock drift.<a href="#section-3.4-2.1.2.1.1" class="pilcrow">¶</a></p>
-</li>
-              <li class="normal" id="section-3.4-2.1.2.2">
-                <p id="section-3.4-2.1.2.2.1">At most 90 days (7,776,000 seconds), to support offline, delay-tolerant networking scenarios.<a href="#section-3.4-2.1.2.2.1" class="pilcrow">¶</a></p>
-</li>
-            </ul>
-</li>
-          <li id="section-3.4-2.2">
-            <p id="section-3.4-2.2.1">The age of a digital signature <span class="bcp14">MUST</span> be calculated from the time when the DNSSEC answer for the <code>_domainauth.&lt;domain&gt;</code> TXT record was signed.<a href="#section-3.4-2.2.1" class="pilcrow">¶</a></p>
-</li>
-          <li id="section-3.4-2.3">
-            <p id="section-3.4-2.3.1">The TTL override value in the DomainAuth TXT record represents the maximum validity period for signatures, counted from the DNSSEC signing time.<a href="#section-3.4-2.3.1" class="pilcrow">¶</a></p>
-</li>
-          <li id="section-3.4-2.4">
-            <p id="section-3.4-2.4.1">Verifiers <span class="bcp14">MAY</span> enforce a TTL shorter than that required by the service, but not shorter than the 1-second minimum.<a href="#section-3.4-2.4.1" class="pilcrow">¶</a></p>
-</li>
-          <li id="section-3.4-2.5">
-            <p id="section-3.4-2.5.1">Verifiers <span class="bcp14">MAY</span> allow their end users to specify a shorter TTL (but still not shorter than 1 second) than the one in the TXT record.<a href="#section-3.4-2.5.1" class="pilcrow">¶</a></p>
-</li>
-        </ol>
-<p id="section-3.4-3">DomainAuth favours short-lived certificates over revocation mechanisms to simplify the protocol and eliminate dependencies on online revocation checking. Service designers <span class="bcp14">SHOULD</span> specify the shortest TTL that satisfies their specific requirements.<a href="#section-3.4-3" class="pilcrow">¶</a></p>
+<p id="section-3.4-3">This chain <span class="bcp14">MUST</span> include all DNSSEC responses necessary to validate the <code>_domainauth.&lt;domain&gt;/TXT</code> record from the trust anchor. However, the root zone DS records <span class="bcp14">SHOULD</span> be omitted, since they will be ignored by verifiers as described in <a href="#verification-process" class="auto internal xref">Section 7.4</a>.<a href="#section-3.4-3" class="pilcrow">¶</a></p>
+<p id="section-3.4-4">Implementations <span class="bcp14">SHOULD</span> optimise the serialisation to minimise redundancy and size whilst ensuring completeness for offline verification.<a href="#section-3.4-4" class="pilcrow">¶</a></p>
 </section>
 </div>
 </section>
@@ -2555,13 +2469,16 @@ DatePeriod ::= SEQUENCE {
                 <p id="section-7.4-2.3.2.1.1">Verify that the chain starts from a trusted DNSSEC anchor.<a href="#section-7.4-2.3.2.1.1" class="pilcrow">¶</a></p>
 </li>
               <li class="normal" id="section-7.4-2.3.2.2">
-                <p id="section-7.4-2.3.2.2.1">Verify all DNSSEC signatures in the chain.<a href="#section-7.4-2.3.2.2.1" class="pilcrow">¶</a></p>
+                <p id="section-7.4-2.3.2.2.1">The root zone DS records <span class="bcp14">MUST</span> be provided by the verifier. Any root zone DS records included in the DNSSEC chain <span class="bcp14">MUST</span> be ignored.<a href="#section-7.4-2.3.2.2.1" class="pilcrow">¶</a></p>
 </li>
               <li class="normal" id="section-7.4-2.3.2.3">
-                <p id="section-7.4-2.3.2.3.1">Confirm that the chain leads to the <code>_domainauth.&lt;domain&gt;</code> TXT record.<a href="#section-7.4-2.3.2.3.1" class="pilcrow">¶</a></p>
+                <p id="section-7.4-2.3.2.3.1">Verify all DNSSEC signatures in the chain.<a href="#section-7.4-2.3.2.3.1" class="pilcrow">¶</a></p>
 </li>
               <li class="normal" id="section-7.4-2.3.2.4">
-                <p id="section-7.4-2.3.2.4.1">Extract the organisation's public key information from the TXT record.<a href="#section-7.4-2.3.2.4.1" class="pilcrow">¶</a></p>
+                <p id="section-7.4-2.3.2.4.1">Confirm that the chain leads to the <code>_domainauth.&lt;domain&gt;</code> TXT record.<a href="#section-7.4-2.3.2.4.1" class="pilcrow">¶</a></p>
+</li>
+              <li class="normal" id="section-7.4-2.3.2.5">
+                <p id="section-7.4-2.3.2.5.1">Extract the organisation's public key information from the TXT record.<a href="#section-7.4-2.3.2.5.1" class="pilcrow">¶</a></p>
 </li>
             </ul>
 </li>
@@ -2662,12 +2579,18 @@ DatePeriod ::= SEQUENCE {
                     <p id="section-7.4-2.8.2.1.2.2.1">The signature metadata validity period.<a href="#section-7.4-2.8.2.1.2.2.1" class="pilcrow">¶</a></p>
 </li>
                   <li class="normal" id="section-7.4-2.8.2.1.2.3">
-                    <p id="section-7.4-2.8.2.1.2.3.1">The DNSSEC record validity period (using the TTL override).<a href="#section-7.4-2.8.2.1.2.3.1" class="pilcrow">¶</a></p>
+                    <p id="section-7.4-2.8.2.1.2.3.1">The DNSSEC chain validity period, applying the TTL override from <a href="#ttl-override" class="auto internal xref">Section 3.3</a>.<a href="#section-7.4-2.8.2.1.2.3.1" class="pilcrow">¶</a></p>
 </li>
                 </ul>
 </li>
               <li class="normal" id="section-7.4-2.8.2.2">
-                <p id="section-7.4-2.8.2.2.1">Verify that the verification time falls within this intersection.<a href="#section-7.4-2.8.2.2.1" class="pilcrow">¶</a></p>
+                <p id="section-7.4-2.8.2.2.1">Verifiers <span class="bcp14">MAY</span> enforce a TTL shorter than that required by the service, but not shorter than the 1-second minimum.<a href="#section-7.4-2.8.2.2.1" class="pilcrow">¶</a></p>
+</li>
+              <li class="normal" id="section-7.4-2.8.2.3">
+                <p id="section-7.4-2.8.2.3.1">Verifiers <span class="bcp14">MAY</span> allow their end users to specify a shorter TTL (but still not shorter than 1 second) than the one in the TXT record.<a href="#section-7.4-2.8.2.3.1" class="pilcrow">¶</a></p>
+</li>
+              <li class="normal" id="section-7.4-2.8.2.4">
+                <p id="section-7.4-2.8.2.4.1">Verify that the verification time falls within this intersection.<a href="#section-7.4-2.8.2.4.1" class="pilcrow">¶</a></p>
 </li>
             </ul>
 </li>
@@ -2795,6 +2718,7 @@ MemberAttribution ::= UTF8String
             <p id="section-8.2-2.1.1"><strong>TTL Constraints:</strong>
   - Services <span class="bcp14">MUST</span> specify a maximum TTL for signatures.
   - The TTL <span class="bcp14">MUST</span> be within the range of 1 second to 90 days.
+  - For the minimum TTL, several minutes is recommended to account for clock drift.
   - Services <span class="bcp14">SHOULD</span> choose the shortest TTL that meets their requirements.<a href="#section-8.2-2.1.1" class="pilcrow">¶</a></p>
 </li>
           <li id="section-8.2-2.2">
@@ -3573,6 +3497,10 @@ MemberAttribution ::= UTF8String
         <dd>
 <span class="refAuthor">Housley, R.</span>, <span class="refTitle">"Cryptographic Message Syntax (CMS)"</span>, <span class="seriesInfo">STD 70</span>, <span class="seriesInfo">RFC 5652</span>, <span class="seriesInfo">DOI 10.17487/RFC5652</span>, <time datetime="2009-09" class="refDate">September 2009</time>, <span>&lt;<a href="https://www.rfc-editor.org/rfc/rfc5652">https://www.rfc-editor.org/rfc/rfc5652</a>&gt;</span>. </dd>
 <dd class="break"></dd>
+<dt id="DNS">[DNS]</dt>
+        <dd>
+<span class="refAuthor">Mockapetris, P.</span>, <span class="refTitle">"Domain names - implementation and specification"</span>, <span class="seriesInfo">STD 13</span>, <span class="seriesInfo">RFC 1035</span>, <span class="seriesInfo">DOI 10.17487/RFC1035</span>, <time datetime="1987-11" class="refDate">November 1987</time>, <span>&lt;<a href="https://www.rfc-editor.org/rfc/rfc1035">https://www.rfc-editor.org/rfc/rfc1035</a>&gt;</span>. </dd>
+<dd class="break"></dd>
 <dt id="DNSSEC">[DNSSEC]</dt>
         <dd>
 <span class="refAuthor">Hoffman, P.</span>, <span class="refTitle">"DNS Security Extensions (DNSSEC)"</span>, <span class="seriesInfo">BCP 237</span>, <span class="seriesInfo">RFC 9364</span>, <span class="seriesInfo">DOI 10.17487/RFC9364</span>, <time datetime="2023-02" class="refDate">February 2023</time>, <span>&lt;<a href="https://www.rfc-editor.org/rfc/rfc9364">https://www.rfc-editor.org/rfc/rfc9364</a>&gt;</span>. </dd>
@@ -3745,8 +3673,8 @@ MemberAttribution ::= UTF8String
       <h2 id="name-acknowledgements">
 <a href="#name-acknowledgements" class="section-name selfRef">Acknowledgements</a>
       </h2>
-<p id="appendix-C-1">The author is grateful to the Open Technology Fund for funding the implementation of VeraId, which heavily influenced the final specification of the VeraId protocol, and therefore this document as its successor.<a href="#appendix-C-1" class="pilcrow">¶</a></p>
-<p id="appendix-C-2">The author would also like to thank the authors of <span>[<a href="#DNSSEC" class="cite xref">DNSSEC</a>]</span>, <span>[<a href="#X.509" class="cite xref">X.509</a>]</span>, <span>[<a href="#CMS" class="cite xref">CMS</a>]</span>, and <span>[<a href="#ASN.1" class="cite xref">ASN.1</a>]</span>, which underpin the present work.<a href="#appendix-C-2" class="pilcrow">¶</a></p>
+<p id="appendix-C-1">The author is grateful to the Open Technology Fund for funding the implementation of VeraId, which heavily influenced the final specification of the VeraId protocol, and therefore DomainAuth as its successor.<a href="#appendix-C-1" class="pilcrow">¶</a></p>
+<p id="appendix-C-2">The author would also like to thank the authors of <span>[<a href="#DNS" class="cite xref">DNS</a>]</span>, <span>[<a href="#DNSSEC" class="cite xref">DNSSEC</a>]</span>, <span>[<a href="#X.509" class="cite xref">X.509</a>]</span>, <span>[<a href="#CMS" class="cite xref">CMS</a>]</span>, and <span>[<a href="#ASN.1" class="cite xref">ASN.1</a>]</span>, which underpin the present protocol.<a href="#appendix-C-2" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="authors-addresses">

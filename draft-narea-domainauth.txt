@@ -24,8 +24,8 @@ Abstract
    record to the final signing key, and (3) the digital signature in the
    form of a CMS SignedData structure.
 
-   Finally, signatures can also be attributed to specific users, such as
-   "alice" of "example.com".
+   Finally, signatures can be attributed to the domain name itself (e.g.
+   "example.com") or specific users (e.g. "alice" of "example.com").
 
 About This Document
 
@@ -73,67 +73,65 @@ Copyright Notice
 Table of Contents
 
    1.  Introduction
-     1.1.  Purpose and Scope
-     1.2.  Problem Statement
-     1.3.  Design Goals
-     1.4.  Terminology
-   2.  Conventions and Definitions
-   3.  Protocol Overview
-     3.1.  Architecture
-     3.2.  Trust Model
-     3.3.  Key Components
-     3.4.  Workflow Summary
-   4.  DNS Integration
-     4.1.  DNSSEC Requirements
-     4.2.  TXT Record
-     4.3.  DNSSEC Chain Serialisation
-     4.4.  TTL Considerations
-   5.  Cryptographic Foundation
-     5.1.  Supported Algorithms
-     5.2.  Key Management
-     5.3.  Certificate Structure
-       5.3.1.  Organisation Certificate Profile:
-       5.3.2.  Member Certificate Profile:
-     5.4.  Signature Format
-   6.  Identity Model
-     6.1.  Organisations
-     6.2.  Members
-     6.3.  Naming Conventions and Restrictions
-   7.  Certificate Management
-     7.1.  Organisation Certificate Issuance
-     7.2.  Member Certificate Issuance
-     7.3.  Certificate Validity Periods
-     7.4.  Certificate Revocation
-   8.  Signature Production and Verification
-     8.1.  Member Id Bundle
-     8.2.  Signature Bundle
-     8.3.  Signature Metadata
-     8.4.  Verification Process
-     8.5.  Member Attribution
-   9.  Service Integration
-     9.1.  Service OIDs
-     9.2.  Service-Specific Validation Rules
-     9.3.  Implementation Guidelines
-   10. Implementation Guidance
-     10.1.  Interoperability Considerations
-     10.2.  Performance Optimisations
-     10.3.  Member vs Organisation Signatures
-       10.3.1.  Implementation Recommendations
-       10.3.2.  User Interface Recommendations
-   11. Implementation Status
-     11.1.  VeraId JavaScript Library
-     11.2.  VeraId JVM Library
-     11.3.  VeraId Authority
-   12. Security Considerations
-     12.1.  DNSSEC Dependency
-     12.2.  Homographic and Character Encoding Attacks
-     12.3.  Domain Ownership Changes
-     12.4.  Offline Verification Limitations
-     12.5.  Organisation Signatures and Member Attribution
-   13. IANA Considerations
-   14. References
-     14.1.  Normative References
-     14.2.  Informative References
+     1.1.  Problem Statement
+     1.2.  Design Goals
+     1.3.  Conventions and Terminology
+   2.  Protocol Overview
+     2.1.  Architecture
+     2.2.  Trust Model
+     2.3.  Key Components
+     2.4.  Workflow Summary
+   3.  DNS Integration
+     3.1.  DNSSEC Requirements
+     3.2.  TXT Record
+     3.3.  DNSSEC Chain Serialisation
+     3.4.  TTL Considerations
+   4.  Cryptographic Foundation
+     4.1.  Supported Algorithms
+     4.2.  Key Management
+     4.3.  Certificate Structure
+       4.3.1.  Organisation Certificate Profile:
+       4.3.2.  Member Certificate Profile:
+     4.4.  Signature Format
+   5.  Identity Model
+     5.1.  Organisations
+     5.2.  Members
+     5.3.  Naming Conventions and Restrictions
+   6.  Certificate Management
+     6.1.  Organisation Certificate Issuance
+     6.2.  Member Certificate Issuance
+     6.3.  Certificate Validity Periods
+     6.4.  Certificate Revocation
+   7.  Signature Production and Verification
+     7.1.  Member Id Bundle
+     7.2.  Signature Bundle
+     7.3.  Signature Metadata
+     7.4.  Verification Process
+     7.5.  Member Attribution
+   8.  Service Integration
+     8.1.  Service OIDs
+     8.2.  Service-Specific Validation Rules
+     8.3.  Implementation Guidelines
+   9.  Implementation Guidance
+     9.1.  Interoperability Considerations
+     9.2.  Performance Optimisations
+     9.3.  Member vs Organisation Signatures
+       9.3.1.  Implementation Recommendations
+       9.3.2.  User Interface Recommendations
+   10. Implementation Status
+     10.1.  VeraId JavaScript Library
+     10.2.  VeraId JVM Library
+     10.3.  VeraId Authority
+   11. Security Considerations
+     11.1.  DNSSEC Dependency
+     11.2.  Homographic and Character Encoding Attacks
+     11.3.  Domain Ownership Changes
+     11.4.  Offline Verification Limitations
+     11.5.  Organisation Signatures and Member Attribution
+   12. IANA Considerations
+   13. References
+     13.1.  Normative References
+     13.2.  Informative References
    Appendix A.  ASN.1 Schemas
    Appendix B.  OID Registry
    Acknowledgements
@@ -141,69 +139,76 @@ Table of Contents
 
 1.  Introduction
 
-   DomainAuth is a decentralised authentication protocol that securely
-   attributes content to domain names, providing a robust mechanism for
-   proving ownership and authorship without requiring continuous
-   Internet connectivity.  By combining the decentralised nature of DNS
-   with established cryptographic standards, DomainAuth enables secure
-   content verification in both online and offline environments.
+   Public Key Infrastructures typically require continuous Internet
+   connectivity for certificate validation or prior distribution of
+   public keys, creating significant limitations for offline or
+   intermittently connected environments.  This document addresses the
+   challenge of securely attributing content to domain names in
+   scenarios where verification must occur entirely offline, without
+   reliance on real-time certificate status checking or pre-distributed
+   trust anchors.
 
-1.1.  Purpose and Scope
+   DomainAuth solves this verification challenge by creating self-
+   contained "signature bundles" that encapsulate the complete trust
+   chain required for validation.  Each bundle comprises three
+   cryptographically linked components: a DNSSEC chain extending from
+   the DNS root to a domain's TXT record containing key material, an
+   X.509 certificate chain from the domain to the signing entity, and a
+   CMS SignedData structure containing the digital signature.  This
+   architecture leverages established standards whilst eliminating the
+   need for continuous connectivity or prior trust establishment.
 
-   The purpose of DomainAuth is to provide a secure, decentralised
-   authentication protocol that enables the attribution of content to
-   domain names and their associated users.  DomainAuth addresses the
-   need for reliable authentication in scenarios where continuous
-   Internet connectivity cannot be guaranteed or is undesirable.
+   This specification defines the protocol components, data structures,
+   and verification procedures that constitute the DomainAuth protocol.
+   It covers the DNS integration mechanism, cryptographic requirements,
+   identity model, certificate management practices, and signature
+   verification processes.
 
-   This V1 specification defines the core protocol components, data
-   structures, cryptographic operations, and verification procedures
-   that constitute the DomainAuth ecosystem.  It provides the necessary
-   information for implementers to create interoperable tools and
-   applications that can produce and verify DomainAuth signatures.
+1.1.  Problem Statement
 
-   The scope of this specification encompasses:
+   The protocol was initially designed and implemented to provide users
+   of the offline messaging application [LETRO] with identifiers that
+   are customisable, user friendly, universally unique, and verifiable.
 
-   *  The DNS-based trust model and its integration with DNSSEC.
+   Letro is powered by the delay-tolerant network [AWALA], which offers
+   an end-to-end encrypted sneakernet to transport data between a region
+   disconnected from the Internet and a location with access to the
+   Internet.  In the most extreme cases, this physical transport may
+   take a short number of months.  Consequently, users should be able to
+   produce and verify digital signatures during that time period without
+   relying on online services.
 
-   *  Certificate issuance and management for organisations and members.
+   Attacks by powerful adversaries, such as nation-state actors, are
+   part of the threat model, given that Awala and Letro explicitly
+   target people disconnected from the Internet due to conflict or
+   government-sponsored censorship.
 
-   *  Production and verification of digital signatures.
+   Despite its origin in delay-tolerant networking, DomainAuth has
+   broader applicability and can be useful when the Internet is
+   available, such as the following use cases:
 
-   *  Serialisation formats for all protocol artefacts.
+   *  Client authentication.  A client could prove its identity to its
+      server by sending a short-lived token signed with DomainAuth; this
+      would be analogous to using a JSON Web Token ([JWT]), except that
+      it can be verified without a prior distribution of public keys or
+      remote operations.  Alternatively, the client could sign each
+      message sent to the server.
 
-   *  Security considerations and mitigations.
+   *  Artefact signing.  Documents, applications, libraries, and other
+      files could be signed on behalf of a domain name, without vendor-
+      specific gatekeeping mechanisms.  This could unlock further use
+      cases, such as enabling users to share original content whilst
+      proving authenticity and integrity, instead of sharing URLs to
+      resources that could be blocked at the network level.
 
-1.2.  Problem Statement
+   *  Peer-to-peer web hosting.  A next-generation of websites could be
+      hosted on a peer-to-peer network, with files reliably attributed
+      to their respective domain names.
 
-   Traditional authentication systems typically require continuous
-   Internet connectivity to verify credentials against centralised
-   authorities.  This requirement becomes problematic in several
-   scenarios:
+   The present document is meant to provide the foundation for all the
+   use cases above in a generic manner.
 
-   1.  *Offline environments:* Users in areas with unreliable or no
-       Internet connectivity need reliable authentication mechanisms
-       that work offline.
-
-   2.  *Content attribution:* Proving that a particular piece of content
-       was produced by a specific entity without relying on centralised
-       certification authorities.
-
-   3.  *User-friendly identifiers:* Existing solutions like PGP rely on
-       cryptographic fingerprints or long key identifiers that are not
-       user-friendly and prone to human error.
-
-   4.  *Self-sovereignty:* Many authentication systems place trust in
-       central authorities that can issue credentials for any entity,
-       creating unnecessary trust dependencies and security risks.
-
-   DomainAuth addresses these challenges by providing a protocol built
-   on DNSSEC that allows content to be securely attributed to user-
-   friendly identifiers (domain names and usernames) in a fully
-   verifiable manner, without requiring online connectivity during
-   verification.
-
-1.3.  Design Goals
+1.2.  Design Goals
 
    DomainAuth is designed with the following primary goals:
 
@@ -218,10 +223,9 @@ Table of Contents
 
    3.  *User-friendly identifiers:* Identities are based on familiar,
        human-readable domain names and usernames rather than
-       cryptographic fingerprints or hashes.
+       cryptographic digests.
 
-   4.  *Battle-tested foundations:* The protocol builds upon well-
-       established standards:
+   4.  *Build upon well-established standards:*
 
        *  DNSSEC for securing DNS responses.
 
@@ -234,24 +238,32 @@ Table of Contents
        unlike traditional PKIs where any CA can issue certificates for
        any domain.
 
-   6.  *Service-specific binding:* Signatures are bound to specific
-       services, preventing their unauthorised use across different
+   6.  *Contextual binding:* Signatures are bound to specific "services"
+       (see below), preventing their unauthorised use across different
        contexts.
 
-1.4.  Terminology
+1.3.  Conventions and Terminology
+
+   The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT",
+   "SHOULD", "SHOULD NOT", "RECOMMENDED", "NOT RECOMMENDED", "MAY", and
+   "OPTIONAL" in this document are to be interpreted as described in
+   BCP 14 [RFC2119] [RFC8174] when, and only when, they appear in all
+   capitals, as shown here.
+
+   The following terms are used:
 
    *  *Organisation:* A domain name that participates in the DomainAuth
       protocol by configuring DNSSEC and publishing the necessary
       DomainAuth TXT record.
 
-   *  *Member:* An entity (user or bot) that acts on behalf of an
-      organisation.
+   *  *Member:* An entity (user or bot) that produces signatures on
+      behalf of an organisation.
 
    *  *User:* A specific type of member identified by a username within
       an organisation.
 
    *  *Bot:* A special type of member that acts on behalf of the
-      organisation as a whole.
+      organisation as a whole.  Bots do not have usernames.
 
    *  *DomainAuth TXT Record:* A DNS TXT record at _domainauth.<domain>
       that contains the organisation's public key information.
@@ -286,17 +298,9 @@ Table of Contents
       a service or application context where a DomainAuth signature is
       valid.
 
-2.  Conventions and Definitions
+2.  Protocol Overview
 
-   The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT",
-   "SHOULD", "SHOULD NOT", "RECOMMENDED", "NOT RECOMMENDED", "MAY", and
-   "OPTIONAL" in this document are to be interpreted as described in
-   BCP 14 [RFC2119] [RFC8174] when, and only when, they appear in all
-   capitals, as shown here.
-
-3.  Protocol Overview
-
-3.1.  Architecture
+2.1.  Architecture
 
    DomainAuth combines DNSSEC, X.509 certificates, and CMS signatures to
    create a decentralised authentication system.  The architecture
@@ -321,7 +325,7 @@ Table of Contents
    bundles to be verified independently, without requiring connectivity
    to the Internet or the organisation's infrastructure.
 
-3.2.  Trust Model
+2.2.  Trust Model
 
    DomainAuth's trust model differs significantly from traditional PKIs
    such as the one used for TLS:
@@ -362,7 +366,7 @@ Table of Contents
    limitations.  The protocol's trust is ultimately rooted in the DNS
    hierarchy, including the root zone and TLD operators.
 
-3.3.  Key Components
+2.3.  Key Components
 
    The DomainAuth protocol consists of the following core components:
 
@@ -401,7 +405,7 @@ Table of Contents
    the DNS root to the individual signatures produced by organisation
    members or by the organisation itself.
 
-3.4.  Workflow Summary
+2.4.  Workflow Summary
 
    The DomainAuth protocol involves the following key workflows:
 
@@ -456,9 +460,9 @@ Table of Contents
    Each of these workflows contributes to the overall security and
    integrity of the DomainAuth ecosystem.
 
-4.  DNS Integration
+3.  DNS Integration
 
-4.1.  DNSSEC Requirements
+3.1.  DNSSEC Requirements
 
    DNSSEC is a fundamental component of DomainAuth, providing the
    cryptographic foundation for validating domain ownership.
@@ -499,7 +503,7 @@ Table of Contents
    beyond standard DNSSEC implementations but depends on their correct
    operation.
 
-4.2.  TXT Record
+3.2.  TXT Record
 
    Each organisation participating in the DomainAuth protocol MUST
    publish a TXT record at _domainauth.<domain> with the following
@@ -558,7 +562,7 @@ _domainauth.example.com. IN TXT "0 1 3 dGhpcyBpcyBub3QgYSByZWFsIGtleSBkaWdlc3Q 8
    This example specifies an RSA-2048 key identified by its SHA-512
    digest with a TTL override of 24 hours (86400 seconds).
 
-4.3.  DNSSEC Chain Serialisation
+3.3.  DNSSEC Chain Serialisation
 
    The DNSSEC chain for a DomainAuth signature MUST be serialised in a
    format that allows for offline verification.  The serialisation
@@ -591,7 +595,7 @@ _domainauth.example.com. IN TXT "0 1 3 dGhpcyBpcyBub3QgYSByZWFsIGtleSBkaWdlc3Q 8
    be optimised to minimise redundancy and size while ensuring
    completeness for offline validation.
 
-4.4.  TTL Considerations
+3.4.  TTL Considerations
 
    TTL (Time-to-Live) values play a crucial role in determining the
    validity period of DomainAuth signatures.  The protocol establishes
@@ -625,9 +629,9 @@ _domainauth.example.com. IN TXT "0 1 3 dGhpcyBpcyBub3QgYSByZWFsIGtleSBkaWdlc3Q 8
    online revocation checking.  Service designers SHOULD specify the
    shortest TTL that satisfies their specific requirements.
 
-5.  Cryptographic Foundation
+4.  Cryptographic Foundation
 
-5.1.  Supported Algorithms
+4.1.  Supported Algorithms
 
    DomainAuth relies on established cryptographic algorithms to ensure
    security and interoperability.  The protocol defines the following
@@ -662,7 +666,7 @@ _domainauth.example.com. IN TXT "0 1 3 dGhpcyBpcyBub3QgYSByZWFsIGtleSBkaWdlc3Q 8
    algorithms to those with well-established security properties and
    widespread implementation support.
 
-5.2.  Key Management
+4.2.  Key Management
 
    Proper key management is essential for the security of the DomainAuth
    protocol.  The following requirements apply:
@@ -698,13 +702,13 @@ _domainauth.example.com. IN TXT "0 1 3 dGhpcyBpcyBub3QgYSByZWFsIGtleSBkaWdlc3Q 8
    secure key management practices appropriate to the security
    requirements of the organisation.
 
-5.3.  Certificate Structure
+4.3.  Certificate Structure
 
    DomainAuth uses X.509 certificates with specific requirements for
    organisations and members.  All certificates MUST comply with the
    X.509v3 standard (RFC 5280).
 
-5.3.1.  Organisation Certificate Profile:
+4.3.1.  Organisation Certificate Profile:
 
    1.  *Version:* MUST be v3 (value = 2).
 
@@ -729,7 +733,7 @@ _domainauth.example.com. IN TXT "0 1 3 dGhpcyBpcyBub3QgYSByZWFsIGtleSBkaWdlc3Q 8
           Identifier: MUST be present.  - Authority Key Identifier: MUST
           be present and match the Subject Key Identifier.
 
-5.3.2.  Member Certificate Profile:
+4.3.2.  Member Certificate Profile:
 
    1.  *Version:* MUST be v3 (value = 2).
 
@@ -760,7 +764,7 @@ _domainauth.example.com. IN TXT "0 1 3 dGhpcyBpcyBub3QgYSByZWFsIGtleSBkaWdlc3Q 8
    Certificates MUST NOT include extensions not specified in this
    profile without careful consideration of their security implications.
 
-5.4.  Signature Format
+4.4.  Signature Format
 
    DomainAuth signatures use the Cryptographic Message Syntax (CMS) as
    defined in RFC 5652, with specific requirements for the DomainAuth
@@ -808,9 +812,9 @@ _domainauth.example.com. IN TXT "0 1 3 dGhpcyBpcyBub3QgYSByZWFsIGtleSBkaWdlc3Q 8
    The DomainAuth signature metadata is encoded as an ASN.1 structure
    and is defined in section 7.3.
 
-6.  Identity Model
+5.  Identity Model
 
-6.1.  Organisations
+5.1.  Organisations
 
    In the DomainAuth protocol, an organisation is represented by a
    domain name and serves as the foundational identity unit.
@@ -845,7 +849,7 @@ _domainauth.example.com. IN TXT "0 1 3 dGhpcyBpcyBub3QgYSByZWFsIGtleSBkaWdlc3Q 8
    subdomain operates as an independent organisation within the
    DomainAuth ecosystem.
 
-6.2.  Members
+5.2.  Members
 
    Members are entities that act on behalf of an organisation and come
    in two forms: users and bots.
@@ -885,7 +889,7 @@ _domainauth.example.com. IN TXT "0 1 3 dGhpcyBpcyBub3QgYSByZWFsIGtleSBkaWdlc3Q 8
    reflected in both the certificate structure and the resulting
    signature verification output.
 
-6.3.  Naming Conventions and Restrictions
+5.3.  Naming Conventions and Restrictions
 
    DomainAuth imposes specific restrictions on member names to prevent
    phishing attacks and ensure consistent processing across
@@ -917,9 +921,9 @@ _domainauth.example.com. IN TXT "0 1 3 dGhpcyBpcyBub3QgYSByZWFsIGtleSBkaWdlc3Q 8
    Organisations SHOULD establish and enforce consistent naming policies
    for their users to maintain clarity and prevent confusion.
 
-7.  Certificate Management
+6.  Certificate Management
 
-7.1.  Organisation Certificate Issuance
+6.1.  Organisation Certificate Issuance
 
    Organisation certificates form the foundation of the DomainAuth trust
    model and MUST be self-issued by the organisation.
@@ -955,7 +959,7 @@ _domainauth.example.com. IN TXT "0 1 3 dGhpcyBpcyBub3QgYSByZWFsIGtleSBkaWdlc3Q 8
    different keys for different purposes or for key rotation, publishing
    corresponding TXT records for each.
 
-7.2.  Member Certificate Issuance
+6.2.  Member Certificate Issuance
 
    Member certificates authorise specific members (users or bots) to
    produce signatures on behalf of the organisation.
@@ -990,7 +994,7 @@ _domainauth.example.com. IN TXT "0 1 3 dGhpcyBpcyBub3QgYSByZWFsIGtleSBkaWdlc3Q 8
    Service-specific extensions MAY be included in member certificates to
    restrict their use to specific contexts or applications.
 
-7.3.  Certificate Validity Periods
+6.3.  Certificate Validity Periods
 
    DomainAuth favours short-lived certificates over complex revocation
    mechanisms.  The following guidelines apply to certificate validity
@@ -1025,7 +1029,7 @@ _domainauth.example.com. IN TXT "0 1 3 dGhpcyBpcyBub3QgYSByZWFsIGtleSBkaWdlc3Q 8
    expiration, reducing the complexity of the protocol and eliminating
    dependencies on online revocation checking mechanisms.
 
-7.4.  Certificate Revocation
+6.4.  Certificate Revocation
 
    DomainAuth primarily relies on short-lived certificates to manage
    certificate lifecycle, but situations may arise where explicit
@@ -1054,9 +1058,9 @@ _domainauth.example.com. IN TXT "0 1 3 dGhpcyBpcyBub3QgYSByZWFsIGtleSBkaWdlc3Q 8
    infrastructures.  Organisations SHOULD issue member certificates with
    the shortest practical validity periods for their use cases.
 
-8.  Signature Production and Verification
+7.  Signature Production and Verification
 
-8.1.  Member Id Bundle
+7.1.  Member Id Bundle
 
    The Member Id Bundle is a self-contained package that provides all
    the information needed for a member to produce verifiable signatures.
@@ -1093,7 +1097,7 @@ _domainauth.example.com. IN TXT "0 1 3 dGhpcyBpcyBub3QgYSByZWFsIGtleSBkaWdlc3Q 8
    only public information, but their integrity is critical for secure
    signature production.
 
-8.2.  Signature Bundle
+7.2.  Signature Bundle
 
    The Signature Bundle is the core artefact of the DomainAuth protocol,
    containing a digital signature and all the information needed to
@@ -1149,7 +1153,7 @@ _domainauth.example.com. IN TXT "0 1 3 dGhpcyBpcyBub3QgYSByZWFsIGtleSBkaWdlc3Q 8
    information needed for offline verification of the signature, without
    requiring any network lookups or external data sources.
 
-8.3.  Signature Metadata
+7.3.  Signature Metadata
 
    Each DomainAuth signature includes metadata that binds it to a
    specific service and validity period.  This metadata is included as a
@@ -1195,7 +1199,7 @@ _domainauth.example.com. IN TXT "0 1 3 dGhpcyBpcyBub3QgYSByZWFsIGtleSBkaWdlc3Q 8
    validity periods of certificates and DNSSEC records to determine the
    overall validity period of the signature.
 
-8.4.  Verification Process
+7.4.  Verification Process
 
    The verification of a DomainAuth signature involves multiple steps
    that validate the entire chain of trust from the DNSSEC
@@ -1288,7 +1292,7 @@ _domainauth.example.com. IN TXT "0 1 3 dGhpcyBpcyBub3QgYSByZWFsIGtleSBkaWdlc3Q 8
    any steps, to ensure the security properties of the DomainAuth
    protocol.
 
-8.5.  Member Attribution
+7.5.  Member Attribution
 
    For organisation signatures, a required signed attribute is included
    in the CMS SignedData structure to attribute the content to a
@@ -1321,9 +1325,9 @@ _domainauth.example.com. IN TXT "0 1 3 dGhpcyBpcyBub3QgYSByZWFsIGtleSBkaWdlc3Q 8
    cryptographically proven by the member.  Verifiers MUST present this
    distinction clearly to end users.
 
-9.  Service Integration
+8.  Service Integration
 
-9.1.  Service OIDs
+8.1.  Service OIDs
 
    DomainAuth uses Object Identifiers (OIDs) to uniquely identify
    services and applications that use the protocol.  Service OIDs serve
@@ -1355,7 +1359,7 @@ _domainauth.example.com. IN TXT "0 1 3 dGhpcyBpcyBub3QgYSByZWFsIGtleSBkaWdlc3Q 8
    are valid.  This provides important namespace isolation and prevents
    cross-service attacks.
 
-9.2.  Service-Specific Validation Rules
+8.2.  Service-Specific Validation Rules
 
    Services using DomainAuth MAY define additional validation rules
    beyond the core protocol requirements.  These rules allow services to
@@ -1387,7 +1391,7 @@ _domainauth.example.com. IN TXT "0 1 3 dGhpcyBpcyBub3QgYSByZWFsIGtleSBkaWdlc3Q 8
    properties of the DomainAuth protocol while addressing service-
    specific requirements.
 
-9.3.  Implementation Guidelines
+8.3.  Implementation Guidelines
 
    Service developers integrating DomainAuth should adhere to the
    following guidelines to ensure secure and consistent implementation:
@@ -1426,9 +1430,9 @@ _domainauth.example.com. IN TXT "0 1 3 dGhpcyBpcyBub3QgYSByZWFsIGtleSBkaWdlc3Q 8
    consistent security properties and user experience across different
    implementations and platforms.
 
-10.  Implementation Guidance
+9.  Implementation Guidance
 
-10.1.  Interoperability Considerations
+9.1.  Interoperability Considerations
 
    To ensure interoperability between different DomainAuth
    implementations:
@@ -1470,7 +1474,7 @@ _domainauth.example.com. IN TXT "0 1 3 dGhpcyBpcyBub3QgYSByZWFsIGtleSBkaWdlc3Q 8
    Regular interoperability testing between different implementations is
    recommended to ensure ongoing compatibility.
 
-10.2.  Performance Optimisations
+9.2.  Performance Optimisations
 
    DomainAuth implementations can benefit from several performance
    optimisations whilst maintaining security:
@@ -1508,7 +1512,7 @@ _domainauth.example.com. IN TXT "0 1 3 dGhpcyBpcyBub3QgYSByZWFsIGtleSBkaWdlc3Q 8
    code to identify bottlenecks and focus optimisation efforts
    accordingly.
 
-10.3.  Member vs Organisation Signatures
+9.3.  Member vs Organisation Signatures
 
    Developers integrating DomainAuth into their applications must decide
    whether to use member signatures or organisation signatures with
@@ -1516,7 +1520,7 @@ _domainauth.example.com. IN TXT "0 1 3 dGhpcyBpcyBub3QgYSByZWFsIGtleSBkaWdlc3Q 8
    requirements of the application and the security considerations
    outlined in Section 9.5.
 
-10.3.1.  Implementation Recommendations
+9.3.1.  Implementation Recommendations
 
    1.  *Library/SDK Design:* - DomainAuth libraries and SDKs SHOULD
        provide distinct functions for creating member signatures and
@@ -1538,7 +1542,7 @@ _domainauth.example.com. IN TXT "0 1 3 dGhpcyBpcyBub3QgYSByZWFsIGtleSBkaWdlc3Q 8
        the specific context or user role.  - In hybrid implementations,
        clear policies should govern when each signature type is used.
 
-10.3.2.  User Interface Recommendations
+9.3.2.  User Interface Recommendations
 
    1.  *Signature Type Indication:* User interfaces SHOULD clearly
        indicate whether a signature is a member signature or an
@@ -1562,7 +1566,7 @@ _domainauth.example.com. IN TXT "0 1 3 dGhpcyBpcyBub3QgYSByZWFsIGtleSBkaWdlc3Q 8
        Different error handling may be appropriate for different
        signature types, reflecting their distinct trust models.
 
-11.  Implementation Status
+10.  Implementation Status
 
    This section records the status of known implementations of the
    protocol defined by this specification at the time of posting of this
@@ -1610,7 +1614,7 @@ _domainauth.example.com. IN TXT "0 1 3 dGhpcyBpcyBub3QgYSByZWFsIGtleSBkaWdlc3Q 8
    audits as of this writing, and their respective reports are expected
    to be published in April 2025.
 
-11.1.  VeraId JavaScript Library
+10.1.  VeraId JavaScript Library
 
    *  Organisation: Relaycorp.
 
@@ -1629,7 +1633,7 @@ _domainauth.example.com. IN TXT "0 1 3 dGhpcyBpcyBub3QgYSByZWFsIGtleSBkaWdlc3Q 8
 
    *  Last updated: 2025
 
-11.2.  VeraId JVM Library
+10.2.  VeraId JVM Library
 
    *  Organisation: Relaycorp.
 
@@ -1648,7 +1652,7 @@ _domainauth.example.com. IN TXT "0 1 3 dGhpcyBpcyBub3QgYSByZWFsIGtleSBkaWdlc3Q 8
 
    *  Last updated: 2025
 
-11.3.  VeraId Authority
+10.3.  VeraId Authority
 
    *  Organisation: Relaycorp
 
@@ -1671,9 +1675,9 @@ _domainauth.example.com. IN TXT "0 1 3 dGhpcyBpcyBub3QgYSByZWFsIGtleSBkaWdlc3Q 8
 
    *  Last updated: 2025
 
-12.  Security Considerations
+11.  Security Considerations
 
-12.1.  DNSSEC Dependency
+11.1.  DNSSEC Dependency
 
    DomainAuth's security model relies fundamentally on DNSSEC, which
    introduces specific security considerations:
@@ -1734,7 +1738,7 @@ _domainauth.example.com. IN TXT "0 1 3 dGhpcyBpcyBub3QgYSByZWFsIGtleSBkaWdlc3Q 8
    compared to centralised PKI models, particularly for offline
    verification scenarios.
 
-12.2.  Homographic and Character Encoding Attacks
+11.2.  Homographic and Character Encoding Attacks
 
    User-friendly identifiers like domain names and usernames are
    susceptible to visual spoofing attacks:
@@ -1793,7 +1797,7 @@ _domainauth.example.com. IN TXT "0 1 3 dGhpcyBpcyBub3QgYSByZWFsIGtleSBkaWdlc3Q 8
    is critical to help users correctly identify the source of signed
    content.
 
-12.3.  Domain Ownership Changes
+11.3.  Domain Ownership Changes
 
    Domain transfers present specific security challenges for the
    DomainAuth protocol:
@@ -1844,7 +1848,7 @@ _domainauth.example.com. IN TXT "0 1 3 dGhpcyBpcyBub3QgYSByZWFsIGtleSBkaWdlc3Q 8
    limiting the time window during which historical signatures remain
    valid.
 
-12.4.  Offline Verification Limitations
+11.4.  Offline Verification Limitations
 
    Offline verification introduces specific security considerations:
 
@@ -1907,7 +1911,7 @@ _domainauth.example.com. IN TXT "0 1 3 dGhpcyBpcyBub3QgYSByZWFsIGtleSBkaWdlc3Q 8
    DomainAuth provides a balanced approach that offers strong
    verification guarantees whilst supporting offline operation.
 
-12.5.  Organisation Signatures and Member Attribution
+11.5.  Organisation Signatures and Member Attribution
 
    Organisation signatures with member attribution introduce specific
    security considerations that implementers and developers should be
@@ -1999,13 +2003,13 @@ _domainauth.example.com. IN TXT "0 1 3 dGhpcyBpcyBub3QgYSByZWFsIGtleSBkaWdlc3Q 8
       organisation signatures with member attribution in high-security
       contexts.
 
-13.  IANA Considerations
+12.  IANA Considerations
 
    This document has no IANA actions.
 
-14.  References
+13.  References
 
-14.1.  Normative References
+13.1.  Normative References
 
    [ASN.1]    International Telecommunications Union, "Information
               Technology — ASN.1 encoding rules: Specification of Basic
@@ -2041,7 +2045,13 @@ _domainauth.example.com. IN TXT "0 1 3 dGhpcyBpcyBub3QgYSByZWFsIGtleSBkaWdlc3Q 8
               (CRL) Profile", RFC 5280, DOI 10.17487/RFC5280, May 2008,
               <https://www.rfc-editor.org/rfc/rfc5280>.
 
-14.2.  Informative References
+13.2.  Informative References
+
+   [AWALA]    Narea, G., "Awala", 2019, <https://specs.awala.network/>.
+
+   [JWT]      Jones, M., Bradley, J., and N. Sakimura, "JSON Web Token
+              (JWT)", RFC 7519, DOI 10.17487/RFC7519, May 2015,
+              <https://www.rfc-editor.org/rfc/rfc7519>.
 
    [LETRO]    Narea, G., "Letro", 2023, <https://letro.app/en/>.
 

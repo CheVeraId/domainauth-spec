@@ -8,7 +8,7 @@ Refer to [`rationale.md`](./rationale.md) for additional context on key design d
 
 ## Conventions
 
-- British spelling is to be used (e.g. "organisation", "serialisation") for consistency with the original draft.
+- British spelling is to be used (e.g. "artefacts", "serialisation", "licence") for consistency with the original draft.
 - The abbreviation for "identifier" is spelt "id", not "ID"; it's an abbreviation, not an acronym.
 
 ## Usage
@@ -25,4 +25,3 @@ This project is powered by [I-D Template](https://github.com/martinthomson/i-d-t
 ## Contributing
 
 See the [guidelines for contributions](./CONTRIBUTING.md).
-

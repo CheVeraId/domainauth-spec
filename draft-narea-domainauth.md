@@ -67,6 +67,14 @@ informative:
       name: Gus Narea
       org: Relaycorp
     date: 2023
+  AWALA:
+    title: Awala
+    target: https://specs.awala.network/
+    author:
+      name: Gus Narea
+      org: Relaycorp
+    date: 2019
+  JWT: RFC7519
 
 --- abstract
 
@@ -74,39 +82,34 @@ This document defines DomainAuth, a protocol to attribute digital signatures to 
 
 A signature bundle is a chain of trust comprising: (1) a DNSSEC chain from the root to a TXT record containing a public key or its digest, (2) a X.509 certificate chain from the key specified in the TXT record to the final signing key, and (3) the digital signature in the form of a CMS SignedData structure.
 
-Finally, signatures can also be attributed to specific users, such as "alice" of "example.com".
+Finally, signatures can be attributed to the domain name itself (e.g. "example.com") or specific users (e.g. "alice" of "example.com").
 
 
 --- middle
 
 # Introduction
 
-DomainAuth is a decentralised authentication protocol that securely attributes content to domain names, providing a robust mechanism for proving ownership and authorship without requiring continuous Internet connectivity. By combining the decentralised nature of DNS with established cryptographic standards, DomainAuth enables secure content verification in both online and offline environments.
+Public Key Infrastructures typically require continuous Internet connectivity for certificate validation or prior distribution of public keys, creating significant limitations for offline or intermittently connected environments. This document addresses the challenge of securely attributing content to domain names in scenarios where verification must occur entirely offline, without reliance on real-time certificate status checking or pre-distributed trust anchors.
 
-## Purpose and Scope
+DomainAuth solves this verification challenge by creating self-contained "signature bundles" that encapsulate the complete trust chain required for validation. Each bundle comprises three cryptographically linked components: a DNSSEC chain extending from the DNS root to a domain's TXT record containing key material, an X.509 certificate chain from the domain to the signing entity, and a CMS SignedData structure containing the digital signature. This architecture leverages established standards whilst eliminating the need for continuous connectivity or prior trust establishment.
 
-The purpose of DomainAuth is to provide a secure, decentralised authentication protocol that enables the attribution of content to domain names and their associated users. DomainAuth addresses the need for reliable authentication in scenarios where continuous Internet connectivity cannot be guaranteed or is undesirable.
-
-This V1 specification defines the core protocol components, data structures, cryptographic operations, and verification procedures that constitute the DomainAuth ecosystem. It provides the necessary information for implementers to create interoperable tools and applications that can produce and verify DomainAuth signatures.
-
-The scope of this specification encompasses:
-
-- The DNS-based trust model and its integration with DNSSEC.
-- Certificate issuance and management for organisations and members.
-- Production and verification of digital signatures.
-- Serialisation formats for all protocol artefacts.
-- Security considerations and mitigations.
+This specification defines the protocol components, data structures, and verification procedures that constitute the DomainAuth protocol. It covers the DNS integration mechanism, cryptographic requirements, identity model, certificate management practices, and signature verification processes.
 
 ## Problem Statement
 
-Traditional authentication systems typically require continuous Internet connectivity to verify credentials against centralised authorities. This requirement becomes problematic in several scenarios:
+The protocol was initially designed and implemented to provide users of the offline messaging application {{LETRO}} with identifiers that are customisable, user friendly, universally unique, and verifiable.
 
-1. **Offline environments:** Users in areas with unreliable or no Internet connectivity need reliable authentication mechanisms that work offline.
-2. **Content attribution:** Proving that a particular piece of content was produced by a specific entity without relying on centralised certification authorities.
-3. **User-friendly identifiers:** Existing solutions like PGP rely on cryptographic fingerprints or long key identifiers that are not user-friendly and prone to human error.
-4. **Self-sovereignty:** Many authentication systems place trust in central authorities that can issue credentials for any entity, creating unnecessary trust dependencies and security risks.
+Letro is powered by the delay-tolerant network {{AWALA}}, which offers an end-to-end encrypted sneakernet to transport data between a region disconnected from the Internet and a location with access to the Internet. In the most extreme cases, this physical transport may take a short number of months. Consequently, users should be able to produce and verify digital signatures during that time period without relying on online services.
 
-DomainAuth addresses these challenges by providing a protocol built on DNSSEC that allows content to be securely attributed to user-friendly identifiers (domain names and usernames) in a fully verifiable manner, without requiring online connectivity during verification.
+Attacks by powerful adversaries, such as nation-state actors, are part of the threat model, given that Awala and Letro explicitly target people disconnected from the Internet due to conflict or government-sponsored censorship.
+
+Despite its origin in delay-tolerant networking, DomainAuth has broader applicability and can be useful when the Internet is available, such as the following use cases:
+
+- Client authentication. A client could prove its identity to its server by sending a short-lived token signed with DomainAuth; this would be analogous to using a JSON Web Token ({{JWT}}), except that it can be verified without a prior distribution of public keys or remote operations. Alternatively, the client could sign each message sent to the server.
+- Artefact signing. Documents, applications, libraries, and other files could be signed on behalf of a domain name, without vendor-specific gatekeeping mechanisms. This could unlock further use cases, such as enabling users to share original content whilst proving authenticity and integrity, instead of sharing URLs to resources that could be blocked at the network level.
+- Peer-to-peer web hosting. A next-generation of websites could be hosted on a peer-to-peer network, with files reliably attributed to their respective domain names.
+
+The present document is meant to provide the foundation for all the use cases above in a generic manner.
 
 ## Design Goals
 
@@ -114,20 +117,24 @@ DomainAuth is designed with the following primary goals:
 
 1. **Decentralisation:** The protocol avoids the need for centralised authorities beyond the DNS hierarchy itself. Each domain owner has exclusive control over their domain and its associated members.
 2. **Offline verification:** All signature bundles contain sufficient information to be independently verified without requiring external network queries.
-3. **User-friendly identifiers:** Identities are based on familiar, human-readable domain names and usernames rather than cryptographic fingerprints or hashes.
-4. **Battle-tested foundations:** The protocol builds upon well-established standards:
+3. **User-friendly identifiers:** Identities are based on familiar, human-readable domain names and usernames rather than cryptographic digests.
+4. **Build upon well-established standards:**
    - DNSSEC for securing DNS responses.
    - X.509 for certificate management.
    - Cryptographic Message Syntax (CMS) for digital signatures.
 5. **Minimal trust assumptions:** The protocol ensures that no entity can issue credentials on behalf of domains they do not control, unlike traditional PKIs where any CA can issue certificates for any domain.
-6. **Service-specific binding:** Signatures are bound to specific services, preventing their unauthorised use across different contexts.
+6. **Contextual binding:** Signatures are bound to specific "services" (see below), preventing their unauthorised use across different contexts.
 
-## Terminology
+## Conventions and Terminology
+
+{::boilerplate bcp14-tagged}
+
+The following terms are used:
 
 - **Organisation:** A domain name that participates in the DomainAuth protocol by configuring DNSSEC and publishing the necessary DomainAuth TXT record.
-- **Member:** An entity (user or bot) that acts on behalf of an organisation.
+- **Member:** An entity (user or bot) that produces signatures on behalf of an organisation.
 - **User:** A specific type of member identified by a username within an organisation.
-- **Bot:** A special type of member that acts on behalf of the organisation as a whole.
+- **Bot:** A special type of member that acts on behalf of the organisation as a whole. Bots do not have usernames.
 - **DomainAuth TXT Record:** A DNS TXT record at `_domainauth.<domain>` that contains the organisation's public key information.
 - **Organisation Certificate:** A self-signed X.509 certificate owned by an organisation that serves as the root of trust for all signatures produced on behalf of that organisation.
 - **Member Certificate:** An X.509 certificate issued by the organisation certificate to a member.
@@ -137,11 +144,6 @@ DomainAuth is designed with the following primary goals:
 - **Organisation Signature Bundle:** A signature bundle containing a signature produced directly by an organisation using its private key, with a required member attribution that assigns authorship of the content to a specific member.
 - **DNSSEC Chain:** A sequence of DNS responses that allows a verifier to cryptographically validate the authenticity of a DNS record.
 - **Service OID:** An Object Identifier (OID) that uniquely identifies a service or application context where a DomainAuth signature is valid.
-
-
-# Conventions and Definitions
-
-{::boilerplate bcp14-tagged}
 
 
 # Protocol Overview

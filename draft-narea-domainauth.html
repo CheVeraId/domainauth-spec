@@ -8,7 +8,7 @@
 <meta content="Gus Narea" name="author">
 <meta content='
        This document defines DomainAuth, a protocol to attribute digital signatures to domain names in such a way that every  signature bundle  contains sufficient data to verify the signature entirely offline without a prior distribution of public keys. 
-       A signature bundle is a chain of trust comprising: (1) a DNSSEC chain from the root to a TXT record containing a public key or its digest, (2) a X.509 certificate chain from the key specified in the TXT record to the final signing key, and (3) the digital signature in the form of a CMS SignedData structure. 
+       A signature bundle is a chain of trust comprising: (1) a DNSSEC chain from the root to a TXT record containing a public key or its digest, (2) an X.509 certificate chain from the key specified in the TXT record to the final signing key, and (3) the digital signature in the form of a CMS SignedData structure. 
        Finally, signatures can be attributed to the domain name itself (e.g. "example.com") or specific users (e.g. "alice" of "example.com"). 
     ' name="description">
 <meta content="xml2rfc 3.28.0" name="generator">
@@ -1085,7 +1085,7 @@ svg :is([fill="white"], [fill^="#fff"]) {
 <section id="section-abstract">
       <h2 id="abstract"><a href="#abstract" class="selfRef">Abstract</a></h2>
 <p id="section-abstract-1">This document defines DomainAuth, a protocol to attribute digital signatures to domain names in such a way that every <em>signature bundle</em> contains sufficient data to verify the signature entirely offline without a prior distribution of public keys.<a href="#section-abstract-1" class="pilcrow">¶</a></p>
-<p id="section-abstract-2">A signature bundle is a chain of trust comprising: (1) a DNSSEC chain from the root to a TXT record containing a public key or its digest, (2) a X.509 certificate chain from the key specified in the TXT record to the final signing key, and (3) the digital signature in the form of a CMS SignedData structure.<a href="#section-abstract-2" class="pilcrow">¶</a></p>
+<p id="section-abstract-2">A signature bundle is a chain of trust comprising: (1) a DNSSEC chain from the root to a TXT record containing a public key or its digest, (2) an X.509 certificate chain from the key specified in the TXT record to the final signing key, and (3) the digital signature in the form of a CMS SignedData structure.<a href="#section-abstract-2" class="pilcrow">¶</a></p>
 <p id="section-abstract-3">Finally, signatures can be attributed to the domain name itself (e.g. "example.com") or specific users (e.g. "alice" of "example.com").<a href="#section-abstract-3" class="pilcrow">¶</a></p>
 </section>
 <section class="note rfcEditorRemove" id="section-note.1">
@@ -1175,6 +1175,20 @@ svg :is([fill="white"], [fill^="#fff"]) {
 </li>
               <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.2.2.4">
                 <p id="section-toc.1-1.2.2.4.1"><a href="#section-2.4" class="auto internal xref">2.4</a>.  <a href="#name-workflow-summary" class="internal xref">Workflow Summary</a></p>
+<ul class="compact toc ulBare ulEmpty">
+<li class="compact toc ulBare ulEmpty" id="section-toc.1-1.2.2.4.2.1">
+                    <p id="section-toc.1-1.2.2.4.2.1.1"><a href="#section-2.4.1" class="auto internal xref">2.4.1</a>.  <a href="#name-organisation-setup" class="internal xref">Organisation Setup</a></p>
+</li>
+                  <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.2.2.4.2.2">
+                    <p id="section-toc.1-1.2.2.4.2.2.1"><a href="#section-2.4.2" class="auto internal xref">2.4.2</a>.  <a href="#name-certificate-issuance" class="internal xref">Certificate Issuance</a></p>
+</li>
+                  <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.2.2.4.2.3">
+                    <p id="section-toc.1-1.2.2.4.2.3.1"><a href="#section-2.4.3" class="auto internal xref">2.4.3</a>.  <a href="#name-signature-bundle-production" class="internal xref">Signature Bundle Production</a></p>
+</li>
+                  <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.2.2.4.2.4">
+                    <p id="section-toc.1-1.2.2.4.2.4.1"><a href="#section-2.4.4" class="auto internal xref">2.4.4</a>.  <a href="#name-signature-bundle-verificati" class="internal xref">Signature Bundle Verification</a></p>
+</li>
+                </ul>
 </li>
             </ul>
 </li>
@@ -1453,7 +1467,7 @@ appear in all capitals, as shown here.<a href="#section-1.3-1" class="pilcrow">�
 <p id="section-1.3-2">The following terms are used:<a href="#section-1.3-2" class="pilcrow">¶</a></p>
 <ul class="normal">
 <li class="normal" id="section-1.3-3.1">
-            <p id="section-1.3-3.1.1"><strong>Organisation:</strong> A domain name that participates in the DomainAuth protocol by configuring DNSSEC and publishing the necessary DomainAuth TXT record.<a href="#section-1.3-3.1.1" class="pilcrow">¶</a></p>
+            <p id="section-1.3-3.1.1"><strong>Organisation:</strong> A domain name that participates in the DomainAuth protocol by configuring DNSSEC and publishing the necessary DomainAuth TXT record(s).<a href="#section-1.3-3.1.1" class="pilcrow">¶</a></p>
 </li>
           <li class="normal" id="section-1.3-3.2">
             <p id="section-1.3-3.2.1"><strong>Member:</strong> An entity (user or bot) that produces signatures on behalf of an organisation.<a href="#section-1.3-3.2.1" class="pilcrow">¶</a></p>
@@ -1539,12 +1553,18 @@ appear in all capitals, as shown here.<a href="#section-1.3-1" class="pilcrow">�
             <p id="section-2.2-2.3.1"><strong>Self-contained verification:</strong> Signature bundles include all necessary information (DNSSEC chains, certificates) to allow completely offline verification.<a href="#section-2.2-2.3.1" class="pilcrow">¶</a></p>
 </li>
           <li id="section-2.2-2.4">
-            <p id="section-2.2-2.4.1"><strong>Short-lived certificates:</strong> DomainAuth favours short-lived certificates over revocation mechanisms, reducing complexity and vulnerability to disconnected operation.<a href="#section-2.2-2.4.1" class="pilcrow">¶</a></p>
+            <p id="section-2.2-2.4.1"><strong>Short-lived credentials:</strong> DomainAuth favours short-lived credentials over revocation mechanisms, reducing complexity and vulnerability to disconnected operation. However, what constitutes "short-lived" will be entirely dependent on the nature of the service.<a href="#section-2.2-2.4.1" class="pilcrow">¶</a></p>
 </li>
           <li id="section-2.2-2.5">
-            <p id="section-2.2-2.5.1"><strong>Two signature types with different trust models:</strong>
- - <strong>Member signatures:</strong> Produced by members using their private keys, these signatures cryptographically prove that a specific member created the content. The verification chain goes from DNSSEC to the organisation certificate to the member certificate to the signature.
- - <strong>Organisation signatures:</strong> Produced directly by organisations using their private keys, these signatures prove that the organisation vouches for the content. When including member attribution, the organisation claims (but does not cryptographically prove) that a specific member created the content.<a href="#section-2.2-2.5.1" class="pilcrow">¶</a></p>
+            <p id="section-2.2-2.5.1"><strong>Two signature types with different trust models:</strong><a href="#section-2.2-2.5.1" class="pilcrow">¶</a></p>
+<ul class="normal">
+<li class="normal" id="section-2.2-2.5.2.1">
+                <p id="section-2.2-2.5.2.1.1"><strong>Member signatures:</strong> Produced by members using their private keys, these signatures cryptographically prove that a specific member created the content. The verification chain goes from DNSSEC to the organisation certificate to the member certificate to the signature.<a href="#section-2.2-2.5.2.1.1" class="pilcrow">¶</a></p>
+</li>
+              <li class="normal" id="section-2.2-2.5.2.2">
+                <p id="section-2.2-2.5.2.2.1"><strong>Organisation signatures:</strong> Produced directly by organisations using their private keys, these signatures prove that the organisation vouches for the content. When including user attribution, the organisation claims (but does not cryptographically prove) that a specific user created the content.<a href="#section-2.2-2.5.2.2.1" class="pilcrow">¶</a></p>
+</li>
+            </ul>
 </li>
         </ol>
 <p id="section-2.2-3">By relying on DNSSEC, DomainAuth inherits its security properties and limitations. The protocol's trust is ultimately rooted in the DNS hierarchy, including the root zone and TLD operators.<a href="#section-2.2-3" class="pilcrow">¶</a></p>
@@ -1573,9 +1593,15 @@ appear in all capitals, as shown here.<a href="#section-1.3-1" class="pilcrow">�
             <p id="section-2.3-2.5.1"><strong>Member Id Bundle:</strong> A structure containing a member certificate, the issuing organisation certificate, and the DNSSEC chain necessary to verify the organisation's authority.<a href="#section-2.3-2.5.1" class="pilcrow">¶</a></p>
 </li>
           <li id="section-2.3-2.6">
-            <p id="section-2.3-2.6.1"><strong>Signature Bundle:</strong> A structure containing a CMS SignedData value, the organisation certificate, and the DNSSEC chain. There are two types of bundles, which determine the signer of the SignedData value:
-  - <strong>Member Signature Bundles</strong> are signed by a member.
-  - <strong>Organisation Signature Bundles</strong> are signed directly by the organisation, but attributed to a specific member.<a href="#section-2.3-2.6.1" class="pilcrow">¶</a></p>
+            <p id="section-2.3-2.6.1"><strong>Signature Bundle:</strong> A structure containing a CMS SignedData value, the organisation certificate, and the DNSSEC chain. There are two types of bundles, which determine the signer of the SignedData value:<a href="#section-2.3-2.6.1" class="pilcrow">¶</a></p>
+<ul class="normal">
+<li class="normal" id="section-2.3-2.6.2.1">
+                <p id="section-2.3-2.6.2.1.1"><strong>Member Signature Bundles</strong> are signed by a member.<a href="#section-2.3-2.6.2.1.1" class="pilcrow">¶</a></p>
+</li>
+              <li class="normal" id="section-2.3-2.6.2.2">
+                <p id="section-2.3-2.6.2.2.1"><strong>Organisation Signature Bundles</strong> are signed directly by the organisation, but attributed to a specific member.<a href="#section-2.3-2.6.2.2.1" class="pilcrow">¶</a></p>
+</li>
+            </ul>
 </li>
         </ol>
 <p id="section-2.3-3">These components work together to create a secure chain of trust from the DNS root to the individual signatures produced by organisation members or by the organisation itself.<a href="#section-2.3-3" class="pilcrow">¶</a></p>
@@ -1587,66 +1613,83 @@ appear in all capitals, as shown here.<a href="#section-1.3-1" class="pilcrow">�
 <a href="#section-2.4" class="section-number selfRef">2.4. </a><a href="#name-workflow-summary" class="section-name selfRef">Workflow Summary</a>
         </h3>
 <p id="section-2.4-1">The DomainAuth protocol involves the following key workflows:<a href="#section-2.4-1" class="pilcrow">¶</a></p>
-<ol start="1" type="1" class="normal type-1" id="section-2.4-2">
-<li id="section-2.4-2.1">
-            <p id="section-2.4-2.1.1"><strong>Organisation Setup:</strong>
-  - The organisation must have DNSSEC properly configured for its domain.
-  - The organisation generates an asymmetric key pair (RSA) and self-issues an X.509 certificate.
-  - The organisation publishes a DomainAuth TXT record at <code>_domainauth.&lt;domain&gt;</code> containing its key information.<a href="#section-2.4-2.1.1" class="pilcrow">¶</a></p>
+<div id="organisation-setup">
+<section id="section-2.4.1">
+          <h4 id="name-organisation-setup">
+<a href="#section-2.4.1" class="section-number selfRef">2.4.1. </a><a href="#name-organisation-setup" class="section-name selfRef">Organisation Setup</a>
+          </h4>
+<p id="section-2.4.1-1">First, the organisation must have DNSSEC properly configured for its domain.<a href="#section-2.4.1-1" class="pilcrow">¶</a></p>
+<p id="section-2.4.1-2">Then, the organisation must generate an asymmetric key pair and publish its public key information in a DomainAuth TXT record at <code>_domainauth.&lt;domain&gt;</code>.<a href="#section-2.4.1-2" class="pilcrow">¶</a></p>
+<p id="section-2.4.1-3">Multiple such records are allowed, which can be useful for key rotation or binding different keys to different services.<a href="#section-2.4.1-3" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="certificate-issuance">
+<section id="section-2.4.2">
+          <h4 id="name-certificate-issuance">
+<a href="#section-2.4.2" class="section-number selfRef">2.4.2. </a><a href="#name-certificate-issuance" class="section-name selfRef">Certificate Issuance</a>
+          </h4>
+<p id="section-2.4.2-1">The organisation must self-issue an X.509 certificate using its private key, or reuse an existing certificate valid during the intended validity period.<a href="#section-2.4.2-1" class="pilcrow">¶</a></p>
+<p id="section-2.4.2-2">When issuing a member certificate, the organisation must distribute it along with the organisation certificate. This can be done with a member id bundle, which is desirable in services meant to be used offline as it also contains the DNSSEC chain.<a href="#section-2.4.2-2" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="signature-bundle-production">
+<section id="section-2.4.3">
+          <h4 id="name-signature-bundle-production">
+<a href="#section-2.4.3" class="section-number selfRef">2.4.3. </a><a href="#name-signature-bundle-production" class="section-name selfRef">Signature Bundle Production</a>
+          </h4>
+<p id="section-2.4.3-1">A member would produce a signature bundle as follows:<a href="#section-2.4.3-1" class="pilcrow">¶</a></p>
+<ol start="1" type="1" class="normal type-1" id="section-2.4.3-2">
+<li id="section-2.4.3-2.1">
+              <p id="section-2.4.3-2.1.1">Use their private key to produce a CMS SignedData structure, encapsulating the member's certificate.<a href="#section-2.4.3-2.1.1" class="pilcrow">¶</a></p>
 </li>
-          <li id="section-2.4-2.2">
-            <p id="section-2.4-2.2.1"><strong>Member Registration:</strong>
-  - The organisation issues X.509 certificates to its members (users and bots).
-  - For users, certificates include the username in the Common Name.
-  - For bots, certificates use the at sign (<code>@</code>) as the Common Name.
-  - Each certificate contains appropriate extensions for its intended use context.<a href="#section-2.4-2.2.1" class="pilcrow">¶</a></p>
+            <li id="section-2.4.3-2.2">
+              <p id="section-2.4.3-2.2.1">Obtain the DNSSEC chain from the DomainAuth TXT record. If not provided by the organisation (e.g. in the form of a member id bundle), the member will have to resolve it or retrieve it from a cache.<a href="#section-2.4.3-2.2.1" class="pilcrow">¶</a></p>
 </li>
-          <li id="section-2.4-2.3">
-            <p id="section-2.4-2.3.1"><strong>Signature Production:</strong>
-  - <strong>Member signatures:</strong><a href="#section-2.4-2.3.1" class="pilcrow">¶</a></p>
-<ul class="normal">
-<li class="normal" id="section-2.4-2.3.2.1">
-                <p id="section-2.4-2.3.2.1.1">Members use their private keys to sign content.<a href="#section-2.4-2.3.2.1.1" class="pilcrow">¶</a></p>
+            <li id="section-2.4.3-2.3">
+              <p id="section-2.4.3-2.3.1">Construct a signature bundle with the CMS SignedData structure, the organisation certificate, and the DNSSEC chain.<a href="#section-2.4.3-2.3.1" class="pilcrow">¶</a></p>
 </li>
-              <li class="normal" id="section-2.4-2.3.2.2">
-                <p id="section-2.4-2.3.2.2.1">The signature is packaged with the member's certificate, the organisation certificate, and the DNSSEC chain into a signature bundle.
-      - <strong>Organisation signatures:</strong><a href="#section-2.4-2.3.2.2.1" class="pilcrow">¶</a></p>
+          </ol>
+<p id="section-2.4.3-3">Similarly, an organisation would produce a signature bundle as follows:<a href="#section-2.4.3-3" class="pilcrow">¶</a></p>
+<ol start="1" type="1" class="normal type-1" id="section-2.4.3-4">
+<li id="section-2.4.3-4.1">
+              <p id="section-2.4.3-4.1.1">Use its private key to produce a CMS SignedData structure, without encapsulating the organisation's certificate.<a href="#section-2.4.3-4.1.1" class="pilcrow">¶</a></p>
 </li>
-              <li class="normal" id="section-2.4-2.3.2.3">
-                <p id="section-2.4-2.3.2.3.1">The organisation uses its private key to sign content directly.<a href="#section-2.4-2.3.2.3.1" class="pilcrow">¶</a></p>
+            <li id="section-2.4.3-4.2">
+              <p id="section-2.4.3-4.2.1">Resolve the DNSSEC chain from the DomainAuth TXT record, or use a cached chain valid during the intended validity period.<a href="#section-2.4.3-4.2.1" class="pilcrow">¶</a></p>
 </li>
-              <li class="normal" id="section-2.4-2.3.2.4">
-                <p id="section-2.4-2.3.2.4.1">The organisation <span class="bcp14">MUST</span> include member attribution to indicate which member authored the content.<a href="#section-2.4-2.3.2.4.1" class="pilcrow">¶</a></p>
+            <li id="section-2.4.3-4.3">
+              <p id="section-2.4.3-4.3.1">Construct a signature bundle with the CMS SignedData structure, the organisation certificate, and the DNSSEC chain.<a href="#section-2.4.3-4.3.1" class="pilcrow">¶</a></p>
 </li>
-              <li class="normal" id="section-2.4-2.3.2.5">
-                <p id="section-2.4-2.3.2.5.1">The signature is packaged with the organisation certificate and the DNSSEC chain into a signature bundle.<a href="#section-2.4-2.3.2.5.1" class="pilcrow">¶</a></p>
+          </ol>
+</section>
+</div>
+<div id="signature-bundle-verification">
+<section id="section-2.4.4">
+          <h4 id="name-signature-bundle-verificati">
+<a href="#section-2.4.4" class="section-number selfRef">2.4.4. </a><a href="#name-signature-bundle-verificati" class="section-name selfRef">Signature Bundle Verification</a>
+          </h4>
+<p id="section-2.4.4-1">The verification process involves validating the entire chain of trust as follows:<a href="#section-2.4.4-1" class="pilcrow">¶</a></p>
+<ol start="1" type="1" class="normal type-1" id="section-2.4.4-2">
+<li id="section-2.4.4-2.1">
+              <p id="section-2.4.4-2.1.1">Verify the DNSSEC chain.<a href="#section-2.4.4-2.1.1" class="pilcrow">¶</a></p>
 </li>
-            </ul>
+            <li id="section-2.4.4-2.2">
+              <p id="section-2.4.4-2.2.1">Verify the organisation certificate using the public key from the TXT record.<a href="#section-2.4.4-2.2.1" class="pilcrow">¶</a></p>
 </li>
-          <li id="section-2.4-2.4">
-            <p id="section-2.4-2.4.1"><strong>Signature Verification:</strong>
-  - Verifiers extract and validate the DNSSEC chain to confirm the organisation's public key.
-  - The organisation certificate is validated using the public key from the TXT record.
-  - For member signatures:<a href="#section-2.4-2.4.1" class="pilcrow">¶</a></p>
-<ul class="normal">
-<li class="normal" id="section-2.4-2.4.2.1">
-                <p id="section-2.4-2.4.2.1.1">The member certificate is validated against the organisation certificate.<a href="#section-2.4-2.4.2.1.1" class="pilcrow">¶</a></p>
+            <li id="section-2.4.4-2.3">
+              <p id="section-2.4.4-2.3.1">Determine the certificate of the signer of the CMS SignedData structure. If it is an organisation signature, use the organisation certificate. Otherwise, use the certificate of the member, which is encapsulated in the CMS SignedData structure.<a href="#section-2.4.4-2.3.1" class="pilcrow">¶</a></p>
 </li>
-              <li class="normal" id="section-2.4-2.4.2.2">
-                <p id="section-2.4-2.4.2.2.1">The digital signature is verified using the member's public key.
-      - For organisation signatures:<a href="#section-2.4-2.4.2.2.1" class="pilcrow">¶</a></p>
+            <li id="section-2.4.4-2.4">
+              <p id="section-2.4.4-2.4.1">Verify the CMS SignedData structure against the certificate of the signer.<a href="#section-2.4.4-2.4.1" class="pilcrow">¶</a></p>
 </li>
-              <li class="normal" id="section-2.4-2.4.2.3">
-                <p id="section-2.4-2.4.2.3.1">The digital signature is verified using the organisation's public key.<a href="#section-2.4-2.4.2.3.1" class="pilcrow">¶</a></p>
+            <li id="section-2.4.4-2.5">
+              <p id="section-2.4.4-2.5.1">Verify that the signature is valid for the intended service and time period.<a href="#section-2.4.4-2.5.1" class="pilcrow">¶</a></p>
 </li>
-              <li class="normal" id="section-2.4-2.4.2.4">
-                <p id="section-2.4-2.4.2.4.1">The member attribution is extracted and presented to the user.
-      - Additional checks ensure the signature is valid for the intended service and time period.<a href="#section-2.4-2.4.2.4.1" class="pilcrow">¶</a></p>
-</li>
-            </ul>
-</li>
-        </ol>
-<p id="section-2.4-3">Each of these workflows contributes to the overall security and integrity of the DomainAuth ecosystem.<a href="#section-2.4-3" class="pilcrow">¶</a></p>
+          </ol>
+<p id="section-2.4.4-3">Alternatively, the verifier can start with the digital signature, then verify the organisation certificate and finally the DNSSEC chain.<a href="#section-2.4.4-3" class="pilcrow">¶</a></p>
+<p id="section-2.4.4-4">For more detailed information on the verification process, particularly regarding validity periods, see <a href="#verification-process" class="auto internal xref">Section 7.4</a>.<a href="#section-2.4.4-4" class="pilcrow">¶</a></p>
+</section>
+</div>
 </section>
 </div>
 </section>
@@ -2475,94 +2518,192 @@ DatePeriod ::= SEQUENCE {
 <p id="section-7.4-1">The verification of a DomainAuth signature involves multiple steps that validate the entire chain of trust from the DNSSEC infrastructure to the signature itself. Implementations <span class="bcp14">MUST</span> perform the following verification steps:<a href="#section-7.4-1" class="pilcrow">¶</a></p>
 <ol start="1" type="1" class="normal type-1" id="section-7.4-2">
 <li id="section-7.4-2.1">
-            <p id="section-7.4-2.1.1"><strong>Parse the Signature Bundle:</strong>
-  - Extract the DNSSEC chain, organisation certificate, and CMS signature.
-  - Validate the structure of each component.<a href="#section-7.4-2.1.1" class="pilcrow">¶</a></p>
+            <p id="section-7.4-2.1.1"><strong>Establish the required validity period:</strong><a href="#section-7.4-2.1.1" class="pilcrow">¶</a></p>
+<ul class="normal">
+<li class="normal" id="section-7.4-2.1.2.1">
+                <p id="section-7.4-2.1.2.1.1">The verification process involves tracking the intersection of the required validity period and the validity period of all the components of the signature bundle (i.e. DNSSEC <code>RRSIG</code> records, X.509 certificates, and the digital signature).<a href="#section-7.4-2.1.2.1.1" class="pilcrow">¶</a></p>
+</li>
+              <li class="normal" id="section-7.4-2.1.2.2">
+                <p id="section-7.4-2.1.2.2.1">The required validity period can be a specific time (e.g. the current time), or a time range where the signature bundle needs to be valid for at least some moment within that range.<a href="#section-7.4-2.1.2.2.1" class="pilcrow">¶</a></p>
+</li>
+              <li class="normal" id="section-7.4-2.1.2.3">
+                <p id="section-7.4-2.1.2.3.1">Even a brief one-second overlap between the bundle's validity period and the required period is sufficient.<a href="#section-7.4-2.1.2.3.1" class="pilcrow">¶</a></p>
+</li>
+              <li class="normal" id="section-7.4-2.1.2.4">
+                <p id="section-7.4-2.1.2.4.1">Service requirements heavily influence this; for example, an offline service might accept a bundle valid at any point in the past 30 days, whilst an online service might require validity at verification time.<a href="#section-7.4-2.1.2.4.1" class="pilcrow">¶</a></p>
+</li>
+              <li class="normal" id="section-7.4-2.1.2.5">
+                <p id="section-7.4-2.1.2.5.1">If there is no intersection between the required period and the validity periods of all components, the signature bundle is invalid.<a href="#section-7.4-2.1.2.5.1" class="pilcrow">¶</a></p>
+</li>
+            </ul>
 </li>
           <li id="section-7.4-2.2">
-            <p id="section-7.4-2.2.1"><strong>Validate the DNSSEC chain:</strong>
-  - Verify that the chain starts from a trusted DNSSEC anchor.
-  - Verify all DNSSEC signatures in the chain.
-  - Confirm that the chain leads to the <code>_domainauth.&lt;domain&gt;</code> TXT record.
-  - Extract the organisation's public key information from the TXT record.<a href="#section-7.4-2.2.1" class="pilcrow">¶</a></p>
+            <p id="section-7.4-2.2.1"><strong>Parse the Signature Bundle:</strong><a href="#section-7.4-2.2.1" class="pilcrow">¶</a></p>
+<ul class="normal">
+<li class="normal" id="section-7.4-2.2.2.1">
+                <p id="section-7.4-2.2.2.1.1">Extract the DNSSEC chain, organisation certificate, and CMS signature.<a href="#section-7.4-2.2.2.1.1" class="pilcrow">¶</a></p>
+</li>
+              <li class="normal" id="section-7.4-2.2.2.2">
+                <p id="section-7.4-2.2.2.2.1">Validate the structure of each component.<a href="#section-7.4-2.2.2.2.1" class="pilcrow">¶</a></p>
+</li>
+            </ul>
 </li>
           <li id="section-7.4-2.3">
-            <p id="section-7.4-2.3.1"><strong>Validate the organisation certificate:</strong>
-  - Verify that the certificate's public key matches the key identified in the TXT record.
-  - Verify that the certificate's CommonName matches the domain name.
-  - Confirm that the certificate is self-signed and valid.
-  - Check that the certificate has the CA flag set in the Basic Constraints extension.<a href="#section-7.4-2.3.1" class="pilcrow">¶</a></p>
+            <p id="section-7.4-2.3.1"><strong>Validate the DNSSEC chain:</strong><a href="#section-7.4-2.3.1" class="pilcrow">¶</a></p>
+<ul class="normal">
+<li class="normal" id="section-7.4-2.3.2.1">
+                <p id="section-7.4-2.3.2.1.1">Verify that the chain starts from a trusted DNSSEC anchor.<a href="#section-7.4-2.3.2.1.1" class="pilcrow">¶</a></p>
+</li>
+              <li class="normal" id="section-7.4-2.3.2.2">
+                <p id="section-7.4-2.3.2.2.1">Verify all DNSSEC signatures in the chain.<a href="#section-7.4-2.3.2.2.1" class="pilcrow">¶</a></p>
+</li>
+              <li class="normal" id="section-7.4-2.3.2.3">
+                <p id="section-7.4-2.3.2.3.1">Confirm that the chain leads to the <code>_domainauth.&lt;domain&gt;</code> TXT record.<a href="#section-7.4-2.3.2.3.1" class="pilcrow">¶</a></p>
+</li>
+              <li class="normal" id="section-7.4-2.3.2.4">
+                <p id="section-7.4-2.3.2.4.1">Extract the organisation's public key information from the TXT record.<a href="#section-7.4-2.3.2.4.1" class="pilcrow">¶</a></p>
+</li>
+            </ul>
 </li>
           <li id="section-7.4-2.4">
-            <p id="section-7.4-2.4.1"><strong>Determine the signature type:</strong>
-  - Extract the signed attributes from the CMS <code>SignedData</code> structure.
-  - Check for the presence of the member attribution attribute (<code>1.3.6.1.4.1.58708.1.2</code>).
-  - If the member attribution attribute is present, it is an organisation signature.
-  - If the member attribution attribute is absent, it is a member signature.<a href="#section-7.4-2.4.1" class="pilcrow">¶</a></p>
+            <p id="section-7.4-2.4.1"><strong>Validate the organisation certificate:</strong><a href="#section-7.4-2.4.1" class="pilcrow">¶</a></p>
+<ul class="normal">
+<li class="normal" id="section-7.4-2.4.2.1">
+                <p id="section-7.4-2.4.2.1.1">Verify that the certificate's public key matches the key identified in the TXT record.<a href="#section-7.4-2.4.2.1.1" class="pilcrow">¶</a></p>
+</li>
+              <li class="normal" id="section-7.4-2.4.2.2">
+                <p id="section-7.4-2.4.2.2.1">Verify that the certificate's CommonName matches the domain name.<a href="#section-7.4-2.4.2.2.1" class="pilcrow">¶</a></p>
+</li>
+              <li class="normal" id="section-7.4-2.4.2.3">
+                <p id="section-7.4-2.4.2.3.1">Confirm that the certificate is self-signed and valid.<a href="#section-7.4-2.4.2.3.1" class="pilcrow">¶</a></p>
+</li>
+              <li class="normal" id="section-7.4-2.4.2.4">
+                <p id="section-7.4-2.4.2.4.1">Check that the certificate has the CA flag set in the Basic Constraints extension.<a href="#section-7.4-2.4.2.4.1" class="pilcrow">¶</a></p>
+</li>
+            </ul>
 </li>
           <li id="section-7.4-2.5">
-            <p id="section-7.4-2.5.1"><strong>Extract and validate certificates:</strong>
-  - Extract the organisation certificate from the signature bundle.
-  - Extract the signer's certificate from the CMS <code>SignedData</code> structure if present.<a href="#section-7.4-2.5.1" class="pilcrow">¶</a></p>
+            <p id="section-7.4-2.5.1"><strong>Determine the signature type:</strong><a href="#section-7.4-2.5.1" class="pilcrow">¶</a></p>
 <ul class="normal">
 <li class="normal" id="section-7.4-2.5.2.1">
-                <p id="section-7.4-2.5.2.1.1">For member signatures, the signer's certificate <span class="bcp14">MUST</span> be present.<a href="#section-7.4-2.5.2.1.1" class="pilcrow">¶</a></p>
+                <p id="section-7.4-2.5.2.1.1">Extract the signed attributes from the CMS <code>SignedData</code> structure.<a href="#section-7.4-2.5.2.1.1" class="pilcrow">¶</a></p>
 </li>
               <li class="normal" id="section-7.4-2.5.2.2">
-                <p id="section-7.4-2.5.2.2.1">For organisation signatures, the signer's certificate <span class="bcp14">MAY</span> be present if it differs from the organisation certificate.
-      - Construct and validate the certification path:<a href="#section-7.4-2.5.2.2.1" class="pilcrow">¶</a></p>
+                <p id="section-7.4-2.5.2.2.1">Check for the presence of the member attribution attribute (<code>1.3.6.1.4.1.58708.1.2</code>).<a href="#section-7.4-2.5.2.2.1" class="pilcrow">¶</a></p>
 </li>
               <li class="normal" id="section-7.4-2.5.2.3">
-                <p id="section-7.4-2.5.2.3.1">The path starts with the organisation certificate from the signature bundle.<a href="#section-7.4-2.5.2.3.1" class="pilcrow">¶</a></p>
+                <p id="section-7.4-2.5.2.3.1">If the member attribution attribute is present, it is an organisation signature.<a href="#section-7.4-2.5.2.3.1" class="pilcrow">¶</a></p>
 </li>
               <li class="normal" id="section-7.4-2.5.2.4">
-                <p id="section-7.4-2.5.2.4.1">The path ends with the signer's certificate (which may be the organisation certificate itself for organisation signatures).<a href="#section-7.4-2.5.2.4.1" class="pilcrow">¶</a></p>
-</li>
-              <li class="normal" id="section-7.4-2.5.2.5">
-                <p id="section-7.4-2.5.2.5.1">Any intermediate certificates in the <code>SignedData</code> structure <span class="bcp14">MUST</span> be included in the path.
-      - Verify that all certificates in the path are valid at the verification time.<a href="#section-7.4-2.5.2.5.1" class="pilcrow">¶</a></p>
+                <p id="section-7.4-2.5.2.4.1">If the member attribution attribute is absent, it is a member signature.<a href="#section-7.4-2.5.2.4.1" class="pilcrow">¶</a></p>
 </li>
             </ul>
 </li>
           <li id="section-7.4-2.6">
-            <p id="section-7.4-2.6.1"><strong>Validate the signature metadata:</strong>
-  - Extract the service OID and validity period from the signature metadata attribute.
-  - Verify that the service OID matches the expected service.
-  - Confirm that the verification time falls within the signature validity period.<a href="#section-7.4-2.6.1" class="pilcrow">¶</a></p>
+            <p id="section-7.4-2.6.1"><strong>Extract and validate certificates:</strong><a href="#section-7.4-2.6.1" class="pilcrow">¶</a></p>
+<ul class="normal">
+<li class="normal" id="section-7.4-2.6.2.1">
+                <p id="section-7.4-2.6.2.1.1">Extract the organisation certificate from the signature bundle.<a href="#section-7.4-2.6.2.1.1" class="pilcrow">¶</a></p>
+</li>
+              <li class="normal" id="section-7.4-2.6.2.2">
+                <p id="section-7.4-2.6.2.2.1">Extract the signer's certificate from the CMS <code>SignedData</code> structure if present.<a href="#section-7.4-2.6.2.2.1" class="pilcrow">¶</a></p>
+<ul class="normal">
+<li class="normal" id="section-7.4-2.6.2.2.2.1">
+                    <p id="section-7.4-2.6.2.2.2.1.1">For member signatures, the signer's certificate <span class="bcp14">MUST</span> be present.<a href="#section-7.4-2.6.2.2.2.1.1" class="pilcrow">¶</a></p>
+</li>
+                  <li class="normal" id="section-7.4-2.6.2.2.2.2">
+                    <p id="section-7.4-2.6.2.2.2.2.1">For organisation signatures, the signer's certificate <span class="bcp14">MAY</span> be present if it differs from the organisation certificate.<a href="#section-7.4-2.6.2.2.2.2.1" class="pilcrow">¶</a></p>
+</li>
+                </ul>
+</li>
+              <li class="normal" id="section-7.4-2.6.2.3">
+                <p id="section-7.4-2.6.2.3.1">Construct and validate the certification path:<a href="#section-7.4-2.6.2.3.1" class="pilcrow">¶</a></p>
+<ul class="normal">
+<li class="normal" id="section-7.4-2.6.2.3.2.1">
+                    <p id="section-7.4-2.6.2.3.2.1.1">The path starts with the organisation certificate from the signature bundle.<a href="#section-7.4-2.6.2.3.2.1.1" class="pilcrow">¶</a></p>
+</li>
+                  <li class="normal" id="section-7.4-2.6.2.3.2.2">
+                    <p id="section-7.4-2.6.2.3.2.2.1">The path ends with the signer's certificate (which may be the organisation certificate itself for organisation signatures).<a href="#section-7.4-2.6.2.3.2.2.1" class="pilcrow">¶</a></p>
+</li>
+                  <li class="normal" id="section-7.4-2.6.2.3.2.3">
+                    <p id="section-7.4-2.6.2.3.2.3.1">Any intermediate certificates in the <code>SignedData</code> structure <span class="bcp14">MUST</span> be included in the path.<a href="#section-7.4-2.6.2.3.2.3.1" class="pilcrow">¶</a></p>
+</li>
+                </ul>
+</li>
+              <li class="normal" id="section-7.4-2.6.2.4">
+                <p id="section-7.4-2.6.2.4.1">Verify that all certificates in the path are valid at the verification time.<a href="#section-7.4-2.6.2.4.1" class="pilcrow">¶</a></p>
+</li>
+            </ul>
 </li>
           <li id="section-7.4-2.7">
-            <p id="section-7.4-2.7.1"><strong>Determine the overall validity period:</strong>
-  - Calculate the intersection of:<a href="#section-7.4-2.7.1" class="pilcrow">¶</a></p>
+            <p id="section-7.4-2.7.1"><strong>Validate the signature metadata:</strong><a href="#section-7.4-2.7.1" class="pilcrow">¶</a></p>
 <ul class="normal">
 <li class="normal" id="section-7.4-2.7.2.1">
-                <p id="section-7.4-2.7.2.1.1">The validity periods of all certificates in the certification path, from the organisation certificate to the signer's certificate (if different).<a href="#section-7.4-2.7.2.1.1" class="pilcrow">¶</a></p>
+                <p id="section-7.4-2.7.2.1.1">Extract the service OID and validity period from the signature metadata attribute.<a href="#section-7.4-2.7.2.1.1" class="pilcrow">¶</a></p>
 </li>
               <li class="normal" id="section-7.4-2.7.2.2">
-                <p id="section-7.4-2.7.2.2.1">The signature metadata validity period.<a href="#section-7.4-2.7.2.2.1" class="pilcrow">¶</a></p>
+                <p id="section-7.4-2.7.2.2.1">Verify that the service OID matches the expected service.<a href="#section-7.4-2.7.2.2.1" class="pilcrow">¶</a></p>
 </li>
               <li class="normal" id="section-7.4-2.7.2.3">
-                <p id="section-7.4-2.7.2.3.1">The DNSSEC record validity period (using the TTL override).
-      - Verify that the verification time falls within this intersection.<a href="#section-7.4-2.7.2.3.1" class="pilcrow">¶</a></p>
+                <p id="section-7.4-2.7.2.3.1">Confirm that the verification time falls within the signature validity period.<a href="#section-7.4-2.7.2.3.1" class="pilcrow">¶</a></p>
 </li>
             </ul>
 </li>
           <li id="section-7.4-2.8">
-            <p id="section-7.4-2.8.1"><strong>Verify the digital signature:</strong>
-  - Use the signer's public key to verify the signature over the content.
-  - For detached signatures, use the externally provided content.
-  - For encapsulated signatures, extract the content from the CMS structure.<a href="#section-7.4-2.8.1" class="pilcrow">¶</a></p>
+            <p id="section-7.4-2.8.1"><strong>Determine the overall validity period:</strong><a href="#section-7.4-2.8.1" class="pilcrow">¶</a></p>
+<ul class="normal">
+<li class="normal" id="section-7.4-2.8.2.1">
+                <p id="section-7.4-2.8.2.1.1">Calculate the intersection of:<a href="#section-7.4-2.8.2.1.1" class="pilcrow">¶</a></p>
+<ul class="normal">
+<li class="normal" id="section-7.4-2.8.2.1.2.1">
+                    <p id="section-7.4-2.8.2.1.2.1.1">The validity periods of all certificates in the certification path, from the organisation certificate to the signer's certificate (if different).<a href="#section-7.4-2.8.2.1.2.1.1" class="pilcrow">¶</a></p>
+</li>
+                  <li class="normal" id="section-7.4-2.8.2.1.2.2">
+                    <p id="section-7.4-2.8.2.1.2.2.1">The signature metadata validity period.<a href="#section-7.4-2.8.2.1.2.2.1" class="pilcrow">¶</a></p>
+</li>
+                  <li class="normal" id="section-7.4-2.8.2.1.2.3">
+                    <p id="section-7.4-2.8.2.1.2.3.1">The DNSSEC record validity period (using the TTL override).<a href="#section-7.4-2.8.2.1.2.3.1" class="pilcrow">¶</a></p>
+</li>
+                </ul>
+</li>
+              <li class="normal" id="section-7.4-2.8.2.2">
+                <p id="section-7.4-2.8.2.2.1">Verify that the verification time falls within this intersection.<a href="#section-7.4-2.8.2.2.1" class="pilcrow">¶</a></p>
+</li>
+            </ul>
 </li>
           <li id="section-7.4-2.9">
-            <p id="section-7.4-2.9.1"><strong>Produce verification output:</strong>
-  - Always include the organisation name.
-  - Include the member name (for users only, not for bots):<a href="#section-7.4-2.9.1" class="pilcrow">¶</a></p>
+            <p id="section-7.4-2.9.1"><strong>Verify the digital signature:</strong><a href="#section-7.4-2.9.1" class="pilcrow">¶</a></p>
 <ul class="normal">
 <li class="normal" id="section-7.4-2.9.2.1">
-                <p id="section-7.4-2.9.2.1.1">For member signatures, from the signer certificate.<a href="#section-7.4-2.9.2.1.1" class="pilcrow">¶</a></p>
+                <p id="section-7.4-2.9.2.1.1">Use the signer's public key to verify the signature over the content.<a href="#section-7.4-2.9.2.1.1" class="pilcrow">¶</a></p>
 </li>
               <li class="normal" id="section-7.4-2.9.2.2">
-                <p id="section-7.4-2.9.2.2.1">For organisation signatures, from the member attribution.
-      - Always include the signature type (member or organisation).<a href="#section-7.4-2.9.2.2.1" class="pilcrow">¶</a></p>
+                <p id="section-7.4-2.9.2.2.1">For detached signatures, use the externally provided content.<a href="#section-7.4-2.9.2.2.1" class="pilcrow">¶</a></p>
+</li>
+              <li class="normal" id="section-7.4-2.9.2.3">
+                <p id="section-7.4-2.9.2.3.1">For encapsulated signatures, extract the content from the CMS structure.<a href="#section-7.4-2.9.2.3.1" class="pilcrow">¶</a></p>
+</li>
+            </ul>
+</li>
+          <li id="section-7.4-2.10">
+            <p id="section-7.4-2.10.1"><strong>Produce verification output:</strong><a href="#section-7.4-2.10.1" class="pilcrow">¶</a></p>
+<ul class="normal">
+<li class="normal" id="section-7.4-2.10.2.1">
+                <p id="section-7.4-2.10.2.1.1">Always include the organisation name.<a href="#section-7.4-2.10.2.1.1" class="pilcrow">¶</a></p>
+</li>
+              <li class="normal" id="section-7.4-2.10.2.2">
+                <p id="section-7.4-2.10.2.2.1">Include the member name (for users only, not for bots):<a href="#section-7.4-2.10.2.2.1" class="pilcrow">¶</a></p>
+<ul class="normal">
+<li class="normal" id="section-7.4-2.10.2.2.2.1">
+                    <p id="section-7.4-2.10.2.2.2.1.1">For member signatures, from the signer certificate.<a href="#section-7.4-2.10.2.2.2.1.1" class="pilcrow">¶</a></p>
+</li>
+                  <li class="normal" id="section-7.4-2.10.2.2.2.2">
+                    <p id="section-7.4-2.10.2.2.2.2.1">For organisation signatures, from the member attribution.<a href="#section-7.4-2.10.2.2.2.2.1" class="pilcrow">¶</a></p>
+</li>
+                </ul>
+</li>
+              <li class="normal" id="section-7.4-2.10.2.3">
+                <p id="section-7.4-2.10.2.3.1">Always include the signature type (member or organisation).<a href="#section-7.4-2.10.2.3.1" class="pilcrow">¶</a></p>
 </li>
             </ul>
 </li>

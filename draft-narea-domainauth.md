@@ -330,6 +330,8 @@ Organisations MAY issue intermediate certificates to delegate the responsibility
 
 When an intermediate certificate is used, the Basic Constraints extension from {{Section 4.2.1.9 of X.509}} MUST be present and marked as critical. Additionally, the CA flag MUST be enabled, and the Path Length Constraint SHOULD be set to the lowest possible value for the length of the intended certificate chains.
 
+Note that if an intermediate certificate is assigned a Common Name, it could also be used as a member certificate and it could therefore produce member signatures.
+
 # Member Id Bundle
 
 The Member Id Bundle is a self-contained message that provides all the information needed for a member to produce verifiable signatures. It is serialised using ASN.1 DER encoding with the following structure:
@@ -360,36 +362,19 @@ Member Id Bundles are not inherently confidential, as they contain only public i
 
 ## CMS SignedData Structure
 
-DomainAuth signatures use the Cryptographic Message Syntax (CMS) as defined in RFC 5652, with specific requirements for the DomainAuth protocol:
+DomainAuth signatures use CMS SignedData structures as defined in {{Section 5 of CMS}}, with specific requirements and recommendations for the DomainAuth protocol:
 
-1. **SignedData Structure:**
-  - The content type MUST be id-data (`1.2.840.113549.1.7.1`).
-  - The version MUST be `3`.
-  - The digestAlgorithms set MUST include the algorithm used for signing.
-  - The encapContentInfo content field MAY be absent for detached signatures.
-2. **Signer Info:**
-  - For member signatures, the SignerInfo structure MUST include the signer's certificate.
-  - For organisation signatures, the signer's certificate MAY be included if it differs from the organisation certificate in the signature bundle.
-  - Both signature types MAY include intermediate certificates if the signer's certificate is issued through a certification path from the organisation certificate.
-  - The digest algorithm MUST match the key strength (SHA-256 for RSA-2048, etc.).
-  - The signature algorithm MUST be RSA-PSS.
-
-  See {{cryptographic-algorithms}} for more details on the cryptographic algorithms used.
-3. **Signed Attributes:**
-  - MUST include the content type attribute (`1.2.840.113549.1.9.3`).
-  - MUST include the message digest attribute (`1.2.840.113549.1.9.4`).
-  - MUST include the DomainAuth signature metadata attribute (`1.3.6.1.4.1.58708.1.0`) containing:
-    - Service OID: The OID of the service for which the signature is valid.
-    - Validity period: The start and end dates for signature validity.
-  - For organisation signatures, MUST include the DomainAuth member attribution attribute (`1.3.6.1.4.1.58708.1.2`) containing:
-    - A UTF8String identifying the member to whom the organisation attributes the content.
-4. **Certificate Chain:**
-  - For member signatures, MUST include the member's certificate.
-  - For organisation signatures where the signer is not the organisation itself (e.g., a delegated signer), MUST include the signer's certificate.
-  - MAY include intermediate certificates if applicable. If included, they SHOULD NOT include certificates extraneous to the chain between the organisation certificate and the signer's certificate.
-  - MUST NOT include the organisation certificate from the signature bundle.
-
-The DomainAuth signature metadata is encoded as an ASN.1 structure and is defined in section 5.4.
+- `signerInfos` field:
+  - There MUST be exactly one `SignerInfo`.
+  - The digest and signature algorithms MUST comply with {{cryptographic-algorithms}}.
+  - The following signed attributes MUST be included:
+    - Content Type attribute as defined in {{Section 11.1 of CMS}}.
+    - Message Digest attribute as defined in {{Section 11.2 of CMS}}.
+    - DomainAuth signature metadata attribute as defined in {{signature-metadata}}.
+- `certificates` field:
+  - Any intermediate certificates between the organisation and the signer MUST be included.
+  - The organisation certificate SHOULD NOT be included, since it is already included in the Signature Bundle.
+  - Certificates outside the certification path between the organisation and the signer SHOULD NOT be included.
 
 ## Signature Types
 
@@ -397,41 +382,30 @@ DomainAuth supports two distinct types of signatures, offering different levels 
 
 ### Member Signatures
 
-- Produced by members (users or bots) using their own private key.
-- The `SignedData` structure includes the member's certificate in the `SignerInfo`.
-- Cryptographically proves that the specific member created the signature.
-- The verification path extends from DNSSEC to the organisation certificate, then to the member certificate, and finally to the signature itself.
-- Suitable for scenarios requiring strong non-repudiation at the individual member level.
+Member signatures are produced by members (users or bots) using their own private key. They are suitable for scenarios requiring strong non-repudiation at the individual member level, or when members need to produce signatures whilst being offline for extended periods.
+
+The member's certificate MUST be included in the `SignedData.certificates` field.
 
 ### Organisation Signatures
 
-- Produced directly by the organisation using its private key.
-- The `SignedData` structure does *not* include the member's certificate in the `SignerInfo` (unless a separate signing key delegated by the organisation is used).
-- MUST include the member attribution attribute (see {{member-attribution}}) in the signed attributes, indicating which member the organisation claims authored the content.
-- Cryptographically proves that the organisation vouches for the content and its attribution.
-- The verification path extends from DNSSEC to the organisation certificate and then directly to the signature.
-- Suitable for scenarios where individual member certificate management is impractical, or when the organisation takes direct responsibility for the content.
+Organisation signatures are produced by the organisation using its private key or by a delegated signing key. Such signatures are suitable for scenarios where individual member certificate management is impractical, or when the organisation takes direct responsibility for the content.
 
-The presence or absence of the member attribution attribute reliably distinguishes between the two signature types during verification (see {{verification-process}}).
-
-### Member Attribution
-
-For organisation signatures, a required signed attribute is included in the CMS `SignedData` structure to attribute the content to a specific member:
+The SignerInfo structure MUST include the DomainAuth member attribution in its signed attributes, using the OID `1.3.6.1.4.1.58708.1.2` and the value defined in the ASN.1 structure below:
 
 ~~~~~~~
 MemberAttribution ::= UTF8String
 ~~~~~~~
 
-The member attribution attribute (`1.3.6.1.4.1.58708.1.2`) serves the following purposes:
+The member attribution attribute serves the following purposes:
 
-1. **Content authorship:** Indicates which member authored the content, even when the organisation signs directly.
-2. **Operational flexibility:** Allows organisations to produce signatures on behalf of members without requiring certificate management for ephemeral members.
-3. **Accountability:** Maintains a record of which member is responsible for the content, even when using organisation signatures.
-4. **Signature type identification:** Enables reliable determination of the signature type during verification.
+- **Content authorship:** Indicates which member authored the content, even when the organisation signs directly.
+- **Operational flexibility:** Allows organisations to produce signatures on behalf of members without requiring certificate management.
+- **Accountability:** Maintains a record of which member is responsible for the content, even when using organisation signatures.
+- **Signature type identification:** Enables reliable determination of the signature type during verification.
 
 The member attribution value MUST conform to the same naming conventions defined in {{naming-conventions-and-restrictions}}. For users, this is the username; for bots, this is the at sign (`@`).
 
-Member attribution is a claim made by the organisation, not cryptographically proven by the member. Verifiers MUST present this distinction clearly to end users.
+Member attribution is a claim made by the organisation, not cryptographically proven by the member. Verifiers SHOULD present this distinction clearly to end users.
 
 ## Signature Bundle
 

@@ -1288,18 +1288,7 @@ svg :is([fill="white"], [fill^="#fff"]) {
             <p id="section-toc.1-1.8.1"><a href="#section-8" class="auto internal xref">8</a>.  <a href="#name-maximum-validity-period" class="internal xref">Maximum Validity Period</a></p>
 </li>
           <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.9">
-            <p id="section-toc.1-1.9.1"><a href="#section-9" class="auto internal xref">9</a>.  <a href="#name-identity-model" class="internal xref">Identity Model</a></p>
-<ul class="compact toc ulBare ulEmpty">
-<li class="compact toc ulBare ulEmpty" id="section-toc.1-1.9.2.1">
-                <p id="section-toc.1-1.9.2.1.1"><a href="#section-9.1" class="auto internal xref">9.1</a>.  <a href="#name-organisations" class="internal xref">Organisations</a></p>
-</li>
-              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.9.2.2">
-                <p id="section-toc.1-1.9.2.2.1"><a href="#section-9.2" class="auto internal xref">9.2</a>.  <a href="#name-members" class="internal xref">Members</a></p>
-</li>
-              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.9.2.3">
-                <p id="section-toc.1-1.9.2.3.1"><a href="#section-9.3" class="auto internal xref">9.3</a>.  <a href="#name-naming-conventions-and-rest" class="internal xref">Naming Conventions and Restrictions</a></p>
-</li>
-            </ul>
+            <p id="section-toc.1-1.9.1"><a href="#section-9" class="auto internal xref">9</a>.  <a href="#name-naming-conventions-and-rest" class="internal xref">Naming Conventions and Restrictions</a></p>
 </li>
           <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.10">
             <p id="section-toc.1-1.10.1"><a href="#section-10" class="auto internal xref">10</a>. <a href="#name-service-integration" class="internal xref">Service Integration</a></p>
@@ -1400,7 +1389,7 @@ svg :is([fill="white"], [fill^="#fff"]) {
       </h2>
 <p id="section-1-1">Public Key Infrastructures typically require continuous Internet connectivity for certificate validation or prior distribution of public keys, creating significant limitations for offline or intermittently connected environments. This document addresses the challenge of securely attributing content to domain names in scenarios where verification must occur entirely offline, without reliance on real-time certificate status checking or pre-distributed trust anchors.<a href="#section-1-1" class="pilcrow">¶</a></p>
 <p id="section-1-2">DomainAuth solves this verification challenge by creating self-contained "signature bundles" that encapsulate the complete trust chain required for validation. Each bundle comprises three cryptographically linked components: a DNSSEC chain extending from the DNS root to a domain's TXT record containing key material, an X.509 certificate chain from the domain to the signing entity, and a CMS SignedData structure containing the digital signature. This architecture leverages established standards whilst eliminating the need for continuous connectivity or prior trust establishment.<a href="#section-1-2" class="pilcrow">¶</a></p>
-<p id="section-1-3">This specification defines the protocol components, data structures, and verification procedures that constitute the DomainAuth protocol. It covers the DNS integration mechanism, cryptographic requirements, identity model, certificate management practices, and signature verification processes.<a href="#section-1-3" class="pilcrow">¶</a></p>
+<p id="section-1-3">This specification defines the protocol components, data structures, and verification procedures that constitute the DomainAuth protocol. It covers the DNS integration mechanism, cryptographic requirements, certificate management practices, and signature verification processes.<a href="#section-1-3" class="pilcrow">¶</a></p>
 <div id="problem-statement">
 <section id="section-1.1">
         <h3 id="name-problem-statement">
@@ -1713,6 +1702,8 @@ appear in all capitals, as shown here.<a href="#section-1.3-1" class="pilcrow">�
 <a href="#section-3.1" class="section-number selfRef">3.1. </a><a href="#name-dnssec-configuration" class="section-name selfRef">DNSSEC Configuration</a>
         </h3>
 <p id="section-3.1-1">Participating domains <span class="bcp14">MUST</span> have a complete DNSSEC chain of trust from the root zone to the DomainAuth TXT record.<a href="#section-3.1-1" class="pilcrow">¶</a></p>
+<p id="section-3.1-2">Newly registered domains <span class="bcp14">SHOULD</span> wait at least the maximum validity period in <a href="#maximum-validity-period" class="auto internal xref">Section 8</a> before enabling DomainAuth to prevent potential attacks using DNSSEC chains from previous domain owners.<a href="#section-3.1-2" class="pilcrow">¶</a></p>
+<p id="section-3.1-3">Subdomains <span class="bcp14">MAY</span> implement DomainAuth separately from their parent domains, provided they also have DNSSEC properly configured. Each subdomain operates as an independent organisation within the DomainAuth ecosystem.<a href="#section-3.1-3" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="txt-record">
@@ -2044,7 +2035,7 @@ MemberAttribution ::= UTF8String
               <p id="section-6.2.3-4.4.1"><strong>Signature type identification:</strong> Enables reliable determination of the signature type during verification.<a href="#section-6.2.3-4.4.1" class="pilcrow">¶</a></p>
 </li>
           </ol>
-<p id="section-6.2.3-5">The member attribution value <span class="bcp14">MUST</span> conform to the same naming conventions defined for member names in section 6.3. For users, this is the username; for bots, this is the at sign (<code>@</code>).<a href="#section-6.2.3-5" class="pilcrow">¶</a></p>
+<p id="section-6.2.3-5">The member attribution value <span class="bcp14">MUST</span> conform to the same naming conventions defined in <a href="#naming-conventions-and-restrictions" class="auto internal xref">Section 9</a>. For users, this is the username; for bots, this is the at sign (<code>@</code>).<a href="#section-6.2.3-5" class="pilcrow">¶</a></p>
 <p id="section-6.2.3-6">Member attribution is a claim made by the organisation, not cryptographically proven by the member. Verifiers <span class="bcp14">MUST</span> present this distinction clearly to end users.<a href="#section-6.2.3-6" class="pilcrow">¶</a></p>
 </section>
 </div>
@@ -2475,115 +2466,39 @@ DatePeriod ::= SEQUENCE {
 <p id="section-8-2">Similarly, verifiers <span class="bcp14">MUST NOT</span> allow a validity period greater than this limit when verifying signatures over a time period.<a href="#section-8-2" class="pilcrow">¶</a></p>
 </section>
 </div>
-<div id="identity-model">
-<section id="section-9">
-      <h2 id="name-identity-model">
-<a href="#section-9" class="section-number selfRef">9. </a><a href="#name-identity-model" class="section-name selfRef">Identity Model</a>
-      </h2>
-<div id="organisations">
-<section id="section-9.1">
-        <h3 id="name-organisations">
-<a href="#section-9.1" class="section-number selfRef">9.1. </a><a href="#name-organisations" class="section-name selfRef">Organisations</a>
-        </h3>
-<p id="section-9.1-1">In the DomainAuth protocol, an organisation is represented by a domain name and serves as the foundational identity unit. Organisations have full control over their DomainAuth implementation and member management.<a href="#section-9.1-1" class="pilcrow">¶</a></p>
-<p id="section-9.1-2">Organisations <span class="bcp14">MUST</span>:<a href="#section-9.1-2" class="pilcrow">¶</a></p>
-<ol start="1" type="1" class="normal type-1" id="section-9.1-3">
-<li id="section-9.1-3.1">
-            <p id="section-9.1-3.1.1">Own or control a domain name with properly configured DNSSEC.<a href="#section-9.1-3.1.1" class="pilcrow">¶</a></p>
-</li>
-          <li id="section-9.1-3.2">
-            <p id="section-9.1-3.2.1">Generate and safeguard an RSA key pair for their organisation certificate.<a href="#section-9.1-3.2.1" class="pilcrow">¶</a></p>
-</li>
-          <li id="section-9.1-3.3">
-            <p id="section-9.1-3.3.1">Self-issue an X.509 certificate with the domain name as the CommonName.<a href="#section-9.1-3.3.1" class="pilcrow">¶</a></p>
-</li>
-          <li id="section-9.1-3.4">
-            <p id="section-9.1-3.4.1">Publish a DomainAuth TXT record at <code>_domainauth.&lt;domain&gt;</code> with the appropriate key information.<a href="#section-9.1-3.4.1" class="pilcrow">¶</a></p>
-</li>
-          <li id="section-9.1-3.5">
-            <p id="section-9.1-3.5.1">Manage the issuance and revocation of member certificates.<a href="#section-9.1-3.5.1" class="pilcrow">¶</a></p>
-</li>
-        </ol>
-<p id="section-9.1-4">The organisation is the trust anchor for all certificates and signatures within its domain. No external authority can issue valid certificates for the organisation or its members.<a href="#section-9.1-4" class="pilcrow">¶</a></p>
-<p id="section-9.1-5">Newly registered domains <span class="bcp14">SHOULD</span> wait at least the maximum validity period in <a href="#maximum-validity-period" class="auto internal xref">Section 8</a> before enabling DomainAuth to prevent potential attacks using DNSSEC chains from previous domain owners.<a href="#section-9.1-5" class="pilcrow">¶</a></p>
-<p id="section-9.1-6">Subdomains <span class="bcp14">MAY</span> implement DomainAuth separately from their parent domains, provided they have their own DNSSEC configuration. Each subdomain operates as an independent organisation within the DomainAuth ecosystem.<a href="#section-9.1-6" class="pilcrow">¶</a></p>
-</section>
-</div>
-<div id="members">
-<section id="section-9.2">
-        <h3 id="name-members">
-<a href="#section-9.2" class="section-number selfRef">9.2. </a><a href="#name-members" class="section-name selfRef">Members</a>
-        </h3>
-<p id="section-9.2-1">Members are entities that act on behalf of an organisation and come in two forms: users and bots.<a href="#section-9.2-1" class="pilcrow">¶</a></p>
-<p id="section-9.2-2"><strong>Users:</strong><a href="#section-9.2-2" class="pilcrow">¶</a></p>
-<ul class="normal">
-<li class="normal" id="section-9.2-3.1">
-            <p id="section-9.2-3.1.1">Represent individual people within an organisation.<a href="#section-9.2-3.1.1" class="pilcrow">¶</a></p>
-</li>
-          <li class="normal" id="section-9.2-3.2">
-            <p id="section-9.2-3.2.1">Identified by a username within the organisation's domain (e.g., <code>alice.smith@example.com</code>).<a href="#section-9.2-3.2.1" class="pilcrow">¶</a></p>
-</li>
-          <li class="normal" id="section-9.2-3.3">
-            <p id="section-9.2-3.3.1">Their certificates <span class="bcp14">MUST</span> have the username as the CommonName.<a href="#section-9.2-3.3.1" class="pilcrow">¶</a></p>
-</li>
-          <li class="normal" id="section-9.2-3.4">
-            <p id="section-9.2-3.4.1">Usernames <span class="bcp14">MUST</span> comply with the naming restrictions specified in section 6.3.<a href="#section-9.2-3.4.1" class="pilcrow">¶</a></p>
-</li>
-        </ul>
-<p id="section-9.2-4"><strong>Bots:</strong><a href="#section-9.2-4" class="pilcrow">¶</a></p>
-<ul class="normal">
-<li class="normal" id="section-9.2-5.1">
-            <p id="section-9.2-5.1.1">Represent automated processes acting on behalf of the organisation as a whole.<a href="#section-9.2-5.1.1" class="pilcrow">¶</a></p>
-</li>
-          <li class="normal" id="section-9.2-5.2">
-            <p id="section-9.2-5.2.1">Identified by the organisation's domain name (e.g., <code>example.com</code>).<a href="#section-9.2-5.2.1" class="pilcrow">¶</a></p>
-</li>
-          <li class="normal" id="section-9.2-5.3">
-            <p id="section-9.2-5.3.1">Their certificates <span class="bcp14">MUST</span> have the at sign (<code>@</code>) as the CommonName.<a href="#section-9.2-5.3.1" class="pilcrow">¶</a></p>
-</li>
-          <li class="normal" id="section-9.2-5.4">
-            <p id="section-9.2-5.4.1">Internally, organisations <span class="bcp14">MAY</span> assign private identifiers to bots for management purposes, but these identifiers <span class="bcp14">MUST NOT</span> be included in certificates.<a href="#section-9.2-5.4.1" class="pilcrow">¶</a></p>
-</li>
-        </ul>
-<p id="section-9.2-6">Members are issued certificates by their organisation, which authorises them to produce signatures on behalf of the organisation. These certificates bind the member identity to a public key and may include additional restrictions on their use.<a href="#section-9.2-6" class="pilcrow">¶</a></p>
-<p id="section-9.2-7">The protocol makes a clear distinction between users (who represent individuals) and bots (which represent the organisation itself), reflected in both the certificate structure and the resulting signature verification output.<a href="#section-9.2-7" class="pilcrow">¶</a></p>
-</section>
-</div>
 <div id="naming-conventions-and-restrictions">
-<section id="section-9.3">
-        <h3 id="name-naming-conventions-and-rest">
-<a href="#section-9.3" class="section-number selfRef">9.3. </a><a href="#name-naming-conventions-and-rest" class="section-name selfRef">Naming Conventions and Restrictions</a>
-        </h3>
-<p id="section-9.3-1">DomainAuth imposes specific restrictions on member names to prevent phishing attacks and ensure consistent processing across implementations:<a href="#section-9.3-1" class="pilcrow">¶</a></p>
-<ol start="1" type="1" class="normal type-1" id="section-9.3-2">
-<li id="section-9.3-2.1">
-            <p id="section-9.3-2.1.1"><strong>User Names:</strong>
+<section id="section-9">
+      <h2 id="name-naming-conventions-and-rest">
+<a href="#section-9" class="section-number selfRef">9. </a><a href="#name-naming-conventions-and-rest" class="section-name selfRef">Naming Conventions and Restrictions</a>
+      </h2>
+<p id="section-9-1">DomainAuth imposes specific restrictions on member names to prevent phishing attacks and ensure consistent processing across implementations:<a href="#section-9-1" class="pilcrow">¶</a></p>
+<ol start="1" type="1" class="normal type-1" id="section-9-2">
+<li id="section-9-2.1">
+          <p id="section-9-2.1.1"><strong>User Names:</strong>
   - <span class="bcp14">MUST NOT</span> contain at signs (<code>@</code>).
   - <span class="bcp14">MUST NOT</span> contain whitespace characters other than simple spaces (e.g., no tabs, newlines, carriage returns).
   - <span class="bcp14">SHOULD</span> be chosen to avoid visual confusion with other usernames.
-  - <span class="bcp14">SHOULD</span> use consistent case and normalisation forms.<a href="#section-9.3-2.1.1" class="pilcrow">¶</a></p>
+  - <span class="bcp14">SHOULD</span> use consistent case and normalisation forms.<a href="#section-9-2.1.1" class="pilcrow">¶</a></p>
 </li>
-          <li id="section-9.3-2.2">
-            <p id="section-9.3-2.2.1"><strong>Display Considerations:</strong>
+        <li id="section-9-2.2">
+          <p id="section-9-2.2.1"><strong>Display Considerations:</strong>
   - User interfaces <span class="bcp14">SHOULD NOT</span> truncate usernames or domain names.
   - Implementations <span class="bcp14">SHOULD</span> display member identifiers in full to avoid confusion.
-  - Implementations <span class="bcp14">SHOULD</span> highlight or visually distinguish the domain portion of identifiers.<a href="#section-9.3-2.2.1" class="pilcrow">¶</a></p>
+  - Implementations <span class="bcp14">SHOULD</span> highlight or visually distinguish the domain portion of identifiers.<a href="#section-9-2.2.1" class="pilcrow">¶</a></p>
 </li>
-          <li id="section-9.3-2.3">
-            <p id="section-9.3-2.3.1"><strong>Homographic Attack Prevention:</strong>
+        <li id="section-9-2.3">
+          <p id="section-9-2.3.1"><strong>Homographic Attack Prevention:</strong>
   - Implementations <span class="bcp14">SHOULD</span> implement mitigations against homographic attacks.
   - Domain names <span class="bcp14">SHOULD</span> be displayed using Punycode when they contain non-ASCII characters.
-  - Implementations <span class="bcp14">MAY</span> refuse to process signatures from domains with mixed scripts.<a href="#section-9.3-2.3.1" class="pilcrow">¶</a></p>
+  - Implementations <span class="bcp14">MAY</span> refuse to process signatures from domains with mixed scripts.<a href="#section-9-2.3.1" class="pilcrow">¶</a></p>
 </li>
-          <li id="section-9.3-2.4">
-            <p id="section-9.3-2.4.1"><strong>Bot Names:</strong>
+        <li id="section-9-2.4">
+          <p id="section-9-2.4.1"><strong>Bot Names:</strong>
   - <span class="bcp14">MUST</span> use the at sign (<code>@</code>) as the CommonName in certificates.
-  - When displaying bot identities, implementations <span class="bcp14">SHOULD</span> clearly indicate they represent the organisation rather than an individual.<a href="#section-9.3-2.4.1" class="pilcrow">¶</a></p>
+  - When displaying bot identities, implementations <span class="bcp14">SHOULD</span> clearly indicate they represent the organisation rather than an individual.<a href="#section-9-2.4.1" class="pilcrow">¶</a></p>
 </li>
-        </ol>
-<p id="section-9.3-3">Organisations <span class="bcp14">SHOULD</span> establish and enforce consistent naming policies for their users to maintain clarity and prevent confusion.<a href="#section-9.3-3" class="pilcrow">¶</a></p>
-</section>
-</div>
+      </ol>
+<p id="section-9-3">Organisations <span class="bcp14">SHOULD</span> establish and enforce consistent naming policies for their users to maintain clarity and prevent confusion.<a href="#section-9-3" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="service-integration">

@@ -94,7 +94,7 @@ Public Key Infrastructures typically require continuous Internet connectivity fo
 
 DomainAuth solves this verification challenge by creating self-contained "signature bundles" that encapsulate the complete trust chain required for validation. Each bundle comprises three cryptographically linked components: a DNSSEC chain extending from the DNS root to a domain's TXT record containing key material, an X.509 certificate chain from the domain to the signing entity, and a CMS SignedData structure containing the digital signature. This architecture leverages established standards whilst eliminating the need for continuous connectivity or prior trust establishment.
 
-This specification defines the protocol components, data structures, and verification procedures that constitute the DomainAuth protocol. It covers the DNS integration mechanism, cryptographic requirements, identity model, certificate management practices, and signature verification processes.
+This specification defines the protocol components, data structures, and verification procedures that constitute the DomainAuth protocol. It covers the DNS integration mechanism, cryptographic requirements, certificate management practices, and signature verification processes.
 
 ## Problem Statement
 
@@ -241,6 +241,10 @@ For more detailed information on the verification process, particularly regardin
 ## DNSSEC Configuration
 
 Participating domains MUST have a complete DNSSEC chain of trust from the root zone to the DomainAuth TXT record.
+
+Newly registered domains SHOULD wait at least the maximum validity period in {{maximum-validity-period}} before enabling DomainAuth to prevent potential attacks using DNSSEC chains from previous domain owners.
+
+Subdomains MAY implement DomainAuth separately from their parent domains, provided they also have DNSSEC properly configured. Each subdomain operates as an independent organisation within the DomainAuth ecosystem.
 
 ## TXT Record
 
@@ -425,7 +429,7 @@ The member attribution attribute (`1.3.6.1.4.1.58708.1.2`) serves the following 
 3. **Accountability:** Maintains a record of which member is responsible for the content, even when using organisation signatures.
 4. **Signature type identification:** Enables reliable determination of the signature type during verification.
 
-The member attribution value MUST conform to the same naming conventions defined for member names in section 6.3. For users, this is the username; for bots, this is the at sign (`@`).
+The member attribution value MUST conform to the same naming conventions defined in {{naming-conventions-and-restrictions}}. For users, this is the username; for bots, this is the at sign (`@`).
 
 Member attribution is a claim made by the organisation, not cryptographically proven by the member. Verifiers MUST present this distinction clearly to end users.
 
@@ -618,49 +622,7 @@ Digital signatures MUST NOT have a validity period greater than 7,776,000 second
 
 Similarly, verifiers MUST NOT allow a validity period greater than this limit when verifying signatures over a time period.
 
-# Identity Model
-
-## Organisations
-
-In the DomainAuth protocol, an organisation is represented by a domain name and serves as the foundational identity unit. Organisations have full control over their DomainAuth implementation and member management.
-
-Organisations MUST:
-
-1. Own or control a domain name with properly configured DNSSEC.
-2. Generate and safeguard an RSA key pair for their organisation certificate.
-3. Self-issue an X.509 certificate with the domain name as the CommonName.
-4. Publish a DomainAuth TXT record at `_domainauth.<domain>` with the appropriate key information.
-5. Manage the issuance and revocation of member certificates.
-
-The organisation is the trust anchor for all certificates and signatures within its domain. No external authority can issue valid certificates for the organisation or its members.
-
-Newly registered domains SHOULD wait at least the maximum validity period in {{maximum-validity-period}} before enabling DomainAuth to prevent potential attacks using DNSSEC chains from previous domain owners.
-
-Subdomains MAY implement DomainAuth separately from their parent domains, provided they have their own DNSSEC configuration. Each subdomain operates as an independent organisation within the DomainAuth ecosystem.
-
-## Members
-
-Members are entities that act on behalf of an organisation and come in two forms: users and bots.
-
-**Users:**
-
-- Represent individual people within an organisation.
-- Identified by a username within the organisation's domain (e.g., `alice.smith@example.com`).
-- Their certificates MUST have the username as the CommonName.
-- Usernames MUST comply with the naming restrictions specified in section 6.3.
-
-**Bots:**
-
-- Represent automated processes acting on behalf of the organisation as a whole.
-- Identified by the organisation's domain name (e.g., `example.com`).
-- Their certificates MUST have the at sign (`@`) as the CommonName.
-- Internally, organisations MAY assign private identifiers to bots for management purposes, but these identifiers MUST NOT be included in certificates.
-
-Members are issued certificates by their organisation, which authorises them to produce signatures on behalf of the organisation. These certificates bind the member identity to a public key and may include additional restrictions on their use.
-
-The protocol makes a clear distinction between users (who represent individuals) and bots (which represent the organisation itself), reflected in both the certificate structure and the resulting signature verification output.
-
-## Naming Conventions and Restrictions
+# Naming Conventions and Restrictions
 
 DomainAuth imposes specific restrictions on member names to prevent phishing attacks and ensure consistent processing across implementations:
 

@@ -198,7 +198,7 @@ The DomainAuth protocol involves the following key workflows:
 
 First, the organisation must have DNSSEC properly configured for its domain.
 
-Then, the organisation must generate an asymmetric key pair and publish its public key information in a DomainAuth TXT record at `_domainauth.<domain>`.
+Then, the organisation must generate an asymmetric key pair and publish its public key information in a DomainAuth TXT record at `_domainauth.<domain>` as described in {{txt-record}}.
 
 Multiple such records are allowed, which can be useful for key rotation or binding different keys to different services.
 
@@ -206,7 +206,7 @@ Multiple such records are allowed, which can be useful for key rotation or bindi
 
 The organisation must self-issue an X.509 certificate using its private key, or reuse an existing certificate valid during the intended validity period.
 
-When issuing a member certificate, the organisation must distribute it along with the organisation certificate. This can be done with a member id bundle, which is desirable in services meant to be used offline as it also contains the DNSSEC chain.
+When issuing a member certificate, the organisation must distribute it along with the organisation certificate. This can be done with a member id bundle as defined in {{member-id-bundle}}, which is desirable in services meant to be used offline as it also contains the DNSSEC chain.
 
 ### Signature Bundle Production
 
@@ -291,7 +291,7 @@ This chain MUST include all DNSSEC responses necessary to validate the `_domaina
 
 Implementations SHOULD optimise the serialisation to minimise redundancy and size whilst ensuring completeness for offline verification.
 
-# X.509 Certificate Infrastructure
+# X.509 Certificate Profile
 
 ## Supported Cryptographic Algorithms
 

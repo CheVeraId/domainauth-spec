@@ -91,55 +91,54 @@ Table of Contents
      3.2.  TXT Record
      3.3.  TTL Override
      3.4.  DNSSEC Chain Serialisation
-   4.  X.509 Certificate Infrastructure
-     4.1.  Supported Cryptographic Algorithms
-     4.2.  Key Management
-     4.3.  Certificate Profiles
-       4.3.1.  Organisation Certificate Profile
-       4.3.2.  Member Certificate Profile
-     4.4.  Certificate Lifecycle
-       4.4.1.  Organisation Certificate Issuance
-       4.4.2.  Member Certificate Issuance
-       4.4.3.  Certificate Validity Periods
-       4.4.4.  Certificate Revocation
-     4.5.  Member Id Bundle
-   5.  Digital Signatures
-     5.1.  CMS SignedData Structure
-     5.2.  Signature Types
-       5.2.1.  Member Signatures
-       5.2.2.  Organisation Signatures
-       5.2.3.  Member Attribution
-     5.3.  Signature Bundle
-     5.4.  Signature Metadata
-     5.5.  Signature Verification
-       5.5.1.  Verification Process
-       5.5.2.  Implementation Recommendations
-       5.5.3.  User Interface Guidelines
-   6.  Identity Model
-     6.1.  Organisations
-     6.2.  Members
-     6.3.  Naming Conventions and Restrictions
-   7.  Service Integration
-     7.1.  Service OIDs
-     7.2.  Service-Specific Validation Rules
-     7.3.  Implementation Guidelines
-   8.  Implementation Guidance
-     8.1.  Interoperability Considerations
-     8.2.  Performance Optimisations
-   9.  Implementation Status
-     9.1.  VeraId JavaScript Library
-     9.2.  VeraId JVM Library
-     9.3.  VeraId Authority
-   10. Security Considerations
-     10.1.  DNSSEC Dependency
-     10.2.  Homographic and Character Encoding Attacks
-     10.3.  Domain Ownership Changes
-     10.4.  Offline Verification Limitations
-     10.5.  Organisation Signatures and Member Attribution
-   11. IANA Considerations
-   12. References
-     12.1.  Normative References
-     12.2.  Informative References
+   4.  X.509 Certificate Profile
+     4.1.  Organisation Certificate
+     4.2.  Member Certificate
+     4.3.  Intermediate Certificate
+   5.  Member Id Bundle
+   6.  Digital Signatures
+     6.1.  CMS SignedData Structure
+     6.2.  Signature Types
+       6.2.1.  Member Signatures
+       6.2.2.  Organisation Signatures
+       6.2.3.  Member Attribution
+     6.3.  Signature Bundle
+     6.4.  Signature Metadata
+     6.5.  Signature Verification
+       6.5.1.  Verification Process
+       6.5.2.  Implementation Recommendations
+       6.5.3.  User Interface Guidelines
+   7.  Cryptographic Algorithms
+     7.1.  Digital Signature Algorithms
+       7.1.1.  RSA-PSS
+     7.2.  Hash Functions
+   8.  Maximum Validity Period
+   9.  Identity Model
+     9.1.  Organisations
+     9.2.  Members
+     9.3.  Naming Conventions and Restrictions
+   10. Service Integration
+     10.1.  Service OIDs
+     10.2.  Service-Specific Validation Rules
+     10.3.  Implementation Guidelines
+   11. Implementation Guidance
+     11.1.  Interoperability Considerations
+     11.2.  Performance Optimisations
+   12. Implementation Status
+     12.1.  VeraId JavaScript Library
+     12.2.  VeraId JVM Library
+     12.3.  VeraId Authority
+   13. Security Considerations
+     13.1.  DNSSEC Dependency
+     13.2.  Homographic and Character Encoding Attacks
+     13.3.  Domain Ownership Changes
+     13.4.  Offline Verification Limitations
+     13.5.  Organisation Signatures and Member Attribution
+     13.6.  Key Management
+   14. IANA Considerations
+   15. References
+     15.1.  Normative References
+     15.2.  Informative References
    Appendix A.  ASN.1 Schemas
    Appendix B.  OID Registry
    Acknowledgements
@@ -433,7 +432,7 @@ Table of Contents
 
    Then, the organisation must generate an asymmetric key pair and
    publish its public key information in a DomainAuth TXT record at
-   _domainauth.<domain>.
+   _domainauth.<domain> as described in Section 3.2.
 
    Multiple such records are allowed, which can be useful for key
    rotation or binding different keys to different services.
@@ -446,8 +445,9 @@ Table of Contents
 
    When issuing a member certificate, the organisation must distribute
    it along with the organisation certificate.  This can be done with a
-   member id bundle, which is desirable in services meant to be used
-   offline as it also contains the DNSSEC chain.
+   member id bundle as defined in Section 5, which is desirable in
+   services meant to be used offline as it also contains the DNSSEC
+   chain.
 
 2.4.3.  Signature Bundle Production
 
@@ -502,7 +502,7 @@ Table of Contents
    chain.
 
    For more detailed information on the verification process,
-   particularly regarding validity periods, see Section 5.5.1.
+   particularly regarding validity periods, see Section 6.5.1.
 
 3.  DNS Integration
 
@@ -530,6 +530,9 @@ Table of Contents
 
        *  3: RSA-PSS with modulus 4096 bits.
 
+       More details on the RSA-PSS algorithm can be found in
+       Section 7.1.
+
    3.  *Key Id Type* (required): An integer denoting how the key is
        identified:
 
@@ -539,13 +542,15 @@ Table of Contents
 
        *  3: The key id is the SHA-512 digest of the key.
 
+       More details on hash functions can be found in Section 7.2.
+
    4.  *Key Id* (required): The Base64-encoded (unpadded) representation
        of the key digest, as specified by the Key Id Type.
 
    5.  *TTL Override* (required): A positive integer representing the
        number of seconds for the maximum validity period of signatures.
-       This value MUST be between 1 second and 7,776,000 seconds (90
-       days).
+       This value MUST be at least 1 second and not exceed the limit
+       specified in Section 8.  Refer to Section 3.3 for more details.
 
    6.  *Service OID* (optional): An Object Identifier (in dotted decimal
        notation) binding the key to a specific service.  If omitted, the
@@ -573,8 +578,9 @@ _domainauth.example.com. IN TXT "0 1 3 dGhpcyBpcyBub3QgYSByZWFsIGtleSBkaWdlc3Q 8
 
    DNS records and DNSSEC signatures typically have TTL values that may
    be as short as a few minutes or hours.  The TTL override mechanism
-   allows the DNSSEC chain to remain verifiable for up to 90 days,
-   regardless of the TTL in such records.
+   allows the DNSSEC chain to remain verifiable for a significantly
+   longer period, regardless of the TTL in such records.  Refer to
+   Section 8 for the maximum validity period.
 
    During verification, the TTL override creates a restricted time
    window that extends backwards from the end of the requested
@@ -601,287 +607,74 @@ _domainauth.example.com. IN TXT "0 1 3 dGhpcyBpcyBub3QgYSByZWFsIGtleSBkaWdlc3Q 8
    This chain MUST include all DNSSEC responses necessary to validate
    the _domainauth.<domain>/TXT record from the trust anchor.  However,
    the root zone DS records SHOULD be omitted, since they will be
-   ignored by verifiers as described in Section 5.5.1.
+   ignored by verifiers as described in Section 6.5.1.
 
    Implementations SHOULD optimise the serialisation to minimise
    redundancy and size whilst ensuring completeness for offline
    verification.
 
-4.  X.509 Certificate Infrastructure
+4.  X.509 Certificate Profile
 
-4.1.  Supported Cryptographic Algorithms
+   All X.509 certificates MUST comply with [X.509].  Additionally, each
+   certificate MUST:
 
-   DomainAuth relies on established cryptographic algorithms to ensure
-   security and interoperability.  The protocol defines the following
-   supported algorithms:
+   *  Have a validity period of at least 1 second and not exceeding the
+      limit specified in Section 8.
 
-   1.  *Hashing Algorithms:* - SHA-256: Recommended for general use.  -
-       SHA-384: Recommended for higher security applications.  - SHA-
-       512: Recommended for highest security applications.
+   *  Only use the algorithms specified in Section 7.
 
-   2.  *Digital Signature Algorithms:* - RSA-PSS with modulus 2048 bits:
-       Minimum acceptable security level.  - RSA-PSS with modulus 3072
-       bits: Recommended for general use.  - RSA-PSS with modulus 4096
-       bits: Recommended for high-security applications.
+   *  Contain the following extensions marked as critical:
 
-   All compliant implementations MUST support these algorithms.  The
-   choice of algorithm strength should be appropriate for the security
-   requirements of the application.
+      -  Authority Key Identifier from Section 4.2.1.1 of [X.509].
 
-   For RSA-PSS signatures:
+      -  Subject Key Identifier from Section 4.2.1.2 of [X.509].
 
-   *  RSA-2048 MUST use SHA-256 for both key identification and
-      signature operations.
+   Additional requirements and recommendations apply to specific
+   certificate types as described in the following sections.
 
-   *  RSA-3072 MUST use SHA-384 for both key identification and
-      signature operations.
+4.1.  Organisation Certificate
 
-   *  RSA-4096 MUST use SHA-512 for both key identification and
-      signature operations.
+   This is certificate whose subject key is referenced by the DomainAuth
+   TXT record.  The following requirements and recommendations apply:
 
-   Future versions of the protocol MAY introduce additional algorithms,
-   but this V1 specification intentionally limits the supported
-   algorithms to those with well-established security properties and
-   widespread implementation support.
+   *  Its Subject Distinguished Name MUST contain the Common Name
+      attribute (OID 2.5.4.3) set to the organisation's domain name with
+      a trailing dot (e.g. example.com.).
 
-4.2.  Key Management
+   *  When the certificate is used to issue other certificates, the
+      Basic Constraints extension from Section 4.2.1.9 of [X.509] MUST
+      be present and marked as critical.  Additionally, the CA flag MUST
+      be enabled, and the Path Length Constraint SHOULD be set to the
+      lowest possible value for the length of the intended certificate
+      chains.
 
-   Proper key management is essential for the security of the DomainAuth
-   protocol.  The following requirements apply:
+   *  When the certificate is used directly to sign CMS SignedData
+      structures, the Basic Constraints extension MAY be absent.  If
+      present, it SHOULD have the CA flag disabled.
 
-   1.  *Key Generation:* - Keys MUST be generated using a
-       cryptographically secure random number generator.  - RSA key
-       generation MUST follow industry best practices for prime
-       generation and testing.  - The minimum modulus size for RSA keys
-       is 2048 bits.
+4.2.  Member Certificate
 
-   2.  *Key Storage:* - Private keys MUST be protected from unauthorised
-       access.  - Organisation private keys SHOULD be stored with the
-       highest level of protection available, preferably in hardware
-       security modules (HSMs).  - Member private keys SHOULD be
-       protected with appropriate measures, such as operating system
-       security mechanisms or hardware tokens.
+   *  Its Subject Distinguished Name MUST contain the Common Name
+      attribute (OID 2.5.4.3) set to the member's name in the case of
+      users or the at sign (@) in the case of bots.
 
-   3.  *Key Rotation:* - Organisations SHOULD establish a regular
-       schedule for rotating their keys.  - Key rotation SHOULD be
-       performed by generating a new key pair and updating the
-       DomainAuth TXT record.  - During key rotation, organisations
-       SHOULD maintain both the old and new keys in DNS for a transition
-       period, allowing for graceful migration.  - Member certificates
-       issued under the old key remain valid until their expiration but
-       SHOULD be renewed under the new key when practical.
+   *  The Basic Constraints extension from Section 4.2.1.9 of [X.509]
+      MAY be absent.  If present, it SHOULD have the CA flag disabled.
 
-   4.  *Key Compromise:* - In the event of a key compromise, immediate
-       rotation is REQUIRED.  - The compromised key's TXT record SHOULD
-       be removed as soon as possible.  - Short certificate lifetimes
-       help mitigate the impact of key compromises.
+4.3.  Intermediate Certificate
 
-   Implementations SHOULD provide guidance and tools to assist with
-   secure key management practices appropriate to the security
-   requirements of the organisation.
+   Organisations MAY issue intermediate certificates to delegate the
+   responsibility of signing member certificates to other entities.
 
-4.3.  Certificate Profiles
+   When an intermediate certificate is used, the Basic Constraints
+   extension from Section 4.2.1.9 of [X.509] MUST be present and marked
+   as critical.  Additionally, the CA flag MUST be enabled, and the Path
+   Length Constraint SHOULD be set to the lowest possible value for the
+   length of the intended certificate chains.
 
-   DomainAuth uses X.509 certificates with specific requirements for
-   organisations and members.  All certificates MUST comply with the
-   X.509v3 standard (RFC 5280).
+5.  Member Id Bundle
 
-4.3.1.  Organisation Certificate Profile
-
-   1.  *Version:* MUST be v3 (value = 2).
-
-   2.  *Subject:* CommonName (CN) MUST contain the organisation's domain
-       name.
-
-   3.  *Issuer:* MUST be identical to the Subject (self-issued).
-
-   4.  *Validity:* - SHOULD be appropriate for the organisation's key
-       rotation policy.  - SHOULD NOT exceed 1 year.
-
-   5.  *Subject Public Key Info:* - Algorithm: rsaEncryption.  - Key
-       size: 2048, 3072, or 4096 bits.
-
-   6.  *Extensions:* - Basic Constraints:
-
-       *  MUST be present and marked critical.
-
-       *  CA flag MUST be TRUE.
-
-       *  Path length constraint MAY be present.  - Subject Key
-          Identifier: MUST be present.  - Authority Key Identifier: MUST
-          be present and match the Subject Key Identifier.
-
-4.3.2.  Member Certificate Profile
-
-   1.  *Version:* MUST be v3 (value = 2).
-
-   2.  *Subject:* - CommonName (CN):
-
-       *  For users: MUST contain the username.
-
-       *  For bots: MUST be the at sign (@).
-
-   3.  *Issuer:* - MUST match the Subject of the issuing organisation
-       certificate.
-
-   4.  *Validity:* - SHOULD be short-lived, preferably not exceeding 90
-       days.  - MUST NOT be longer than the validity period of the
-       issuing organisation certificate.
-
-   5.  *Subject Public Key Info:* - Algorithm: rsaEncryption.  - Key
-       size: 2048, 3072, or 4096 bits.
-
-   6.  *Extensions:* - Basic Constraints:
-
-       *  MUST be present and marked critical.
-
-       *  CA flag MUST be FALSE.  - Subject Key Identifier: MUST be
-          present.  - Authority Key Identifier: MUST be present and
-          match the Subject Key Identifier of the issuing certificate.
-
-   Certificates MUST NOT include extensions not specified in this
-   profile without careful consideration of their security implications.
-
-4.4.  Certificate Lifecycle
-
-4.4.1.  Organisation Certificate Issuance
-
-   Organisation certificates form the foundation of the DomainAuth trust
-   model and MUST be self-issued by the organisation.
-
-   The process for issuing an organisation certificate is as follows:
-
-   1.  The organisation generates an RSA key pair with a modulus of
-       2048, 3072, or 4096 bits.
-
-   2.  The organisation creates a self-signed X.509 certificate with the
-       following characteristics: - Subject and Issuer fields both
-       containing the organisation's domain name as CommonName.  - A
-       validity period appropriate for the organisation's security
-       policy.  - The Basic Constraints extension with the CA flag set
-       to TRUE.  - Subject Key Identifier and Authority Key Identifier
-       extensions.
-
-   3.  The organisation calculates the appropriate key identifier as
-       specified in the DomainAuth TXT Record Format (section 3.2).
-
-   4.  The organisation publishes a DomainAuth TXT record at
-       _domainauth.<domain> containing the key algorithm, key id type,
-       key id, TTL override, and optional service OID.
-
-   5.  The organisation ensures that DNSSEC is properly configured and
-       that the TXT record is signed.
-
-   The organisation certificate SHOULD be created with appropriate key
-   management procedures, ideally using hardware security modules or
-   similar protection mechanisms for the private key.
-
-   Organisations MAY issue multiple organisation certificates with
-   different keys for different purposes or for key rotation, publishing
-   corresponding TXT records for each.
-
-4.4.2.  Member Certificate Issuance
-
-   Member certificates authorise specific members (users or bots) to
-   produce signatures on behalf of the organisation.
-
-   The process for issuing a member certificate is as follows:
-
-   1.  The member generates an RSA key pair with a modulus of 2048,
-       3072, or 4096 bits.
-
-   2.  The member provides the public key to the organisation's
-       certificate issuance system.
-
-   3.  The organisation verifies the member's identity according to its
-       internal policies.
-
-   4.  The organisation issues an X.509 certificate with the following
-       characteristics: - Subject CommonName containing the member's
-       username (for users) or the at sign (@) (for bots).  - Issuer
-       matching the Subject of the organisation certificate.  - A
-       validity period appropriate for the member type and service
-       requirements.  - The Basic Constraints extension with the CA flag
-       set to FALSE.  - Subject Key Identifier extension.  - Authority
-       Key Identifier matching the Subject Key Identifier of the
-       organisation certificate.
-
-   5.  The organisation delivers the certificate to the member through a
-       secure channel.
-
-   Organisations SHOULD implement appropriate authorisation checks and
-   approval workflows before issuing member certificates.
-
-   Service-specific extensions MAY be included in member certificates to
-   restrict their use to specific contexts or applications.
-
-4.4.3.  Certificate Validity Periods
-
-   DomainAuth favours short-lived certificates over complex revocation
-   mechanisms.  The following guidelines apply to certificate validity
-   periods:
-
-   1.  *Organisation Certificates:* - SHOULD have a validity period
-       aligned with the organisation's key management policy.  - SHOULD
-       NOT exceed 1 year.  - MAY be shorter if the organisation
-       implements frequent key rotation.
-
-   2.  *Member Certificates:* - SHOULD be short-lived, with validity
-       periods of 90 days or less.  - MUST NOT exceed the validity
-       period of the issuing organisation certificate.  - MAY be as
-       short as a few hours for high-security applications.  - SHOULD
-       balance security requirements with operational concerns about
-       renewal frequency.
-
-   3.  *Validity Period Intersection:* - For signature verification, the
-       validity period is the intersection of:
-
-       *  The organisation certificate validity period.
-
-       *  The member certificate validity period.
-
-       *  The signature metadata validity period.
-
-       *  The DNSSEC record validity period (as determined by the TTL
-          override).  - Signatures are only valid when the verification
-          time falls within this intersection.
-
-   Short certificate lifetimes provide natural revocation through
-   expiration, reducing the complexity of the protocol and eliminating
-   dependencies on online revocation checking mechanisms.
-
-4.4.4.  Certificate Revocation
-
-   DomainAuth primarily relies on short-lived certificates to manage
-   certificate lifecycle, but situations may arise where explicit
-   revocation is necessary.
-
-   1.  *Organisation Certificates:* - Revocation is achieved by removing
-       or updating the DomainAuth TXT record.  - Old signatures using
-       the revoked certificate will no longer verify once the DNSSEC
-       chain is refreshed.  - In case of key compromise, immediate
-       removal of the TXT record is essential.
-
-   2.  *Member Certificates:* - The primary revocation mechanism is
-       natural expiration.  - For urgent revocation, organisations
-       SHOULD maintain internal revocation lists.  - Implementations MAY
-       provide additional revocation mechanisms appropriate to their
-       specific needs.
-
-   3.  *Revocation Checking:* - The DomainAuth protocol does not require
-       online revocation checking.  - Implementations MAY implement
-       additional revocation checking mechanisms.  - Any additional
-       revocation mechanisms SHOULD be designed to work in offline
-       scenarios.
-
-   The reliance on short-lived certificates significantly reduces the
-   impact of key compromise and the need for complex revocation
-   infrastructures.  Organisations SHOULD issue member certificates with
-   the shortest practical validity periods for their use cases.
-
-4.5.  Member Id Bundle
-
-   The Member Id Bundle is a self-contained package that provides all
+   The Member Id Bundle is a self-contained message that provides all
    the information needed for a member to produce verifiable signatures.
    It is serialised using ASN.1 DER encoding with the following
    structure:
@@ -890,7 +683,8 @@ _domainauth.example.com. IN TXT "0 1 3 dGhpcyBpcyBub3QgYSByZWFsIGtleSBkaWdlc3Q 8
        version                  [0] INTEGER DEFAULT 0,
        dnssecChain              [1] DnssecChain,
        organisationCertificate  [2] Certificate,
-       memberCertificate        [3] Certificate
+       memberCertificate        [3] Certificate,
+       intermediateCertificates [4] SET OF Certificate OPTIONAL
    }
 
    Where:
@@ -906,6 +700,12 @@ _domainauth.example.com. IN TXT "0 1 3 dGhpcyBpcyBub3QgYSByZWFsIGtleSBkaWdlc3Q 8
    *  memberCertificate is the X.509 certificate issued to the member by
       the organisation.
 
+   *  intermediateCertificates is a set of X.509 certificates issued by
+      the organisation to other entities that can sign member
+      certificates.  It SHOULD NOT include certificates extraneous to
+      the chain between the organisation certificate and the member
+      certificate.
+
    The Member Id Bundle links the member to their organisation and
    provides all the cryptographic material needed to verify this
    relationship.  It serves as a precursor to signature production and
@@ -916,9 +716,9 @@ _domainauth.example.com. IN TXT "0 1 3 dGhpcyBpcyBub3QgYSByZWFsIGtleSBkaWdlc3Q 8
    only public information, but their integrity is critical for secure
    signature production.
 
-5.  Digital Signatures
+6.  Digital Signatures
 
-5.1.  CMS SignedData Structure
+6.1.  CMS SignedData Structure
 
    DomainAuth signatures use the Cryptographic Message Syntax (CMS) as
    defined in RFC 5652, with specific requirements for the DomainAuth
@@ -940,38 +740,34 @@ _domainauth.example.com. IN TXT "0 1 3 dGhpcyBpcyBub3QgYSByZWFsIGtleSBkaWdlc3Q 8
        digest algorithm MUST match the key strength (SHA-256 for RSA-
        2048, etc.).  - The signature algorithm MUST be RSA-PSS.
 
-   3.  *Signed Attributes:* - MUST include the content type attribute
-       (1.2.840.113549.1.9.3).  - MUST include the message digest
-       attribute (1.2.840.113549.1.9.4).  - MUST include the DomainAuth
-       signature metadata attribute (1.3.6.1.4.1.58708.1.0) containing:
-
-       *  Service OID: The OID of the service for which the signature is
-          valid.
-
-       *  Validity period: The start and end dates for signature
-          validity.  - For organisation signatures, MUST include the
-          DomainAuth member attribution attribute
-          (1.3.6.1.4.1.58708.1.2) containing:
-
-       *  A UTF8String identifying the member to whom the organisation
-          attributes the content.
-
-   4.  *Certificate Chain:* - For member signatures, MUST include the
-       member's certificate.  - For organisation signatures where the
-       signer is not the organisation itself (e.g., a delegated signer),
-       MUST include the signer's certificate.  - MAY include
-       intermediate certificates if applicable.  - MUST NOT include the
-       organisation certificate from the signature bundle.
+   See Section 7 for more details on the cryptographic algorithms used.
+   3. *Signed Attributes:* - MUST include the content type attribute
+   (1.2.840.113549.1.9.3).  - MUST include the message digest attribute
+   (1.2.840.113549.1.9.4).  - MUST include the DomainAuth signature
+   metadata attribute (1.3.6.1.4.1.58708.1.0) containing: - Service OID:
+   The OID of the service for which the signature is valid.  - Validity
+   period: The start and end dates for signature validity.  - For
+   organisation signatures, MUST include the DomainAuth member
+   attribution attribute (1.3.6.1.4.1.58708.1.2) containing: - A
+   UTF8String identifying the member to whom the organisation attributes
+   the content. 4. *Certificate Chain:* - For member signatures, MUST
+   include the member's certificate.  - For organisation signatures
+   where the signer is not the organisation itself (e.g., a delegated
+   signer), MUST include the signer's certificate.  - MAY include
+   intermediate certificates if applicable.  If included, they SHOULD
+   NOT include certificates extraneous to the chain between the
+   organisation certificate and the signer's certificate.  - MUST NOT
+   include the organisation certificate from the signature bundle.
 
    The DomainAuth signature metadata is encoded as an ASN.1 structure
    and is defined in section 5.4.
 
-5.2.  Signature Types
+6.2.  Signature Types
 
    DomainAuth supports two distinct types of signatures, offering
    different levels of assurance and operational flexibility:
 
-5.2.1.  Member Signatures
+6.2.1.  Member Signatures
 
    *  Produced by members (users or bots) using their own private key.
 
@@ -988,7 +784,7 @@ _domainauth.example.com. IN TXT "0 1 3 dGhpcyBpcyBub3QgYSByZWFsIGtleSBkaWdlc3Q 8
    *  Suitable for scenarios requiring strong non-repudiation at the
       individual member level.
 
-5.2.2.  Organisation Signatures
+6.2.2.  Organisation Signatures
 
    *  Produced directly by the organisation using its private key.
 
@@ -996,7 +792,7 @@ _domainauth.example.com. IN TXT "0 1 3 dGhpcyBpcyBub3QgYSByZWFsIGtleSBkaWdlc3Q 8
       certificate in the SignerInfo (unless a separate signing key
       delegated by the organisation is used).
 
-   *  MUST include the member attribution attribute (see Section 5.2.3)
+   *  MUST include the member attribution attribute (see Section 6.2.3)
       in the signed attributes, indicating which member the organisation
       claims authored the content.
 
@@ -1012,9 +808,9 @@ _domainauth.example.com. IN TXT "0 1 3 dGhpcyBpcyBub3QgYSByZWFsIGtleSBkaWdlc3Q 8
 
    The presence or absence of the member attribution attribute reliably
    distinguishes between the two signature types during verification
-   (see Section 5.5.1).
+   (see Section 6.5.1).
 
-5.2.3.  Member Attribution
+6.2.3.  Member Attribution
 
    For organisation signatures, a required signed attribute is included
    in the CMS SignedData structure to attribute the content to a
@@ -1047,7 +843,7 @@ _domainauth.example.com. IN TXT "0 1 3 dGhpcyBpcyBub3QgYSByZWFsIGtleSBkaWdlc3Q 8
    cryptographically proven by the member.  Verifiers MUST present this
    distinction clearly to end users.
 
-5.3.  Signature Bundle
+6.3.  Signature Bundle
 
    The Signature Bundle is the core artefact of the DomainAuth protocol,
    containing a digital signature and all the information needed to
@@ -1075,7 +871,7 @@ _domainauth.example.com. IN TXT "0 1 3 dGhpcyBpcyBub3QgYSByZWFsIGtleSBkaWdlc3Q 8
 
    The specific contents of the signature field depend on whether it is
    a member signature or an organisation signature, as detailed in
-   Section 5.2 and Section 5.1.
+   Section 6.2 and Section 6.1.
 
    The signature type is determined by the presence of the member
    attribution attribute within the SignedData structure: if present,
@@ -1088,7 +884,7 @@ _domainauth.example.com. IN TXT "0 1 3 dGhpcyBpcyBub3QgYSByZWFsIGtleSBkaWdlc3Q 8
    information needed for offline verification of the signature, without
    requiring any network lookups or external data sources.
 
-5.4.  Signature Metadata
+6.4.  Signature Metadata
 
    Each DomainAuth signature includes metadata that binds it to a
    specific service and validity period.  This metadata is included as a
@@ -1134,9 +930,9 @@ _domainauth.example.com. IN TXT "0 1 3 dGhpcyBpcyBub3QgYSByZWFsIGtleSBkaWdlc3Q 8
    validity periods of certificates and DNSSEC records to determine the
    overall validity period of the signature.
 
-5.5.  Signature Verification
+6.5.  Signature Verification
 
-5.5.1.  Verification Process
+6.5.1.  Verification Process
 
    The verification of a DomainAuth signature involves multiple steps
    that validate the entire chain of trust from the DNSSEC
@@ -1309,7 +1105,7 @@ _domainauth.example.com. IN TXT "0 1 3 dGhpcyBpcyBub3QgYSByZWFsIGtleSBkaWdlc3Q 8
    any steps, to ensure the security properties of the DomainAuth
    protocol.
 
-5.5.2.  Implementation Recommendations
+6.5.2.  Implementation Recommendations
 
    1.  *Library/SDK Design:* - DomainAuth libraries and SDKs SHOULD
        provide distinct functions for creating member signatures and
@@ -1331,7 +1127,7 @@ _domainauth.example.com. IN TXT "0 1 3 dGhpcyBpcyBub3QgYSByZWFsIGtleSBkaWdlc3Q 8
        the specific context or user role.  - In hybrid implementations,
        clear policies should govern when each signature type is used.
 
-5.5.3.  User Interface Guidelines
+6.5.3.  User Interface Guidelines
 
    1.  *Signature Type Indication:* User interfaces SHOULD clearly
        indicate whether a signature is a member signature or an
@@ -1355,9 +1151,74 @@ _domainauth.example.com. IN TXT "0 1 3 dGhpcyBpcyBub3QgYSByZWFsIGtleSBkaWdlc3Q 8
        Different error handling may be appropriate for different
        signature types, reflecting their distinct trust models.
 
-6.  Identity Model
+7.  Cryptographic Algorithms
 
-6.1.  Organisations
+   This section describes the cryptographic algorithms used in the
+   DomainAuth protocol.  It applies to the X.509 certificates and CMS
+   SignedData structures, but not to the DNSSEC chain.
+
+7.1.  Digital Signature Algorithms
+
+7.1.1.  RSA-PSS
+
+   DomainAuth uses RSA-PSS (Probabilistic Signature Scheme) as the
+   digital signature algorithm with the following parameters:
+
+   *  RSA-PSS with modulus 2048 bits: Minimum acceptable security level.
+
+   *  RSA-PSS with modulus 3072 bits: Recommended for general use.
+
+   *  RSA-PSS with modulus 4096 bits: Recommended for high-security
+      applications.
+
+   For RSA-PSS signatures:
+
+   *  RSA-2048 MUST use SHA-256 for both key identification and
+      signature operations.
+
+   *  RSA-3072 MUST use SHA-384 for both key identification and
+      signature operations.
+
+   *  RSA-4096 MUST use SHA-512 for both key identification and
+      signature operations.
+
+   The minimum modulus size for RSA keys is 2048 bits.  RSA key
+   generation MUST follow industry best practices for prime generation
+   and testing and MUST use a cryptographically secure random number
+   generator.
+
+7.2.  Hash Functions
+
+   DomainAuth uses the following hash functions:
+
+   *  SHA-256: Recommended for general use.
+
+   *  SHA-384: Recommended for higher security applications.
+
+   *  SHA-512: Recommended for highest security applications.
+
+   All compliant implementations MUST support these algorithms.  The
+   choice of algorithm strength should be appropriate for the security
+   requirements of the application.
+
+   Future versions of the protocol MAY introduce additional algorithms,
+   but this V1 specification intentionally limits the supported
+   algorithms to those with well-established security properties and
+   widespread implementation support.
+
+8.  Maximum Validity Period
+
+   Digital signatures MUST NOT have a validity period greater than
+   7,776,000 seconds (90 days).  This limit applies to DNSSEC RRSIG
+   records, X.509 certificates, and CMS SignedData structures (including
+   the signature metadata).
+
+   Similarly, verifiers MUST NOT allow a validity period greater than
+   this limit when verifying signatures over a time period.
+
+9.  Identity Model
+
+9.1.  Organisations
 
    In the DomainAuth protocol, an organisation is represented by a
    domain name and serves as the foundational identity unit.
@@ -1383,16 +1244,16 @@ _domainauth.example.com. IN TXT "0 1 3 dGhpcyBpcyBub3QgYSByZWFsIGtleSBkaWdlc3Q 8
    signatures within its domain.  No external authority can issue valid
    certificates for the organisation or its members.
 
-   Newly registered domains SHOULD wait at least the maximum TTL (90
-   days) before implementing DomainAuth to prevent potential attacks
-   using DNSSEC chains from previous domain owners.
+   Newly registered domains SHOULD wait at least the maximum validity
+   period in Section 8 before enabling DomainAuth to prevent potential
+   attacks using DNSSEC chains from previous domain owners.
 
    Subdomains MAY implement DomainAuth separately from their parent
    domains, provided they have their own DNSSEC configuration.  Each
    subdomain operates as an independent organisation within the
    DomainAuth ecosystem.
 
-6.2.  Members
+9.2.  Members
 
    Members are entities that act on behalf of an organisation and come
    in two forms: users and bots.
@@ -1432,7 +1293,7 @@ _domainauth.example.com. IN TXT "0 1 3 dGhpcyBpcyBub3QgYSByZWFsIGtleSBkaWdlc3Q 8
    reflected in both the certificate structure and the resulting
    signature verification output.
 
-6.3.  Naming Conventions and Restrictions
+9.3.  Naming Conventions and Restrictions
 
    DomainAuth imposes specific restrictions on member names to prevent
    phishing attacks and ensure consistent processing across
@@ -1464,9 +1325,9 @@ _domainauth.example.com. IN TXT "0 1 3 dGhpcyBpcyBub3QgYSByZWFsIGtleSBkaWdlc3Q 8
    Organisations SHOULD establish and enforce consistent naming policies
    for their users to maintain clarity and prevent confusion.
 
-7.  Service Integration
+10.  Service Integration
 
-7.1.  Service OIDs
+10.1.  Service OIDs
 
    DomainAuth uses Object Identifiers (OIDs) to uniquely identify
    services and applications that use the protocol.  Service OIDs serve
@@ -1498,17 +1359,17 @@ _domainauth.example.com. IN TXT "0 1 3 dGhpcyBpcyBub3QgYSByZWFsIGtleSBkaWdlc3Q 8
    are valid.  This provides important namespace isolation and prevents
    cross-service attacks.
 
-7.2.  Service-Specific Validation Rules
+10.2.  Service-Specific Validation Rules
 
    Services using DomainAuth MAY define additional validation rules
    beyond the core protocol requirements.  These rules allow services to
    implement domain-specific security policies.
 
    1.  *TTL Constraints:* - Services MUST specify a maximum TTL for
-       signatures.  - The TTL MUST be within the range of 1 second to 90
-       days.  - For the minimum TTL, several minutes is recommended to
-       account for clock drift.  - Services SHOULD choose the shortest
-       TTL that meets their requirements.
+       signatures.  - The TTL MUST be within the range of 1 second to
+       the limit specified in Section 8.  - For the minimum TTL, several
+       minutes is recommended to account for clock drift.  - Services
+       SHOULD choose the shortest TTL that meets their requirements.
 
    2.  *Content Type Restrictions:* - Services MAY restrict the types of
        content that can be signed.  - Content type restrictions SHOULD
@@ -1531,7 +1392,7 @@ _domainauth.example.com. IN TXT "0 1 3 dGhpcyBpcyBub3QgYSByZWFsIGtleSBkaWdlc3Q 8
    properties of the DomainAuth protocol while addressing service-
    specific requirements.
 
-7.3.  Implementation Guidelines
+10.3.  Implementation Guidelines
 
    Service developers integrating DomainAuth should adhere to the
    following guidelines to ensure secure and consistent implementation:
@@ -1570,9 +1431,9 @@ _domainauth.example.com. IN TXT "0 1 3 dGhpcyBpcyBub3QgYSByZWFsIGtleSBkaWdlc3Q 8
    consistent security properties and user experience across different
    implementations and platforms.
 
-8.  Implementation Guidance
+11.  Implementation Guidance
 
-8.1.  Interoperability Considerations
+11.1.  Interoperability Considerations
 
    To ensure interoperability between different DomainAuth
    implementations:
@@ -1614,7 +1475,7 @@ _domainauth.example.com. IN TXT "0 1 3 dGhpcyBpcyBub3QgYSByZWFsIGtleSBkaWdlc3Q 8
    Regular interoperability testing between different implementations is
    recommended to ensure ongoing compatibility.
 
-8.2.  Performance Optimisations
+11.2.  Performance Optimisations
 
    DomainAuth implementations can benefit from several performance
    optimisations whilst maintaining security:
@@ -1652,7 +1513,7 @@ _domainauth.example.com. IN TXT "0 1 3 dGhpcyBpcyBub3QgYSByZWFsIGtleSBkaWdlc3Q 8
    code to identify bottlenecks and focus optimisation efforts
    accordingly.
 
-9.  Implementation Status
+12.  Implementation Status
 
    This section records the status of known implementations of the
    protocol defined by this specification at the time of posting of this
@@ -1691,6 +1552,11 @@ _domainauth.example.com. IN TXT "0 1 3 dGhpcyBpcyBub3QgYSByZWFsIGtleSBkaWdlc3Q 8
          followed by a space.  This value does not have a version number
          in VeraId.
 
+   *  VeraId does not explicitly support intermediate certificates, and
+      its implementations do not support them.  Consequently, the
+      intermediateCertificates field in the Member Id Bundle is not
+      present in VeraId.
+
    VeraId is led by the author of this document, who intends to
    deprecate the VeraId specification in favour of DomainAuth and update
    the reference implementations to fully comply with this
@@ -1700,7 +1566,7 @@ _domainauth.example.com. IN TXT "0 1 3 dGhpcyBpcyBub3QgYSByZWFsIGtleSBkaWdlc3Q 8
    audits as of this writing, and their respective reports are expected
    to be published in April 2025.
 
-9.1.  VeraId JavaScript Library
+12.1.  VeraId JavaScript Library
 
    *  Organisation: Relaycorp.
 
@@ -1719,7 +1585,7 @@ _domainauth.example.com. IN TXT "0 1 3 dGhpcyBpcyBub3QgYSByZWFsIGtleSBkaWdlc3Q 8
 
    *  Last updated: 2025
 
-9.2.  VeraId JVM Library
+12.2.  VeraId JVM Library
 
    *  Organisation: Relaycorp.
 
@@ -1738,7 +1604,7 @@ _domainauth.example.com. IN TXT "0 1 3 dGhpcyBpcyBub3QgYSByZWFsIGtleSBkaWdlc3Q 8
 
    *  Last updated: 2025
 
-9.3.  VeraId Authority
+12.3.  VeraId Authority
 
    *  Organisation: Relaycorp
 
@@ -1761,9 +1627,9 @@ _domainauth.example.com. IN TXT "0 1 3 dGhpcyBpcyBub3QgYSByZWFsIGtleSBkaWdlc3Q 8
 
    *  Last updated: 2025
 
-10.  Security Considerations
+13.  Security Considerations
 
-10.1.  DNSSEC Dependency
+13.1.  DNSSEC Dependency
 
    DomainAuth's security model relies fundamentally on DNSSEC, which
    introduces specific security considerations:
@@ -1824,7 +1690,7 @@ _domainauth.example.com. IN TXT "0 1 3 dGhpcyBpcyBub3QgYSByZWFsIGtleSBkaWdlc3Q 8
    compared to centralised PKI models, particularly for offline
    verification scenarios.
 
-10.2.  Homographic and Character Encoding Attacks
+13.2.  Homographic and Character Encoding Attacks
 
    User-friendly identifiers like domain names and usernames are
    susceptible to visual spoofing attacks:
@@ -1883,7 +1749,7 @@ _domainauth.example.com. IN TXT "0 1 3 dGhpcyBpcyBub3QgYSByZWFsIGtleSBkaWdlc3Q 8
    is critical to help users correctly identify the source of signed
    content.
 
-10.3.  Domain Ownership Changes
+13.3.  Domain Ownership Changes
 
    Domain transfers present specific security challenges for the
    DomainAuth protocol:
@@ -1891,8 +1757,8 @@ _domainauth.example.com. IN TXT "0 1 3 dGhpcyBpcyBub3QgYSByZWFsIGtleSBkaWdlc3Q 8
    1.  *Waiting Period:*
 
        *  Organisations SHOULD delay implementing DomainAuth until at
-          least the maximum TTL (90 days) has elapsed since the domain
-          was registered or acquired.
+          least the period specified in Section 8 has elapsed since the
+          domain was registered or acquired.
 
        *  This prevents the DNSSEC chain from the previous owner from
           remaining valid.
@@ -1934,7 +1800,7 @@ _domainauth.example.com. IN TXT "0 1 3 dGhpcyBpcyBub3QgYSByZWFsIGtleSBkaWdlc3Q 8
    limiting the time window during which historical signatures remain
    valid.
 
-10.4.  Offline Verification Limitations
+13.4.  Offline Verification Limitations
 
    Offline verification introduces specific security considerations:
 
@@ -1997,7 +1863,7 @@ _domainauth.example.com. IN TXT "0 1 3 dGhpcyBpcyBub3QgYSByZWFsIGtleSBkaWdlc3Q 8
    DomainAuth provides a balanced approach that offers strong
    verification guarantees whilst supporting offline operation.
 
-10.5.  Organisation Signatures and Member Attribution
+13.5.  Organisation Signatures and Member Attribution
 
    Organisation signatures with member attribution introduce specific
    security considerations that implementers and developers should be
@@ -2089,13 +1955,49 @@ _domainauth.example.com. IN TXT "0 1 3 dGhpcyBpcyBub3QgYSByZWFsIGtleSBkaWdlc3Q 8
       organisation signatures with member attribution in high-security
       contexts.
 
-11.  IANA Considerations
+13.6.  Key Management
+
+   Proper key management is essential for the security of the DomainAuth
+   protocol.  The following requirements apply:
+
+   1.  *Key Generation:* - Keys MUST be generated using a
+       cryptographically secure random number generator.  - RSA key
+       generation MUST follow industry best practices for prime
+       generation and testing.  - The minimum modulus size for RSA keys
+       is 2048 bits.
+
+   2.  *Key Storage:* - Private keys MUST be protected from unauthorised
+       access.  - Organisation private keys SHOULD be stored with the
+       highest level of protection available, preferably in hardware
+       security modules (HSMs).  - Member private keys SHOULD be
+       protected with appropriate measures, such as operating system
+       security mechanisms or hardware tokens.
+
+   3.  *Key Rotation:* - Organisations SHOULD establish a regular
+       schedule for rotating their keys.  - Key rotation SHOULD be
+       performed by generating a new key pair and updating the
+       DomainAuth TXT record.  - During key rotation, organisations
+       SHOULD maintain both the old and new keys in DNS for a transition
+       period, allowing for graceful migration.  - Member certificates
+       issued under the old key remain valid until their expiration but
+       SHOULD be renewed under the new key when practical.
+
+   4.  *Key Compromise:* - In the event of a key compromise, immediate
+       rotation is REQUIRED.  - The compromised key's TXT record SHOULD
+       be removed as soon as possible.  - Short certificate lifetimes
+       help mitigate the impact of key compromises.
+
+   Implementations SHOULD provide guidance and tools to assist with
+   secure key management practices appropriate to the security
+   requirements of the organisation.
+
+14.  IANA Considerations
 
    This document has no IANA actions.
 
-12.  References
+15.  References
 
-12.1.  Normative References
+15.1.  Normative References
 
    [ASN.1]    International Telecommunications Union, "Information
               Technology — ASN.1 encoding rules: Specification of Basic
@@ -2135,7 +2037,7 @@ _domainauth.example.com. IN TXT "0 1 3 dGhpcyBpcyBub3QgYSByZWFsIGtleSBkaWdlc3Q 8
               (CRL) Profile", RFC 5280, DOI 10.17487/RFC5280, May 2008,
               <https://www.rfc-editor.org/rfc/rfc5280>.
 
-12.2.  Informative References
+15.2.  Informative References
 
    [AWALA]    Narea, G., "Awala", 2019, <https://specs.awala.network/>.
 

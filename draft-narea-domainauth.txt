@@ -101,7 +101,6 @@ Table of Contents
      6.2.  Signature Types
        6.2.1.  Member Signatures
        6.2.2.  Organisation Signatures
-       6.2.3.  Member Attribution
      6.3.  Signature Bundle
      6.4.  Signature Metadata
      6.5.  Signature Verification
@@ -678,6 +677,10 @@ _domainauth.example.com. IN TXT "0 1 3 dGhpcyBpcyBub3QgYSByZWFsIGtleSBkaWdlc3Q 8
    Length Constraint SHOULD be set to the lowest possible value for the
    length of the intended certificate chains.
 
+   Note that if an intermediate certificate is assigned a Common Name,
+   it could also be used as a member certificate and it could therefore
+   produce member signatures.
+
 5.  Member Id Bundle
 
    The Member Id Bundle is a self-contained message that provides all
@@ -686,7 +689,7 @@ _domainauth.example.com. IN TXT "0 1 3 dGhpcyBpcyBub3QgYSByZWFsIGtleSBkaWdlc3Q 8
    structure:
 
    MemberIdBundle ::= SEQUENCE {
-       version                  [0] INTEGER DEFAULT 0,
+       version                  [0] INTEGER,
        dnssecChain              [1] DnssecChain,
        organisationCertificate  [2] Certificate,
        memberCertificate        [3] Certificate,
@@ -695,7 +698,8 @@ _domainauth.example.com. IN TXT "0 1 3 dGhpcyBpcyBub3QgYSByZWFsIGtleSBkaWdlc3Q 8
 
    Where:
 
-   *  version is the format version (currently 0).
+   *  version is the format version, set to 0 (zero) in this version of
+      the specification.
 
    *  dnssecChain contains the serialised DNSSEC chain proving the
       authenticity of the organisation's DomainAuth TXT record.
@@ -726,47 +730,36 @@ _domainauth.example.com. IN TXT "0 1 3 dGhpcyBpcyBub3QgYSByZWFsIGtleSBkaWdlc3Q 8
 
 6.1.  CMS SignedData Structure
 
-   DomainAuth signatures use the Cryptographic Message Syntax (CMS) as
-   defined in RFC 5652, with specific requirements for the DomainAuth
-   protocol:
+   DomainAuth signatures use CMS SignedData structures as defined in
+   Section 5 of [CMS], with specific requirements and recommendations
+   for the DomainAuth protocol:
 
-   1.  *SignedData Structure:* - The content type MUST be id-data
-       (1.2.840.113549.1.7.1).  - The version MUST be 3.  - The
-       digestAlgorithms set MUST include the algorithm used for signing.
-       - The encapContentInfo content field MAY be absent for detached
-       signatures.
+   *  signerInfos field:
 
-   2.  *Signer Info:* - For member signatures, the SignerInfo structure
-       MUST include the signer's certificate.  - For organisation
-       signatures, the signer's certificate MAY be included if it
-       differs from the organisation certificate in the signature
-       bundle.  - Both signature types MAY include intermediate
-       certificates if the signer's certificate is issued through a
-       certification path from the organisation certificate.  - The
-       digest algorithm MUST match the key strength (SHA-256 for RSA-
-       2048, etc.).  - The signature algorithm MUST be RSA-PSS.
+      -  There MUST be exactly one SignerInfo.
 
-   See Section 7 for more details on the cryptographic algorithms used.
-   3. *Signed Attributes:* - MUST include the content type attribute
-   (1.2.840.113549.1.9.3).  - MUST include the message digest attribute
-   (1.2.840.113549.1.9.4).  - MUST include the DomainAuth signature
-   metadata attribute (1.3.6.1.4.1.58708.1.0) containing: - Service OID:
-   The OID of the service for which the signature is valid.  - Validity
-   period: The start and end dates for signature validity.  - For
-   organisation signatures, MUST include the DomainAuth member
-   attribution attribute (1.3.6.1.4.1.58708.1.2) containing: - A
-   UTF8String identifying the member to whom the organisation attributes
-   the content. 4. *Certificate Chain:* - For member signatures, MUST
-   include the member's certificate.  - For organisation signatures
-   where the signer is not the organisation itself (e.g., a delegated
-   signer), MUST include the signer's certificate.  - MAY include
-   intermediate certificates if applicable.  If included, they SHOULD
-   NOT include certificates extraneous to the chain between the
-   organisation certificate and the signer's certificate.  - MUST NOT
-   include the organisation certificate from the signature bundle.
+      -  The digest and signature algorithms MUST comply with Section 7.
 
-   The DomainAuth signature metadata is encoded as an ASN.1 structure
-   and is defined in section 5.4.
+      -  The following signed attributes MUST be included:
+
+         o  Content Type attribute as defined in Section 11.1 of [CMS].
+
+         o  Message Digest attribute as defined in Section 11.2 of
+            [CMS].
+
+         o  DomainAuth signature metadata attribute as defined in
+            Section 6.4.
+
+   *  certificates field:
+
+      -  Any intermediate certificates between the organisation and the
+         signer MUST be included.
+
+      -  The organisation certificate SHOULD NOT be included, since it
+         is already included in the Signature Bundle.
+
+      -  Certificates outside the certification path between the
+         organisation and the signer SHOULD NOT be included.
 
 6.2.  Signature Types
 
@@ -775,89 +768,62 @@ _domainauth.example.com. IN TXT "0 1 3 dGhpcyBpcyBub3QgYSByZWFsIGtleSBkaWdlc3Q 8
 
 6.2.1.  Member Signatures
 
-   *  Produced by members (users or bots) using their own private key.
+   Member signatures are produced by members (users or bots) using their
+   own private key.  They are suitable for scenarios requiring strong
+   non-repudiation at the individual member level, or when members need
+   to produce signatures whilst being offline for extended periods.
 
-   *  The SignedData structure includes the member's certificate in the
-      SignerInfo.
-
-   *  Cryptographically proves that the specific member created the
-      signature.
-
-   *  The verification path extends from DNSSEC to the organisation
-      certificate, then to the member certificate, and finally to the
-      signature itself.
-
-   *  Suitable for scenarios requiring strong non-repudiation at the
-      individual member level.
+   The member's certificate MUST be included in the
+   SignedData.certificates field.
 
 6.2.2.  Organisation Signatures
 
-   *  Produced directly by the organisation using its private key.
+   Organisation signatures are produced by the organisation using its
+   private key or by a delegated signing key.  Such signatures are
+   suitable for scenarios where individual member certificate management
+   is impractical, or when the organisation takes direct responsibility
+   for the content.
 
-   *  The SignedData structure does _not_ include the member's
-      certificate in the SignerInfo (unless a separate signing key
-      delegated by the organisation is used).
-
-   *  MUST include the member attribution attribute (see Section 6.2.3)
-      in the signed attributes, indicating which member the organisation
-      claims authored the content.
-
-   *  Cryptographically proves that the organisation vouches for the
-      content and its attribution.
-
-   *  The verification path extends from DNSSEC to the organisation
-      certificate and then directly to the signature.
-
-   *  Suitable for scenarios where individual member certificate
-      management is impractical, or when the organisation takes direct
-      responsibility for the content.
-
-   The presence or absence of the member attribution attribute reliably
-   distinguishes between the two signature types during verification
-   (see Section 6.5.1).
-
-6.2.3.  Member Attribution
-
-   For organisation signatures, a required signed attribute is included
-   in the CMS SignedData structure to attribute the content to a
-   specific member:
+   The SignerInfo structure MUST include the DomainAuth member
+   attribution in its signed attributes, using the OID
+   1.3.6.1.4.1.58708.1.2 and the value defined in the ASN.1 structure
+   below:
 
    MemberAttribution ::= UTF8String
 
-   The member attribution attribute (1.3.6.1.4.1.58708.1.2) serves the
-   following purposes:
+   The member attribution attribute serves the following purposes:
 
-   1.  *Content authorship:* Indicates which member authored the
-       content, even when the organisation signs directly.
+   *  *Content authorship:* Indicates which member authored the content,
+      even when the organisation signs directly.
 
-   2.  *Operational flexibility:* Allows organisations to produce
-       signatures on behalf of members without requiring certificate
-       management for ephemeral members.
+   *  *Operational flexibility:* Allows organisations to produce
+      signatures on behalf of members without requiring certificate
+      management.
 
-   3.  *Accountability:* Maintains a record of which member is
-       responsible for the content, even when using organisation
-       signatures.
+   *  *Accountability:* Maintains a record of which member is
+      responsible for the content, even when using organisation
+      signatures.
 
-   4.  *Signature type identification:* Enables reliable determination
-       of the signature type during verification.
+   *  *Signature type identification:* Enables reliable determination of
+      the signature type during verification.
 
    The member attribution value MUST conform to the same naming
    conventions defined in Section 9.  For users, this is the username;
    for bots, this is the at sign (@).
 
    Member attribution is a claim made by the organisation, not
-   cryptographically proven by the member.  Verifiers MUST present this
-   distinction clearly to end users.
+   cryptographically proven by the member.  Verifiers SHOULD present
+   this distinction clearly to end users.
 
 6.3.  Signature Bundle
 
-   The Signature Bundle is the core artefact of the DomainAuth protocol,
-   containing a digital signature and all the information needed to
-   verify it offline.  It is serialised using ASN.1 DER encoding with
-   the following structure:
+   The Signature Bundle is the primary artefact of the DomainAuth
+   protocol, containing a digital signature and all the information
+   needed to verify it offline.  It is serialised using ASN.1 DER
+   encoding with the following structure:
 
    SignatureBundle ::= SEQUENCE {
-       version                  [0] INTEGER DEFAULT 0,
+       version                  [0] INTEGER,
        dnssecChain              [1] DnssecChain,
        organisationCertificate  [2] Certificate,
        signature                [3] ContentInfo
@@ -865,7 +831,8 @@ _domainauth.example.com. IN TXT "0 1 3 dGhpcyBpcyBub3QgYSByZWFsIGtleSBkaWdlc3Q 8
 
    Where:
 
-   *  version is the format version (currently 0).
+   *  version is the format version, set to 0 (zero) in this version of
+      the specification.
 
    *  dnssecChain contains the serialised DNSSEC chain proving the
       authenticity of the organisation's DomainAuth TXT record.
@@ -1996,7 +1963,7 @@ DnssecChain ::= SET OF OCTET STRING
 -- Default tag defines all tags as IMPLICIT
 -- Member Id Bundle
 MemberIdBundle ::= SEQUENCE {
-    version                  [0] INTEGER DEFAULT 0,
+    version                  [0] INTEGER,
     dnssecChain              [1] DnssecChain,
     organisationCertificate  [2] Certificate,
     memberCertificate        [3] Certificate
@@ -2004,7 +1971,7 @@ MemberIdBundle ::= SEQUENCE {
 
 -- Signature Bundle
 SignatureBundle ::= SEQUENCE {
-    version                  [0] INTEGER DEFAULT 0,
+    version                  [0] INTEGER,
     dnssecChain              [1] DnssecChain,
     organisationCertificate  [2] Certificate,
     signature                [3] ContentInfo

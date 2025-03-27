@@ -291,9 +291,9 @@ This chain MUST include all DNSSEC responses necessary to validate the `_domaina
 
 Implementations SHOULD optimise the serialisation to minimise redundancy and size whilst ensuring completeness for offline verification.
 
-# Cryptographic Foundation
+# X.509 Certificate Infrastructure
 
-## Supported Algorithms
+## Supported Cryptographic Algorithms
 
 DomainAuth relies on established cryptographic algorithms to ensure security and interoperability. The protocol defines the following supported algorithms:
 
@@ -340,7 +340,7 @@ Proper key management is essential for the security of the DomainAuth protocol. 
 
 Implementations SHOULD provide guidance and tools to assist with secure key management practices appropriate to the security requirements of the organisation.
 
-## Certificate Structure
+## Certificate Profiles
 
 DomainAuth uses X.509 certificates with specific requirements for organisations and members. All certificates MUST comply with the X.509v3 standard (RFC 5280).
 
@@ -387,7 +387,119 @@ DomainAuth uses X.509 certificates with specific requirements for organisations 
 
 Certificates MUST NOT include extensions not specified in this profile without careful consideration of their security implications.
 
-## Signature Format
+## Certificate Lifecycle
+
+### Organisation Certificate Issuance
+
+Organisation certificates form the foundation of the DomainAuth trust model and MUST be self-issued by the organisation.
+
+The process for issuing an organisation certificate is as follows:
+
+1. The organisation generates an RSA key pair with a modulus of 2048, 3072, or 4096 bits.
+2. The organisation creates a self-signed X.509 certificate with the following characteristics:
+  - Subject and Issuer fields both containing the organisation's domain name as CommonName.
+  - A validity period appropriate for the organisation's security policy.
+  - The Basic Constraints extension with the CA flag set to TRUE.
+  - Subject Key Identifier and Authority Key Identifier extensions.
+3. The organisation calculates the appropriate key identifier as specified in the DomainAuth TXT Record Format (section 3.2).
+4. The organisation publishes a DomainAuth TXT record at `_domainauth.<domain>` containing the key algorithm, key id type, key id, TTL override, and optional service OID.
+5. The organisation ensures that DNSSEC is properly configured and that the TXT record is signed.
+
+The organisation certificate SHOULD be created with appropriate key management procedures, ideally using hardware security modules or similar protection mechanisms for the private key.
+
+Organisations MAY issue multiple organisation certificates with different keys for different purposes or for key rotation, publishing corresponding TXT records for each.
+
+### Member Certificate Issuance
+
+Member certificates authorise specific members (users or bots) to produce signatures on behalf of the organisation.
+
+The process for issuing a member certificate is as follows:
+
+1. The member generates an RSA key pair with a modulus of 2048, 3072, or 4096 bits.
+2. The member provides the public key to the organisation's certificate issuance system.
+3. The organisation verifies the member's identity according to its internal policies.
+4. The organisation issues an X.509 certificate with the following characteristics:
+  - Subject CommonName containing the member's username (for users) or the at sign (`@`) (for bots).
+  - Issuer matching the Subject of the organisation certificate.
+  - A validity period appropriate for the member type and service requirements.
+  - The Basic Constraints extension with the CA flag set to FALSE.
+  - Subject Key Identifier extension.
+  - Authority Key Identifier matching the Subject Key Identifier of the organisation certificate.
+5. The organisation delivers the certificate to the member through a secure channel.
+
+Organisations SHOULD implement appropriate authorisation checks and approval workflows before issuing member certificates.
+
+Service-specific extensions MAY be included in member certificates to restrict their use to specific contexts or applications.
+
+### Certificate Validity Periods
+
+DomainAuth favours short-lived certificates over complex revocation mechanisms. The following guidelines apply to certificate validity periods:
+
+1. **Organisation Certificates:**
+  - SHOULD have a validity period aligned with the organisation's key management policy.
+  - SHOULD NOT exceed 1 year.
+  - MAY be shorter if the organisation implements frequent key rotation.
+2. **Member Certificates:**
+  - SHOULD be short-lived, with validity periods of 90 days or less.
+  - MUST NOT exceed the validity period of the issuing organisation certificate.
+  - MAY be as short as a few hours for high-security applications.
+  - SHOULD balance security requirements with operational concerns about renewal frequency.
+3. **Validity Period Intersection:**
+  - For signature verification, the validity period is the intersection of:
+    - The organisation certificate validity period.
+    - The member certificate validity period.
+    - The signature metadata validity period.
+    - The DNSSEC record validity period (as determined by the TTL override).
+  - Signatures are only valid when the verification time falls within this intersection.
+
+Short certificate lifetimes provide natural revocation through expiration, reducing the complexity of the protocol and eliminating dependencies on online revocation checking mechanisms.
+
+### Certificate Revocation
+
+DomainAuth primarily relies on short-lived certificates to manage certificate lifecycle, but situations may arise where explicit revocation is necessary.
+
+1. **Organisation Certificates:**
+  - Revocation is achieved by removing or updating the DomainAuth TXT record.
+  - Old signatures using the revoked certificate will no longer verify once the DNSSEC chain is refreshed.
+  - In case of key compromise, immediate removal of the TXT record is essential.
+2. **Member Certificates:**
+  - The primary revocation mechanism is natural expiration.
+  - For urgent revocation, organisations SHOULD maintain internal revocation lists.
+  - Implementations MAY provide additional revocation mechanisms appropriate to their specific needs.
+3. **Revocation Checking:**
+  - The DomainAuth protocol does not require online revocation checking.
+  - Implementations MAY implement additional revocation checking mechanisms.
+  - Any additional revocation mechanisms SHOULD be designed to work in offline scenarios.
+
+The reliance on short-lived certificates significantly reduces the impact of key compromise and the need for complex revocation infrastructures. Organisations SHOULD issue member certificates with the shortest practical validity periods for their use cases.
+
+## Member Id Bundle
+
+The Member Id Bundle is a self-contained package that provides all the information needed for a member to produce verifiable signatures. It is serialised using ASN.1 DER encoding with the following structure:
+
+~~~~~~~
+MemberIdBundle ::= SEQUENCE {
+    version                  [0] INTEGER DEFAULT 0,
+    dnssecChain              [1] DnssecChain,
+    organisationCertificate  [2] Certificate,
+    memberCertificate        [3] Certificate
+}
+~~~~~~~
+
+Where:
+
+- `version` is the format version (currently 0).
+- `dnssecChain` contains the serialised DNSSEC chain proving the authenticity of the organisation's DomainAuth TXT record.
+- `organisationCertificate` is the organisation's self-issued X.509 certificate.
+- `memberCertificate` is the X.509 certificate issued to the member by the organisation.
+
+The Member Id Bundle links the member to their organisation and provides all the cryptographic material needed to verify this relationship. It serves as a precursor to signature production and is typically distributed to members by their organisation's certificate management system.
+
+Member Id Bundles are not inherently confidential, as they contain only public information, but their integrity is critical for secure signature production.
+
+# Digital Signatures
+
+## CMS SignedData Structure
 
 DomainAuth signatures use the Cryptographic Message Syntax (CMS) as defined in RFC 5652, with specific requirements for the DomainAuth protocol:
 
@@ -416,184 +528,49 @@ DomainAuth signatures use the Cryptographic Message Syntax (CMS) as defined in R
   - MAY include intermediate certificates if applicable.
   - MUST NOT include the organisation certificate from the signature bundle.
 
-The DomainAuth signature metadata is encoded as an ASN.1 structure and is defined in section 7.3.
+The DomainAuth signature metadata is encoded as an ASN.1 structure and is defined in section 5.4.
 
-# Identity Model
+## Signature Types
 
-## Organisations
+DomainAuth supports two distinct types of signatures, offering different levels of assurance and operational flexibility:
 
-In the DomainAuth protocol, an organisation is represented by a domain name and serves as the foundational identity unit. Organisations have full control over their DomainAuth implementation and member management.
+### Member Signatures
 
-Organisations MUST:
+- Produced by members (users or bots) using their own private key.
+- The `SignedData` structure includes the member's certificate in the `SignerInfo`.
+- Cryptographically proves that the specific member created the signature.
+- The verification path extends from DNSSEC to the organisation certificate, then to the member certificate, and finally to the signature itself.
+- Suitable for scenarios requiring strong non-repudiation at the individual member level.
 
-1. Own or control a domain name with properly configured DNSSEC.
-2. Generate and safeguard an RSA key pair for their organisation certificate.
-3. Self-issue an X.509 certificate with the domain name as the CommonName.
-4. Publish a DomainAuth TXT record at `_domainauth.<domain>` with the appropriate key information.
-5. Manage the issuance and revocation of member certificates.
+### Organisation Signatures
 
-The organisation is the trust anchor for all certificates and signatures within its domain. No external authority can issue valid certificates for the organisation or its members.
+- Produced directly by the organisation using its private key.
+- The `SignedData` structure does *not* include the member's certificate in the `SignerInfo` (unless a separate signing key delegated by the organisation is used).
+- MUST include the member attribution attribute (see {{member-attribution}}) in the signed attributes, indicating which member the organisation claims authored the content.
+- Cryptographically proves that the organisation vouches for the content and its attribution.
+- The verification path extends from DNSSEC to the organisation certificate and then directly to the signature.
+- Suitable for scenarios where individual member certificate management is impractical, or when the organisation takes direct responsibility for the content.
 
-Newly registered domains SHOULD wait at least the maximum TTL (90 days) before implementing DomainAuth to prevent potential attacks using DNSSEC chains from previous domain owners.
+The presence or absence of the member attribution attribute reliably distinguishes between the two signature types during verification (see {{verification-process}}).
 
-Subdomains MAY implement DomainAuth separately from their parent domains, provided they have their own DNSSEC configuration. Each subdomain operates as an independent organisation within the DomainAuth ecosystem.
+### Member Attribution
 
-## Members
-
-Members are entities that act on behalf of an organisation and come in two forms: users and bots.
-
-**Users:**
-
-- Represent individual people within an organisation.
-- Identified by a username within the organisation's domain (e.g., `alice.smith@example.com`).
-- Their certificates MUST have the username as the CommonName.
-- Usernames MUST comply with the naming restrictions specified in section 5.3.
-
-**Bots:**
-
-- Represent automated processes acting on behalf of the organisation as a whole.
-- Identified by the organisation's domain name (e.g., `example.com`).
-- Their certificates MUST have the at sign (`@`) as the CommonName.
-- Internally, organisations MAY assign private identifiers to bots for management purposes, but these identifiers MUST NOT be included in certificates.
-
-Members are issued certificates by their organisation, which authorises them to produce signatures on behalf of the organisation. These certificates bind the member identity to a public key and may include additional restrictions on their use.
-
-The protocol makes a clear distinction between users (who represent individuals) and bots (which represent the organisation itself), reflected in both the certificate structure and the resulting signature verification output.
-
-## Naming Conventions and Restrictions
-
-DomainAuth imposes specific restrictions on member names to prevent phishing attacks and ensure consistent processing across implementations:
-
-1. **User Names:**
-  - MUST NOT contain at signs (`@`).
-  - MUST NOT contain whitespace characters other than simple spaces (e.g., no tabs, newlines, carriage returns).
-  - SHOULD be chosen to avoid visual confusion with other usernames.
-  - SHOULD use consistent case and normalisation forms.
-2. **Display Considerations:**
-  - User interfaces SHOULD NOT truncate usernames or domain names.
-  - Implementations SHOULD display member identifiers in full to avoid confusion.
-  - Implementations SHOULD highlight or visually distinguish the domain portion of identifiers.
-3. **Homographic Attack Prevention:**
-  - Implementations SHOULD implement mitigations against homographic attacks.
-  - Domain names SHOULD be displayed using Punycode when they contain non-ASCII characters.
-  - Implementations MAY refuse to process signatures from domains with mixed scripts.
-4. **Bot Names:**
-  - MUST use the at sign (`@`) as the CommonName in certificates.
-  - When displaying bot identities, implementations SHOULD clearly indicate they represent the organisation rather than an individual.
-
-Organisations SHOULD establish and enforce consistent naming policies for their users to maintain clarity and prevent confusion.
-
-# Certificate Management
-
-## Organisation Certificate Issuance
-
-Organisation certificates form the foundation of the DomainAuth trust model and MUST be self-issued by the organisation.
-
-The process for issuing an organisation certificate is as follows:
-
-1. The organisation generates an RSA key pair with a modulus of 2048, 3072, or 4096 bits.
-2. The organisation creates a self-signed X.509 certificate with the following characteristics:
-  - Subject and Issuer fields both containing the organisation's domain name as CommonName.
-  - A validity period appropriate for the organisation's security policy.
-  - The Basic Constraints extension with the CA flag set to TRUE.
-  - Subject Key Identifier and Authority Key Identifier extensions.
-3. The organisation calculates the appropriate key identifier as specified in the DomainAuth TXT Record Format (section 3.2).
-4. The organisation publishes a DomainAuth TXT record at `_domainauth.<domain>` containing the key algorithm, key id type, key id, TTL override, and optional service OID.
-5. The organisation ensures that DNSSEC is properly configured and that the TXT record is signed.
-
-The organisation certificate SHOULD be created with appropriate key management procedures, ideally using hardware security modules or similar protection mechanisms for the private key.
-
-Organisations MAY issue multiple organisation certificates with different keys for different purposes or for key rotation, publishing corresponding TXT records for each.
-
-## Member Certificate Issuance
-
-Member certificates authorise specific members (users or bots) to produce signatures on behalf of the organisation.
-
-The process for issuing a member certificate is as follows:
-
-1. The member generates an RSA key pair with a modulus of 2048, 3072, or 4096 bits.
-2. The member provides the public key to the organisation's certificate issuance system.
-3. The organisation verifies the member's identity according to its internal policies.
-4. The organisation issues an X.509 certificate with the following characteristics:
-  - Subject CommonName containing the member's username (for users) or the at sign (`@`) (for bots).
-  - Issuer matching the Subject of the organisation certificate.
-  - A validity period appropriate for the member type and service requirements.
-  - The Basic Constraints extension with the CA flag set to FALSE.
-  - Subject Key Identifier extension.
-  - Authority Key Identifier matching the Subject Key Identifier of the organisation certificate.
-5. The organisation delivers the certificate to the member through a secure channel.
-
-Organisations SHOULD implement appropriate authorisation checks and approval workflows before issuing member certificates.
-
-Service-specific extensions MAY be included in member certificates to restrict their use to specific contexts or applications.
-
-## Certificate Validity Periods
-
-DomainAuth favours short-lived certificates over complex revocation mechanisms. The following guidelines apply to certificate validity periods:
-
-1. **Organisation Certificates:**
-  - SHOULD have a validity period aligned with the organisation's key management policy.
-  - SHOULD NOT exceed 1 year.
-  - MAY be shorter if the organisation implements frequent key rotation.
-2. **Member Certificates:**
-  - SHOULD be short-lived, with validity periods of 90 days or less.
-  - MUST NOT exceed the validity period of the issuing organisation certificate.
-  - MAY be as short as a few hours for high-security applications.
-  - SHOULD balance security requirements with operational concerns about renewal frequency.
-3. **Validity Period Intersection:**
-  - For signature verification, the validity period is the intersection of:
-    - The organisation certificate validity period.
-    - The member certificate validity period.
-    - The signature metadata validity period.
-    - The DNSSEC record validity period (as determined by the TTL override).
-  - Signatures are only valid when the verification time falls within this intersection.
-
-Short certificate lifetimes provide natural revocation through expiration, reducing the complexity of the protocol and eliminating dependencies on online revocation checking mechanisms.
-
-## Certificate Revocation
-
-DomainAuth primarily relies on short-lived certificates to manage certificate lifecycle, but situations may arise where explicit revocation is necessary.
-
-1. **Organisation Certificates:**
-  - Revocation is achieved by removing or updating the DomainAuth TXT record.
-  - Old signatures using the revoked certificate will no longer verify once the DNSSEC chain is refreshed.
-  - In case of key compromise, immediate removal of the TXT record is essential.
-2. **Member Certificates:**
-  - The primary revocation mechanism is natural expiration.
-  - For urgent revocation, organisations SHOULD maintain internal revocation lists.
-  - Implementations MAY provide additional revocation mechanisms appropriate to their specific needs.
-3. **Revocation Checking:**
-  - The DomainAuth protocol does not require online revocation checking.
-  - Implementations MAY implement additional revocation checking mechanisms.
-  - Any additional revocation mechanisms SHOULD be designed to work in offline scenarios.
-
-The reliance on short-lived certificates significantly reduces the impact of key compromise and the need for complex revocation infrastructures. Organisations SHOULD issue member certificates with the shortest practical validity periods for their use cases.
-
-# Signature Production and Verification
-
-## Member Id Bundle
-
-The Member Id Bundle is a self-contained package that provides all the information needed for a member to produce verifiable signatures. It is serialised using ASN.1 DER encoding with the following structure:
+For organisation signatures, a required signed attribute is included in the CMS `SignedData` structure to attribute the content to a specific member:
 
 ~~~~~~~
-MemberIdBundle ::= SEQUENCE {
-    version                  [0] INTEGER DEFAULT 0,
-    dnssecChain              [1] DnssecChain,
-    organisationCertificate  [2] Certificate,
-    memberCertificate        [3] Certificate
-}
+MemberAttribution ::= UTF8String
 ~~~~~~~
 
-Where:
+The member attribution attribute (`1.3.6.1.4.1.58708.1.2`) serves the following purposes:
 
-- `version` is the format version (currently 0).
-- `dnssecChain` contains the serialised DNSSEC chain proving the authenticity of the organisation's DomainAuth TXT record.
-- `organisationCertificate` is the organisation's self-issued X.509 certificate.
-- `memberCertificate` is the X.509 certificate issued to the member by the organisation.
+1. **Content authorship:** Indicates which member authored the content, even when the organisation signs directly.
+2. **Operational flexibility:** Allows organisations to produce signatures on behalf of members without requiring certificate management for ephemeral members.
+3. **Accountability:** Maintains a record of which member is responsible for the content, even when using organisation signatures.
+4. **Signature type identification:** Enables reliable determination of the signature type during verification.
 
-The Member Id Bundle links the member to their organisation and provides all the cryptographic material needed to verify this relationship. It serves as a precursor to signature production and is typically distributed to members by their organisation's certificate management system.
+The member attribution value MUST conform to the same naming conventions defined for member names in section 6.3. For users, this is the username; for bots, this is the at sign (`@`).
 
-Member Id Bundles are not inherently confidential, as they contain only public information, but their integrity is critical for secure signature production.
+Member attribution is a claim made by the organisation, not cryptographically proven by the member. Verifiers MUST present this distinction clearly to end users.
 
 ## Signature Bundle
 
@@ -615,21 +592,9 @@ Where:
 - `organisationCertificate` is the organisation's self-issued X.509 certificate.
 - `signature` is a CMS `ContentInfo` containing a `SignedData` structure.
 
-DomainAuth supports two types of signature bundles, which share the same structure but differ in their content and verification process:
+The specific contents of the `signature` field depend on whether it is a member signature or an organisation signature, as detailed in {{signature-types}} and {{cms-signeddata-structure}}.
 
-1. **Member signatures:** The `SignedData` structure contains:
-  - The member certificate (and any intermediate certificates if applicable).
-  - The digital signature over the content, produced using the member's private key.
-  - Signature attributes, including the DomainAuth signature metadata.
-  - Optionally, the signed content itself (for encapsulated signatures).
-2. **Organisation signatures:** The `SignedData` structure contains:
-  - The digital signature over the content, produced using the organisation's private key.
-  - Signature attributes, including the DomainAuth signature metadata.
-  - The member attribution attribute identifying the member who authored the content.
-  - Optionally, intermediate certificates if the organisation uses a certification path.
-  - Optionally, the signed content itself (for encapsulated signatures).
-
-The signature type is determined by the presence of the member attribution attribute: if present, it's an organisation signature; if absent, it's a member signature.
+The signature type is determined by the presence of the member attribution attribute within the `SignedData` structure: if present, it's an organisation signature; if absent, it's a member signature.
 
 For detached signatures, the plaintext content must be provided separately during verification.
 
@@ -668,7 +633,9 @@ Verifiers MUST check that the signature metadata's service OID matches the expec
 
 The validity period in the signature metadata is intersected with the validity periods of certificates and DNSSEC records to determine the overall validity period of the signature.
 
-## Verification Process
+## Signature Verification
+
+### Verification Process
 
 The verification of a DomainAuth signature involves multiple steps that validate the entire chain of trust from the DNSSEC infrastructure to the signature itself. Implementations MUST perform the following verification steps:
 
@@ -734,24 +701,90 @@ If all these steps succeed, the signature is considered valid, and the content i
 
 The verification process MUST be performed in full, without skipping any steps, to ensure the security properties of the DomainAuth protocol.
 
-## Member Attribution
+### Implementation Recommendations
 
-For organisation signatures, a required signed attribute is included in the CMS `SignedData` structure to attribute the content to a specific member:
+1. **Library/SDK Design:**
+  - DomainAuth libraries and SDKs SHOULD provide distinct functions for creating member signatures and organisation signatures.
+  - Verification functions SHOULD be unified, with the signature type included in the verification output.
+  - Libraries SHOULD NOT require developers to specify the signature type during verification, as this should be determined automatically from the signature bundle.
+2. **Use Case Considerations:**
+  - Member signatures are recommended for applications where non-repudiation at the individual level is critical.
+  - Organisation signatures with member attribution are appropriate for applications where certificate management for individual members is impractical or where organisational accountability is sufficient.
+3. **Hybrid Approaches:**
+  - Some applications may benefit from supporting both signature types, allowing flexibility based on the specific context or user role.
+  - In hybrid implementations, clear policies should govern when each signature type is used.
 
-~~~~~~~
-MemberAttribution ::= UTF8String
-~~~~~~~
+### User Interface Guidelines
 
-The member attribution attribute (`1.3.6.1.4.1.58708.1.2`) serves the following purposes:
+1. **Signature Type Indication:** User interfaces SHOULD clearly indicate whether a signature is a member signature or an organisation signature with member attribution. Different visual indicators (icons, colors, labels) SHOULD be used to distinguish between the two signature types.
+2. **Attribution Presentation:** For organisation signatures, interfaces SHOULD clearly indicate that the member attribution is a claim made by the organisation, not cryptographic proof. Example phrasing: `Signed by example.com on behalf of alice` rather than `Signed by alice of example.com`.
+3. **Verification Details:** Interfaces SHOULD provide access to detailed verification information, including the full certification path and validity periods. Advanced users SHOULD be able to view the complete verification process and results.
+4. **Error Handling:** Clear error messages SHOULD be displayed when verification fails, with appropriate guidance for users. Different error handling may be appropriate for different signature types, reflecting their distinct trust models.
 
-1. **Content authorship:** Indicates which member authored the content, even when the organisation signs directly.
-2. **Operational flexibility:** Allows organisations to produce signatures on behalf of members without requiring certificate management for ephemeral members.
-3. **Accountability:** Maintains a record of which member is responsible for the content, even when using organisation signatures.
-4. **Signature type identification:** Enables reliable determination of the signature type during verification.
+# Identity Model
 
-The member attribution value MUST conform to the same naming conventions defined for member names in section 5.3. For users, this is the username; for bots, this is the at sign (`@`).
+## Organisations
 
-Member attribution is a claim made by the organisation, not cryptographically proven by the member. Verifiers MUST present this distinction clearly to end users.
+In the DomainAuth protocol, an organisation is represented by a domain name and serves as the foundational identity unit. Organisations have full control over their DomainAuth implementation and member management.
+
+Organisations MUST:
+
+1. Own or control a domain name with properly configured DNSSEC.
+2. Generate and safeguard an RSA key pair for their organisation certificate.
+3. Self-issue an X.509 certificate with the domain name as the CommonName.
+4. Publish a DomainAuth TXT record at `_domainauth.<domain>` with the appropriate key information.
+5. Manage the issuance and revocation of member certificates.
+
+The organisation is the trust anchor for all certificates and signatures within its domain. No external authority can issue valid certificates for the organisation or its members.
+
+Newly registered domains SHOULD wait at least the maximum TTL (90 days) before implementing DomainAuth to prevent potential attacks using DNSSEC chains from previous domain owners.
+
+Subdomains MAY implement DomainAuth separately from their parent domains, provided they have their own DNSSEC configuration. Each subdomain operates as an independent organisation within the DomainAuth ecosystem.
+
+## Members
+
+Members are entities that act on behalf of an organisation and come in two forms: users and bots.
+
+**Users:**
+
+- Represent individual people within an organisation.
+- Identified by a username within the organisation's domain (e.g., `alice.smith@example.com`).
+- Their certificates MUST have the username as the CommonName.
+- Usernames MUST comply with the naming restrictions specified in section 6.3.
+
+**Bots:**
+
+- Represent automated processes acting on behalf of the organisation as a whole.
+- Identified by the organisation's domain name (e.g., `example.com`).
+- Their certificates MUST have the at sign (`@`) as the CommonName.
+- Internally, organisations MAY assign private identifiers to bots for management purposes, but these identifiers MUST NOT be included in certificates.
+
+Members are issued certificates by their organisation, which authorises them to produce signatures on behalf of the organisation. These certificates bind the member identity to a public key and may include additional restrictions on their use.
+
+The protocol makes a clear distinction between users (who represent individuals) and bots (which represent the organisation itself), reflected in both the certificate structure and the resulting signature verification output.
+
+## Naming Conventions and Restrictions
+
+DomainAuth imposes specific restrictions on member names to prevent phishing attacks and ensure consistent processing across implementations:
+
+1. **User Names:**
+  - MUST NOT contain at signs (`@`).
+  - MUST NOT contain whitespace characters other than simple spaces (e.g., no tabs, newlines, carriage returns).
+  - SHOULD be chosen to avoid visual confusion with other usernames.
+  - SHOULD use consistent case and normalisation forms.
+2. **Display Considerations:**
+  - User interfaces SHOULD NOT truncate usernames or domain names.
+  - Implementations SHOULD display member identifiers in full to avoid confusion.
+  - Implementations SHOULD highlight or visually distinguish the domain portion of identifiers.
+3. **Homographic Attack Prevention:**
+  - Implementations SHOULD implement mitigations against homographic attacks.
+  - Domain names SHOULD be displayed using Punycode when they contain non-ASCII characters.
+  - Implementations MAY refuse to process signatures from domains with mixed scripts.
+4. **Bot Names:**
+  - MUST use the at sign (`@`) as the CommonName in certificates.
+  - When displaying bot identities, implementations SHOULD clearly indicate they represent the organisation rather than an individual.
+
+Organisations SHOULD establish and enforce consistent naming policies for their users to maintain clarity and prevent confusion.
 
 # Service Integration
 
@@ -897,30 +930,6 @@ DomainAuth implementations can benefit from several performance optimisations wh
   - Balance parallelisation benefits against overhead costs.
 
 These optimisations MUST NOT compromise security or correctness. Performance-critical applications SHOULD profile their verification code to identify bottlenecks and focus optimisation efforts accordingly.
-
-## Member vs Organisation Signatures
-
-Developers integrating DomainAuth into their applications must decide whether to use member signatures or organisation signatures with member attribution. This decision should be based on the specific requirements of the application and the security considerations outlined in Section 9.5.
-
-### Implementation Recommendations
-
-1. **Library/SDK Design:**
-  - DomainAuth libraries and SDKs SHOULD provide distinct functions for creating member signatures and organisation signatures.
-  - Verification functions SHOULD be unified, with the signature type included in the verification output.
-  - Libraries SHOULD NOT require developers to specify the signature type during verification, as this should be determined automatically from the signature bundle.
-2. **Use Case Considerations:**
-  - Member signatures are recommended for applications where non-repudiation at the individual level is critical.
-  - Organisation signatures with member attribution are appropriate for applications where certificate management for individual members is impractical or where organisational accountability is sufficient.
-3. **Hybrid Approaches:**
-  - Some applications may benefit from supporting both signature types, allowing flexibility based on the specific context or user role.
-  - In hybrid implementations, clear policies should govern when each signature type is used.
-
-### User Interface Recommendations
-
-1. **Signature Type Indication:** User interfaces SHOULD clearly indicate whether a signature is a member signature or an organisation signature with member attribution. Different visual indicators (icons, colors, labels) SHOULD be used to distinguish between the two signature types.
-2. **Attribution Presentation:** For organisation signatures, interfaces SHOULD clearly indicate that the member attribution is a claim made by the organisation, not cryptographic proof. Example phrasing: `Signed by example.com on behalf of alice` rather than `Signed by alice of example.com`.
-3. **Verification Details:** Interfaces SHOULD provide access to detailed verification information, including the full certification path and validity periods. Advanced users SHOULD be able to view the complete verification process and results.
-4. **Error Handling:** Clear error messages SHOULD be displayed when verification fails, with appropriate guidance for users. Different error handling may be appropriate for different signature types, reflecting their distinct trust models.
 
 # Implementation Status
 

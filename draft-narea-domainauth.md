@@ -336,7 +336,7 @@ The Member Id Bundle is a self-contained message that provides all the informati
 
 ~~~~~~~
 MemberIdBundle ::= SEQUENCE {
-    version                  [0] INTEGER DEFAULT 0,
+    version                  [0] INTEGER,
     dnssecChain              [1] DnssecChain,
     organisationCertificate  [2] Certificate,
     memberCertificate        [3] Certificate,
@@ -346,7 +346,7 @@ MemberIdBundle ::= SEQUENCE {
 
 Where:
 
-- `version` is the format version (currently 0).
+- `version` is the format version, set to `0` (zero) in this version of the specification.
 - `dnssecChain` contains the serialised DNSSEC chain proving the authenticity of the organisation's DomainAuth TXT record.
 - `organisationCertificate` is the organisation's self-issued X.509 certificate.
 - `memberCertificate` is the X.509 certificate issued to the member by the organisation.
@@ -435,11 +435,11 @@ Member attribution is a claim made by the organisation, not cryptographically pr
 
 ## Signature Bundle
 
-The Signature Bundle is the core artefact of the DomainAuth protocol, containing a digital signature and all the information needed to verify it offline. It is serialised using ASN.1 DER encoding with the following structure:
+The Signature Bundle is the primary artefact of the DomainAuth protocol, containing a digital signature and all the information needed to verify it offline. It is serialised using ASN.1 DER encoding with the following structure:
 
 ~~~~~~~
 SignatureBundle ::= SEQUENCE {
-    version                  [0] INTEGER DEFAULT 0,
+    version                  [0] INTEGER,
     dnssecChain              [1] DnssecChain,
     organisationCertificate  [2] Certificate,
     signature                [3] ContentInfo
@@ -448,7 +448,7 @@ SignatureBundle ::= SEQUENCE {
 
 Where:
 
-- `version` is the format version (currently 0).
+- `version` is the format version, set to `0` (zero) in this version of the specification.
 - `dnssecChain` contains the serialised DNSSEC chain proving the authenticity of the organisation's DomainAuth TXT record.
 - `organisationCertificate` is the organisation's self-issued X.509 certificate.
 - `signature` is a CMS `ContentInfo` containing a `SignedData` structure.
@@ -1021,7 +1021,7 @@ DnssecChain ::= SET OF OCTET STRING
 -- Default tag defines all tags as IMPLICIT
 -- Member Id Bundle
 MemberIdBundle ::= SEQUENCE {
-    version                  [0] INTEGER DEFAULT 0,
+    version                  [0] INTEGER,
     dnssecChain              [1] DnssecChain,
     organisationCertificate  [2] Certificate,
     memberCertificate        [3] Certificate
@@ -1029,7 +1029,7 @@ MemberIdBundle ::= SEQUENCE {
 
 -- Signature Bundle
 SignatureBundle ::= SEQUENCE {
-    version                  [0] INTEGER DEFAULT 0,
+    version                  [0] INTEGER,
     dnssecChain              [1] DnssecChain,
     organisationCertificate  [2] Certificate,
     signature                [3] ContentInfo

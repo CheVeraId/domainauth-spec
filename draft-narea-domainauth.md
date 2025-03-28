@@ -346,7 +346,7 @@ Where:
 
 - `version` is the format version, set to `0` (zero) in this version of the specification.
 - `dnssecChain` contains the serialised DNSSEC chain proving the authenticity of the organisation's DomainAuth TXT record.
-- `organisationCertificate` is the organisation's self-issued X.509 certificate.
+- `organisationCertificate` is the organisation's X.509 certificate.
 - `memberCertificate` is the X.509 certificate issued to the member by the organisation.
 - `intermediateCertificates` is a set of X.509 certificates issued by the organisation to other entities that can sign member certificates. It SHOULD NOT include certificates extraneous to the chain between the organisation certificate and the member certificate.
 
@@ -434,7 +434,7 @@ Where:
 
 - `version` is the format version, set to `0` (zero) in this version of the specification.
 - `dnssecChain` contains the serialised DNSSEC chain proving the authenticity of the organisation's DomainAuth TXT record.
-- `organisationCertificate` is the organisation's self-issued X.509 certificate.
+- `organisationCertificate` is the organisation's X.509 certificate.
 - `signature` is a CMS `ContentInfo` containing a SignedData structure.
 
 The specific contents of the `signature` field depend on whether it is a member signature or an organisation signature, as detailed in {{signature-types}} and {{cms-signeddata-structure}}.

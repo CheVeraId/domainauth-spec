@@ -130,16 +130,16 @@ DomainAuth is designed with the following primary goals:
 The following terms are used:
 
 - **Organisation:** A domain name that participates in the DomainAuth protocol by configuring DNSSEC and publishing the necessary DomainAuth TXT record(s).
-- **Member:** An entity (user or bot) that produces signatures on behalf of an organisation.
-- **User:** A specific type of member identified by a username within an organisation.
-- **Bot:** A special type of member that acts on behalf of the organisation as a whole. Bots do not have usernames.
+- **Member:** An entity that produces signatures on behalf of an organisation. There are two types of members:
+  - **User:** A member identified by a unique username within an organisation.
+  - **Bot:** A special type of member that acts on behalf of the organisation as a whole. Bots do not have usernames.
 - **DomainAuth TXT Record:** A DNS TXT record at `_domainauth.<domain>` that contains the organisation's public key information.
 - **Organisation Certificate:** A self-signed X.509 certificate owned by an organisation that serves as the root of trust for all signatures produced on behalf of that organisation.
 - **Member Certificate:** An X.509 certificate issued by the organisation certificate to a member.
 - **Member Id Bundle:** A data structure containing a member certificate, its issuing organisation certificate, and the DNSSEC chain proving the authenticity of the organisation's DomainAuth TXT record.
-- **Signature Bundle:** A data structure containing a digital signature and all the information needed to verify it offline.
-- **Member Signature Bundle:** A signature bundle containing a signature produced by a member using their private key.
-- **Organisation Signature Bundle:** A signature bundle containing a signature produced directly by an organisation using its private key, with a required member attribution that assigns authorship of the content to a specific member.
+- **Signature Bundle:** A data structure containing a digital signature and all the information needed to verify it offline. There are two types of signature bundles:
+  - **Member Signature Bundle:** A signature bundle containing a signature produced by a member using their private key.
+  - **Organisation Signature Bundle:** A signature bundle containing a signature produced directly by an organisation using its private key, with a required member attribution that assigns authorship of the content to a specific member.
 - **DNSSEC Chain:** A sequence of DNS responses that allows a verifier to cryptographically validate the authenticity of a DNS record.
 - **Service:** A protocol or system that employs DomainAuth signatures for a specific use case. Each service defines the context in which a signature is valid, and its own rules for signature creation and verification.
 

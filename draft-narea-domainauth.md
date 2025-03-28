@@ -205,7 +205,7 @@ The verification process involves validating the entire chain of trust as follow
 
 Alternatively, the verifier can start with the digital signature, then verify the organisation certificate and finally the DNSSEC chain.
 
-For more detailed information on the verification process, particularly regarding validity periods, see {{verification-process}}.
+For more detailed information on the verification process, particularly regarding validity periods, see {{verification-procedure}}.
 
 ## Trust Model
 
@@ -284,7 +284,7 @@ The serialised chain MUST be encoded as the ASN.1 `DnssecChain` structure below,
 DnssecChain ::= SET OF OCTET STRING
 ~~~~~~~
 
-This chain MUST include all DNSSEC responses necessary to validate the `_domainauth.<domain>/TXT` record from the trust anchor. However, the root zone DS records SHOULD be omitted, since they will be ignored by verifiers as described in {{verification-process}}.
+This chain MUST include all DNSSEC responses necessary to validate the `_domainauth.<domain>/TXT` record from the trust anchor. However, the root zone DS records SHOULD be omitted, since they will be ignored by verifiers as described in {{verification-procedure}}.
 
 Implementations SHOULD optimise the serialisation to minimise redundancy and size whilst ensuring completeness for offline verification.
 
@@ -434,67 +434,57 @@ The specific contents of the `signature` field depend on whether it is a member 
 
 For detached signatures, the plaintext MUST be provided separately during verification.
 
-## Verification Process
+## Verification Procedure
 
-The verification of a signature bundle involves multiple steps that validate the entire chain of trust from the DNSSEC infrastructure to the signature itself. Implementations MUST perform the following verification steps:
+Implementations MUST verify the syntactic validity of the signature bundle against its ASN.1 schema and reject malformed values. Refer to {{data-serialisation}} for more information on serialisation formats.
 
-1. **Establish the required validity period:**
-   - The verification process involves tracking the intersection of the required validity period and the validity period of all the components of the signature bundle (i.e. DNSSEC `RRSIG` records, X.509 certificates, and the digital signature).
-   - The required validity period can be a specific time (e.g. the current time), or a time range where the signature bundle needs to be valid for at least some moment within that range.
-   - Even a brief one-second overlap between the bundle's validity period and the required period is sufficient.
-   - Service requirements heavily influence this; for example, an offline service might accept a bundle valid at any point in the past 30 days, whilst an online service might require validity at verification time.
-   - If there is no intersection between the required period and the validity periods of all components, the signature bundle is invalid.
-2. **Parse the Signature Bundle:**
-   - Extract the DNSSEC chain, organisation certificate, and CMS signature.
-   - Validate the structure of each component.
-3. **Validate the DNSSEC chain:**
-   - Verify that the chain starts from a trusted DNSSEC anchor.
-   - The root zone DS records MUST be provided by the verifier. Any root zone DS records included in the DNSSEC chain MUST be ignored.
-   - Verify all DNSSEC signatures in the chain.
-   - Confirm that the chain leads to the `_domainauth.<domain>` TXT record.
-   - Extract the organisation's public key information from the TXT record.
-4. **Validate the organisation certificate:**
-   - Verify that the certificate's public key matches the key identified in the TXT record.
-   - Verify that the certificate's CommonName matches the domain name.
-   - Confirm that the certificate is self-signed and valid.
-   - Check that the certificate has the CA flag set in the Basic Constraints extension.
-5. **Determine the signature type:**
-   - Extract the signed attributes from the CMS SignedData structure.
-   - Check for the presence of the member attribution attribute (`1.3.6.1.4.1.58708.1.2`).
-   - If the member attribution attribute is present, it is an organisation signature.
-   - If the member attribution attribute is absent, it is a member signature.
-6. **Extract and validate certificates:**
-   - Extract the organisation certificate from the signature bundle.
-   - Extract the signer's certificate from the CMS SignedData structure if present.
-     - For member signatures, the signer's certificate MUST be present.
-     - For organisation signatures, the signer's certificate MAY be present if it differs from the organisation certificate.
-   - Construct and validate the certification path:
-     - The path starts with the organisation certificate from the signature bundle.
-     - The path ends with the signer's certificate (which may be the organisation certificate itself for organisation signatures).
-     - Any intermediate certificates in the SignedData structure MUST be included in the path.
-   - Verify that all certificates in the path are valid at the verification time.
-7. **Validate the signature metadata:**
-   - Extract the service OID and validity period from the signature metadata attribute.
-   - Verify that the service OID matches the expected service.
-   - Confirm that the verification time falls within the signature validity period.
-8. **Determine the overall validity period:**
-   - Calculate the intersection of:
-     - The validity periods of all certificates in the certification path, from the organisation certificate to the signer's certificate (if different).
-     - The signature metadata validity period.
-     - The DNSSEC chain validity period, applying the TTL override from {{ttl-override}}.
-   - Verifiers MAY enforce a TTL shorter than that required by the service, but not shorter than the 1-second minimum.
-   - Verifiers MAY allow their end users to specify a shorter TTL (but still not shorter than 1 second) than the one in the TXT record.
-   - Verify that the verification time falls within this intersection.
-9. **Verify the digital signature:**
-   - Use the signer's public key to verify the signature over the content.
-   - For detached signatures, use the externally provided content.
-   - For encapsulated signatures, extract the content from the CMS structure.
-10. **Produce verification output:**
-    - Always include the organisation name.
-    - Include the member name (for users only, not for bots):
+A fundamental aspect of the verification procedure is to establish that all components—the DNSSEC chain, X.509 certificate path and the signature itself—were simultaneously valid for at least one second within the specified verification period. This temporal intersection of validity periods ensures the cryptographic continuity of the trust chain at the time of verification.
+
+Implementations MUST verify every syntactically-valid signature bundle as follows, and fail if any step fails:
+
+1. **Establish the verification parameters.** The verifier MUST specify the following parameters:
+   - Plaintext: The content to be verified if it is detached from the SignedData structure (i.e. the field `SignedData.encapContentInfo.eContent` is absent). This value MUST NOT be provided if the plaintext is encapsulated.
+   - Service: The OID of the service for which the signature must be valid.
+   - Validity period: The inclusive time range during which the signature bundle must be valid for at least one second (e.g. 1st January 1970 00:00:00 UTC to 31st January 1970 23:59:59 UTC). This period MAY be specified as a specific time (e.g. 1st January 1970 00:00:00 UTC), in which case it MUST be converted to a 1-second period where the start and end are the same as the specified time.
+
+   The verifier MAY override the root zone DNSSEC DS record(s) for testing purposes only.
+2. **Identify the relevant DomainAuth TXT record and determine the verification time window for the DNSSEC chain:**
+   1. Extract all records in the RRSet for `_domainauth.<domain>/TXT`.
+   2. Parse each TXT record rdata, per the rules in {{txt-record}}.
+   3. Locate records matching the subject key specification from the organisation certificate (key algorithm and key id) and the service OID specified by the verifier (either matching exactly or with an absent service OID). If multiple matching records exist, use the one with the specific service OID; if none exists, use the wildcard record. If multiple records of the same type (specific or wildcard) match, verification MUST fail.
+   4. Extract the TTL override value from the identified TXT record.
+   5. Calculate a verification time window for the DNSSEC chain as follows:
+      - End time: The end of the required verification period (as specified by the verifier).
+      - Start time: The maximum (later) of:
+         - The start of the required verification period (as specified by the verifier).
+         - The end time minus the TTL override value in seconds.
+3. **Verify the DNSSEC chain** from the root zone to the `_domainauth.<domain>/TXT` RRSet as described in {{DNSSEC}}, ensuring that the chain was valid for at least one second within the verification time window calculated in the previous step.
+4. **Verify the X.509 certificate chain** from the organisation certificate to the signer's certificate as specified in {{X.509}}, using any additional certificates in the `SignedData.certificates` field as potential intermediate certificates when constructing the chain. Note that the chain will comprise a single certificate when the organisation itself is the signer.
+
+   The certificate chain MUST overlap with the verification time window and the DNSSEC chain for at least one second.
+5. **Verify the CMS SignedData structure** as described in {{Section 5.6 of CMS}}, using the signer's certificate from the `SignedData.certificates` field or the organisation certificate if the signer is the organisation itself.
+
+   The signature metadata attribute MUST be present in the signed attributes of the SignerInfo structure. Additionally:
+
+   - The service OID MUST match that specified by the verifier.
+   - The validity period MUST overlap with the verification time window, the X.509 certificate chain and the DNSSEC chain for at least one second.
+
+   If present, the member attribution attribute MUST be in the signed attributes of the SignerInfo structure, and its value MUST be a valid member name as specified in {{naming-conventions-and-restrictions}}. If absent, the signer MUST be a member whose certificate meets the requirements specified in {{member-certificate}}.
+6. **Produce verification output:**
+    - The organisation name without a trailing dot (e.g. `example.com`).
+    - The member name (for users only, not for bots):
       - For member signatures, from the signer certificate.
       - For organisation signatures, from the member attribution.
-    - Always include the signature type (member or organisation).
+    - Whether the signature was produced by the member or the organisation.
+
+Alternatively, the verification MAY start with the SignedData structure and end with the DNSSEC chain as described below, as long as the validity periods across all components overlap for at least one second:
+
+1. Establish the verification parameters.
+2. Verify the CMS SignedData structure.
+3. Verify the X.509 certificate chain.
+4. Identify the relevant DomainAuth TXT record and determine the verification time window for the DNSSEC chain.
+5. Verify the DNSSEC chain.
+6. Produce verification output.
 
 If all these steps succeed, the signature is considered valid, and the content is confirmed to originate from the identified member of the specified organisation or from the organisation itself.
 

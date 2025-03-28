@@ -148,15 +148,26 @@ The following terms are used:
 
 ## Architecture
 
-DomainAuth combines DNSSEC, X.509 certificates, and CMS signatures to create a decentralised authentication system. The architecture consists of several layered components:
+DomainAuth is built on three foundational layers:
 
-1. **DNS Layer:** Provides the domain name hierarchy and DNSSEC-based verification of domain ownership.
-2. **PKI Layer:** Establishes a per-organisation Public Key Infrastructure where each organisation issues certificates to its members.
-3. **Signature Layer:** Enables members to produce unforgeable digital signatures on behalf of their organisation.
+1. **DNS and DNSSEC Layer:** 
+   - Provides the domain name hierarchy and DNSSEC-based verification of domain ownership.
+   - The DNSSEC chain connects the DNS root of trust to the organisation's domain, enabling offline validation without prior key distribution.
+   - The DomainAuth TXT record bridges DNSSEC and PKI by publishing the organisation's public key information in a standardised, discoverable way.
+2. **PKI Layer:** 
+   - Establishes a per-organisation PKI where each organisation issues certificates to its members.
+   - The Organisation certificate functions as the domain-specific trust anchor that binds the organisation's public key to its domain name.
+   - Member certificates extend the organisation's trust to specific members, containing identity information that enables them to produce signatures.
+3. **Signature Layer:** 
+   - Enables members to produce digital signatures on behalf of their organisation.
+   - Signature bundles package digital signatures with all verification material, enabling offline validation.
 
-Each organisation serves as an independent trust anchor, responsible for managing its own members and certificates. The DNSSEC infrastructure provides a secure foundation for verifying the authenticity of the organisation's public key.
+These layers interact differently depending on the signature context:
 
-DomainAuth's self-contained verification model allows signature bundles to be verified independently, without requiring connectivity to the Internet or the organisation's infrastructure.
+- In **member signatures**, the chain of trust flows from the DNSSEC chain to the organisation certificate, then to the member certificate, and finally to the signature, providing end-to-end cryptographic proof of authorship.
+- In **organisation signatures**, the chain of trust flows from the DNSSEC chain directly to the organisation certificate and then to the signature, with member attribution provided as a claim rather than a cryptographic proof.
+
+Furthermore, Member Id Bundles are a key architectural component that packages the complete chain of trust (DNSSEC chain, organisation certificate, and member certificate) into a single, portable format, enabling members to produce verifiable signatures offline.
 
 ## Trust Model
 
@@ -171,21 +182,6 @@ DomainAuth's trust model differs significantly from traditional PKIs such as the
    - **Organisation signatures:** Produced directly by organisations using their private keys, these signatures prove that the organisation vouches for the content. When including user attribution, the organisation claims (but does not cryptographically prove) that a specific user created the content.
 
 By relying on DNSSEC, DomainAuth inherits its security properties and limitations. The protocol's trust is ultimately rooted in the DNS hierarchy, including the root zone and TLD operators.
-
-## Key Components
-
-The DomainAuth protocol consists of the following core components:
-
-1. **DomainAuth TXT Record:** A DNS TXT record at `_domainauth.<domain>` containing the organisation's public key information, including key algorithm, key id type, key id, TTL override, and optional service OID.
-2. **Organisation Certificate:** A self-issued X.509 certificate containing the organisation's public key. This certificate serves as the root Certificate Authority (CA) for all certification paths and digital signatures under the organisation's domain.
-3. **Member Certificates:** X.509 certificates issued by the organisation to individual users or bots. User certificates include the username in the Common Name field, whilst bot certificates use the at sign (`@`) as their Common Name.
-4. **DNSSEC Chain:** A serialised collection of DNS responses that provide cryptographic proof of the authenticity of the organisation's DomainAuth TXT record.
-5. **Member Id Bundle:** A structure containing a member certificate, the issuing organisation certificate, and the DNSSEC chain necessary to verify the organisation's authority.
-6. **Signature Bundle:** A structure containing a CMS SignedData value, the organisation certificate, and the DNSSEC chain. There are two types of bundles, which determine the signer of the SignedData value:
-   - **Member Signature Bundles** are signed by a member.
-   - **Organisation Signature Bundles** are signed directly by the organisation, but attributed to a specific member.
-
-These components work together to create a secure chain of trust from the DNS root to the individual signatures produced by organisation members or by the organisation itself.
 
 ## Workflow Summary
 

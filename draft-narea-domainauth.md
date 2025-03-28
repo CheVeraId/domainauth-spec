@@ -435,15 +435,11 @@ Where:
 - `version` is the format version, set to `0` (zero) in this version of the specification.
 - `dnssecChain` contains the serialised DNSSEC chain proving the authenticity of the organisation's DomainAuth TXT record.
 - `organisationCertificate` is the organisation's X.509 certificate.
-- `signature` is a CMS `ContentInfo` containing a SignedData structure.
+- `signature` is a CMS `ContentInfo` containing the SignedData structure.
 
-The specific contents of the `signature` field depend on whether it is a member signature or an organisation signature, as detailed in {{signature-types}} and {{cms-signeddata-structure}}.
+The specific contents of the `signature` field depend on whether it is a member signature or an organisation signature, as detailed in {{cms-signeddata-structure}}.
 
-The signature type is determined by the presence of the member attribution attribute within the SignedData structure: if present, it's an organisation signature; if absent, it's a member signature.
-
-For detached signatures, the plaintext content must be provided separately during verification.
-
-The Signature Bundle is self-contained and provides all the information needed for offline verification of the signature, without requiring any network lookups or external data sources.
+For detached signatures, the plaintext MUST be provided separately during verification.
 
 ## Verification Process
 

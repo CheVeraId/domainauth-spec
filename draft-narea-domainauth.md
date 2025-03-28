@@ -182,7 +182,7 @@ Multiple such records are allowed, which can be useful for key rotation or bindi
 
 ### Certificate Issuance
 
-The organisation must self-issue an X.509 certificate using its private key, or reuse an existing certificate valid during the intended validity period.
+The organisation must issue an X.509 certificate using its private key, or reuse an existing certificate valid during the intended validity period.
 
 When issuing a member certificate, the organisation must distribute it along with the organisation certificate. This can be done with a member id bundle as defined in {{member-id-bundle}}, which is desirable in services meant to be used offline as it also contains the DNSSEC chain.
 
@@ -448,7 +448,7 @@ DatePeriod ::= SEQUENCE {
 Where:
 
 - `serviceOid` is the Object Identifier of the service for which the signature is valid.
-- `validityPeriod` specifies the time period during which the signature is considered valid.
+- `validityPeriod` specifies the time period during which the signature is considered valid. The `start` and `end` fields MUST be expressed in Greenwich Mean Time (GMT) and MUST include seconds. Therefore, both times will follow the format `YYYYMMDDHHMMSSZ`.
 
 The signature metadata serves several key purposes:
 
@@ -611,7 +611,7 @@ DomainAuth imposes specific restrictions on member names to prevent phishing att
 
 Organisations SHOULD establish and enforce consistent naming policies for their users to maintain clarity and prevent confusion.
 
-# Service Integration
+# Services
 
 ## Service OIDs
 
@@ -692,69 +692,6 @@ Service developers integrating DomainAuth should adhere to the following guideli
   - Ensure verification fails as expected with tampered data.
 
 These guidelines help ensure that DomainAuth integrations provide consistent security properties and user experience across different implementations and platforms.
-
-# Implementation Guidance
-
-## Interoperability Considerations
-
-To ensure interoperability between different DomainAuth implementations:
-
-1. **Strict Validation:**
-  - Implementations MUST strictly validate all inputs.
-  - Implementations MUST reject malformed data rather than attempting to repair it.
-  - ASN.1 parsing MUST be strict and reject any non-conformant encodings.
-2. **Format Compatibility:**
-  - Implementations MUST correctly handle all ASN.1 DER encoding rules.
-  - Implementations MUST handle BER-encoded ASN.1 if the encoding is also valid DER.
-  - X.509 extensions MUST be encoded correctly.
-3. **Character Encoding:**
-  - Implementations MUST handle UTF-8 encoded strings correctly.
-  - Domain names SHOULD be handled in their ASCII form after Punycode conversion.
-  - Usernames MUST be compared using case-sensitive comparison.
-4. **Time Representation:**
-  - Implementations SHOULD use UTC (`Z` suffix) in all `GeneralizedTime` values, including those in X.509 certificates.
-  - When timezone information is absent from a `GeneralizedTime` value in any DomainAuth structure, implementations MUST interpret it as UTC.
-  - Implementations MUST correctly handle and compare `GeneralizedTime` values with different timezone representations.
-5. **Algorithm Support:**
-  - Implementations MUST support all mandatory cryptographic algorithms.
-  - Implementations MAY support additional algorithms for future compatibility.
-  - Implementations MUST reject signatures using unsupported algorithms.
-6. **Version Handling:**
-  - Implementations MUST check version fields in all structures.
-  - Implementations MUST reject structures with unsupported versions.
-  - Implementations SHOULD be designed to accommodate future versions.
-
-Regular interoperability testing between different implementations is recommended to ensure ongoing compatibility.
-
-## Performance Optimisations
-
-DomainAuth implementations can benefit from several performance optimisations whilst maintaining security:
-
-1. **Caching Strategies:**
-  - Cache parsed certificates and DNSSEC chains to avoid repeated parsing.
-  - Cache verification results for the duration of their validity.
-  - Use LRU (Least Recently Used) or similar algorithms for cache management.
-  - Ensure cache entries are invalidated when they expire.
-2. **Size Optimisations:**
-  - Minimise the size of DNSSEC chains by removing redundant records.
-  - Use the minimum required set of certificates in signature bundles.
-  - Consider compression for storage or transmission (whilst maintaining original formats for cryptographic operations).
-3. **Computational Efficiency:**
-  - Use efficient ASN.1 parsing libraries.
-  - Implement lazy parsing for large structures.
-  - Consider hardware acceleration for cryptographic operations when available.
-  - Batch operations when processing multiple signatures.
-4. **Memory Management:**
-  - Implement streaming processing for large documents.
-  - Avoid keeping entire documents in memory when possible.
-  - Free resources promptly after use.
-  - Consider memory constraints on resource-limited devices.
-5. **Parallel Processing:**
-  - Parallelise independent verification steps when possible.
-  - Consider using worker threads for CPU-intensive operations.
-  - Balance parallelisation benefits against overhead costs.
-
-These optimisations MUST NOT compromise security or correctness. Performance-critical applications SHOULD profile their verification code to identify bottlenecks and focus optimisation efforts accordingly.
 
 # Implementation Status
 
@@ -1048,6 +985,36 @@ OID registration procedures:
 4. Once allocated, OIDs are never reassigned to different services.
 
 Services SHOULD use versioning in their OID structure to manage protocol evolution. Major, incompatible changes SHOULD use a new OID, whilst minor, backward-compatible changes MAY use the same OID.
+
+# Implementation Guidance
+
+## Performance Optimisations
+
+DomainAuth implementations can benefit from several performance optimisations whilst maintaining security:
+
+1. **Caching Strategies:**
+   - Cache parsed certificates and DNSSEC chains to avoid repeated parsing.
+   - Cache verification results for the duration of their validity.
+   - Use LRU (Least Recently Used) or similar algorithms for cache management.
+   - Ensure cache entries are invalidated when they expire.
+2. **Size Optimisations:**
+   - Minimise the size of DNSSEC chains by removing redundant records.
+   - Use the minimum required set of certificates in signature bundles.
+   - Consider compression for storage or transmission (whilst maintaining original formats for cryptographic operations).
+3. **Computational Efficiency:**
+   - Use efficient ASN.1 parsing libraries.
+   - Implement lazy parsing for large structures.
+   - Consider hardware acceleration for cryptographic operations when available.
+   - Batch operations when processing multiple signatures.
+4. **Memory Management:**
+   - Implement streaming processing for large documents.
+   - Avoid keeping entire documents in memory when possible.
+   - Free resources promptly after use.
+   - Consider memory constraints on resource-limited devices.
+5. **Parallel Processing:**
+   - Parallelise independent verification steps when possible.
+   - Consider using worker threads for CPU-intensive operations.
+   - Balance parallelisation benefits against overhead costs.
 
 # Acknowledgements
 {:numbered="false"}

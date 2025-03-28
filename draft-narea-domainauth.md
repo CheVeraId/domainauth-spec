@@ -230,13 +230,15 @@ By relying on DNSSEC, DomainAuth inherits its security properties and limitation
 
 # DNS Integration
 
+This document makes no distinction between different types of DNS zones, with the exception of the root zone which MUST NOT participate in DomainAuth. The root zone exclusion avoids representation challenges in user interfaces (where it would appear as a dot or empty string) and eliminates the need for implementations to handle this special case.
+
+TLDs, apex domains, and subdomains are all treated equivalently. Any domain at any level in the DNS hierarchy, except the root zone, MAY implement DomainAuth. Each participating domain operates entirely independently from its parent zones, with no hierarchical relationship or inherited trust. Throughout this document, the terms "domain" and "domain name" refer to any such zone without regard to its hierarchical position.
+
 ## DNSSEC Configuration
 
 Participating domains MUST have a complete DNSSEC chain of trust from the root zone to the DomainAuth TXT record.
 
 Newly registered domains SHOULD wait at least the maximum validity period in {{maximum-validity-period}} before enabling DomainAuth to prevent potential attacks using DNSSEC chains from previous domain owners.
-
-Subdomains MAY implement DomainAuth separately from their parent domains, provided they also have DNSSEC properly configured. Each subdomain operates as an independent organisation within the DomainAuth ecosystem.
 
 ## TXT Record
 

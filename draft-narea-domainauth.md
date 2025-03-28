@@ -645,13 +645,13 @@ Service developers integrating DomainAuth should adhere to the following guideli
 
 These guidelines help ensure that DomainAuth integrations provide consistent security properties and user experience across different implementations and platforms.
 
-## Data Serialisation
+# Data Serialisation
 
 All data structures in the DomainAuth protocol are defined using Abstract Syntax Notation One (ASN.1), as referenced in {{ASN.1}}.
 
-Implementations MUST support Distinguished Encoding Rules (DER) as defined in {{ASN.1}} for storage and transmission.
+Implementations MUST support Distinguished Encoding Rules (DER) as defined in {{ASN.1}}.
 
-Services MAY require or support additional ASN.1 encoding rules. In such cases, service implementations MUST handle the conversion between DER and the alternative encoding rules.
+Services MAY require or recommend additional ASN.1 encoding rules. In such cases, service implementations MUST handle the conversion between DER and the alternative encoding rules, if the additional rules are not supported by the DomainAuth implementation.
 
 # Implementation Status
 

@@ -232,7 +232,9 @@ By relying on DNSSEC, DomainAuth inherits its security properties and limitation
 
 This document makes no distinction between different types of DNS zones, with the exception of the root zone which MUST NOT participate in DomainAuth. The root zone exclusion avoids representation challenges in user interfaces (where it would appear as a dot or empty string) and eliminates the need for implementations to handle this special case.
 
-TLDs, apex domains, and subdomains are all treated equivalently. Any domain at any level in the DNS hierarchy, except the root zone, MAY implement DomainAuth. Each participating domain operates entirely independently from its parent zones, with no hierarchical relationship or inherited trust. Throughout this document, the terms "domain" and "domain name" refer to any such zone without regard to its hierarchical position.
+TLDs, apex domains, and subdomains are all treated equivalently. Any domain at any level in the DNS hierarchy, except the root zone, MAY implement DomainAuth. Each participating domain operates entirely independently from its parent zones, with no hierarchical relationship or inherited trust.
+
+Throughout this document, the terms "domain" and "domain name" refer to any such zone without regard to its hierarchical position.
 
 ## DNSSEC Configuration
 
@@ -352,9 +354,7 @@ The Member Id Bundle links the member to their organisation and provides all the
 
 Member Id Bundles are not inherently confidential, as they contain only public information, but their integrity is critical for secure signature production.
 
-# Digital Signatures
-
-## CMS SignedData Structure
+# CMS SignedData Structure
 
 DomainAuth signatures use CMS SignedData structures as defined in {{Section 5 of CMS}}, with specific requirements and recommendations for the DomainAuth protocol:
 
@@ -401,34 +401,6 @@ The member attribution value MUST conform to the same naming conventions defined
 
 Member attribution is a claim made by the organisation, not cryptographically proven by the member. Verifiers SHOULD present this distinction clearly to end users.
 
-## Signature Bundle
-
-The Signature Bundle is the primary artefact of the DomainAuth protocol, containing a digital signature and all the information needed to verify it offline. It is serialised using ASN.1 DER encoding with the following structure:
-
-~~~~~~~
-SignatureBundle ::= SEQUENCE {
-    version                  [0] INTEGER,
-    dnssecChain              [1] DnssecChain,
-    organisationCertificate  [2] Certificate,
-    signature                [3] ContentInfo
-}
-~~~~~~~
-
-Where:
-
-- `version` is the format version, set to `0` (zero) in this version of the specification.
-- `dnssecChain` contains the serialised DNSSEC chain proving the authenticity of the organisation's DomainAuth TXT record.
-- `organisationCertificate` is the organisation's self-issued X.509 certificate.
-- `signature` is a CMS `ContentInfo` containing a `SignedData` structure.
-
-The specific contents of the `signature` field depend on whether it is a member signature or an organisation signature, as detailed in {{signature-types}} and {{cms-signeddata-structure}}.
-
-The signature type is determined by the presence of the member attribution attribute within the `SignedData` structure: if present, it's an organisation signature; if absent, it's a member signature.
-
-For detached signatures, the plaintext content must be provided separately during verification.
-
-The Signature Bundle is self-contained and provides all the information needed for offline verification of the signature, without requiring any network lookups or external data sources.
-
 ## Signature Metadata
 
 Each DomainAuth signature includes metadata that binds it to a specific service and validity period. This metadata is included as a signed attribute in the CMS `SignedData` structure, ensuring it cannot be modified without invalidating the signature.
@@ -462,9 +434,35 @@ Verifiers MUST check that the signature metadata's service OID matches the expec
 
 The validity period in the signature metadata is intersected with the validity periods of certificates and DNSSEC records to determine the overall validity period of the signature.
 
-## Signature Verification
+# Signature Bundle
 
-### Verification Process
+The Signature Bundle is the primary artefact of the DomainAuth protocol, containing a digital signature and all the information needed to verify it offline. It is serialised using ASN.1 DER encoding with the following structure:
+
+~~~~~~~
+SignatureBundle ::= SEQUENCE {
+    version                  [0] INTEGER,
+    dnssecChain              [1] DnssecChain,
+    organisationCertificate  [2] Certificate,
+    signature                [3] ContentInfo
+}
+~~~~~~~
+
+Where:
+
+- `version` is the format version, set to `0` (zero) in this version of the specification.
+- `dnssecChain` contains the serialised DNSSEC chain proving the authenticity of the organisation's DomainAuth TXT record.
+- `organisationCertificate` is the organisation's self-issued X.509 certificate.
+- `signature` is a CMS `ContentInfo` containing a `SignedData` structure.
+
+The specific contents of the `signature` field depend on whether it is a member signature or an organisation signature, as detailed in {{signature-types}} and {{cms-signeddata-structure}}.
+
+The signature type is determined by the presence of the member attribution attribute within the `SignedData` structure: if present, it's an organisation signature; if absent, it's a member signature.
+
+For detached signatures, the plaintext content must be provided separately during verification.
+
+The Signature Bundle is self-contained and provides all the information needed for offline verification of the signature, without requiring any network lookups or external data sources.
+
+## Verification Process
 
 The verification of a DomainAuth signature involves multiple steps that validate the entire chain of trust from the DNSSEC infrastructure to the signature itself. Implementations MUST perform the following verification steps:
 
@@ -530,7 +528,7 @@ If all these steps succeed, the signature is considered valid, and the content i
 
 The verification process MUST be performed in full, without skipping any steps, to ensure the security properties of the DomainAuth protocol.
 
-### Implementation Recommendations
+## Implementation Recommendations
 
 1. **Library/SDK Design:**
   - DomainAuth libraries and SDKs SHOULD provide distinct functions for creating member signatures and organisation signatures.
@@ -543,7 +541,7 @@ The verification process MUST be performed in full, without skipping any steps, 
   - Some applications may benefit from supporting both signature types, allowing flexibility based on the specific context or user role.
   - In hybrid implementations, clear policies should govern when each signature type is used.
 
-### User Interface Guidelines
+## User Interface Guidelines
 
 1. **Signature Type Indication:** User interfaces SHOULD clearly indicate whether a signature is a member signature or an organisation signature with member attribution. Different visual indicators (icons, colors, labels) SHOULD be used to distinguish between the two signature types.
 2. **Attribution Presentation:** For organisation signatures, interfaces SHOULD clearly indicate that the member attribution is a claim made by the organisation, not cryptographic proof. Example phrasing: `Signed by example.com on behalf of alice` rather than `Signed by alice of example.com`.

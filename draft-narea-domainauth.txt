@@ -111,30 +111,29 @@ Table of Contents
      7.2.  Hash Functions
    8.  Maximum Validity Period
    9.  Naming Conventions and Restrictions
-   10. Service Integration
+   10. Services
      10.1.  Service OIDs
      10.2.  Service-Specific Validation Rules
      10.3.  Implementation Guidelines
-   11. Implementation Guidance
-     11.1.  Interoperability Considerations
-     11.2.  Performance Optimisations
-   12. Implementation Status
-     12.1.  VeraId JavaScript Library
-     12.2.  VeraId JVM Library
-     12.3.  VeraId Authority
-   13. Security Considerations
-     13.1.  DNSSEC Dependency
-     13.2.  Homographic and Character Encoding Attacks
-     13.3.  Domain Ownership Changes
-     13.4.  Offline Verification Limitations
-     13.5.  Organisation Signatures and Member Attribution
-     13.6.  Key Management
-   14. IANA Considerations
-   15. References
-     15.1.  Normative References
-     15.2.  Informative References
+   11. Implementation Status
+     11.1.  VeraId JavaScript Library
+     11.2.  VeraId JVM Library
+     11.3.  VeraId Authority
+   12. Security Considerations
+     12.1.  DNSSEC Dependency
+     12.2.  Homographic and Character Encoding Attacks
+     12.3.  Domain Ownership Changes
+     12.4.  Offline Verification Limitations
+     12.5.  Organisation Signatures and Member Attribution
+     12.6.  Key Management
+   13. IANA Considerations
+   14. References
+     14.1.  Normative References
+     14.2.  Informative References
    Appendix A.  ASN.1 Schemas
    Appendix B.  OID Registry
+   Appendix C.  Implementation Guidance
+     C.1.  Performance Optimisations
    Acknowledgements
    Author's Address
 
@@ -372,9 +371,9 @@ Table of Contents
 
 2.2.2.  Certificate Issuance
 
-   The organisation must self-issue an X.509 certificate using its
-   private key, or reuse an existing certificate valid during the
-   intended validity period.
+   The organisation must issue an X.509 certificate using its private
+   key, or reuse an existing certificate valid during the intended
+   validity period.
 
    When issuing a member certificate, the organisation must distribute
    it along with the organisation certificate.  This can be done with a
@@ -485,6 +484,21 @@ Table of Contents
 
 3.  DNS Integration
 
+   This document makes no distinction between different types of DNS
+   zones, with the exception of the root zone which MUST NOT participate
+   in DomainAuth.  The root zone exclusion avoids representation
+   challenges in user interfaces (where it would appear as a dot or
+   empty string) and eliminates the need for implementations to handle
+   this special case.
+
+   TLDs, apex domains, and subdomains are all treated equivalently.  Any
+   domain at any level in the DNS hierarchy, except the root zone, MAY
+   implement DomainAuth.  Each participating domain operates entirely
+   independently from its parent zones, with no hierarchical
+   relationship or inherited trust.  Throughout this document, the terms
+   "domain" and "domain name" refer to any such zone without regard to
+   its hierarchical position.
+
 3.1.  DNSSEC Configuration
 
    Participating domains MUST have a complete DNSSEC chain of trust from
@@ -493,11 +507,6 @@ Table of Contents
    Newly registered domains SHOULD wait at least the maximum validity
    period in Section 8 before enabling DomainAuth to prevent potential
    attacks using DNSSEC chains from previous domain owners.
-
-   Subdomains MAY implement DomainAuth separately from their parent
-   domains, provided they also have DNSSEC properly configured.  Each
-   subdomain operates as an independent organisation within the
-   DomainAuth ecosystem.
 
 3.2.  TXT Record
 
@@ -865,7 +874,9 @@ _domainauth.example.com. IN TXT "0 1 3 dGhpcyBpcyBub3QgYSByZWFsIGtleSBkaWdlc3Q 8
       signature is valid.
 
    *  validityPeriod specifies the time period during which the
-      signature is considered valid.
+      signature is considered valid.  The start and end fields MUST be
+      expressed in Greenwich Mean Time (GMT) and MUST include seconds.
+      Therefore, both times will follow the format YYYYMMDDHHMMSSZ.
 
    The signature metadata serves several key purposes:
 
@@ -1204,7 +1215,7 @@ _domainauth.example.com. IN TXT "0 1 3 dGhpcyBpcyBub3QgYSByZWFsIGtleSBkaWdlc3Q 8
    Organisations SHOULD establish and enforce consistent naming policies
    for their users to maintain clarity and prevent confusion.
 
-10.  Service Integration
+10.  Services
 
 10.1.  Service OIDs
 
@@ -1310,89 +1321,7 @@ _domainauth.example.com. IN TXT "0 1 3 dGhpcyBpcyBub3QgYSByZWFsIGtleSBkaWdlc3Q 8
    consistent security properties and user experience across different
    implementations and platforms.
 
-11.  Implementation Guidance
-
-11.1.  Interoperability Considerations
-
-   To ensure interoperability between different DomainAuth
-   implementations:
-
-   1.  *Strict Validation:* - Implementations MUST strictly validate all
-       inputs.  - Implementations MUST reject malformed data rather than
-       attempting to repair it.  - ASN.1 parsing MUST be strict and
-       reject any non-conformant encodings.
-
-   2.  *Format Compatibility:* - Implementations MUST correctly handle
-       all ASN.1 DER encoding rules.  - Implementations MUST handle BER-
-       encoded ASN.1 if the encoding is also valid DER.  - X.509
-       extensions MUST be encoded correctly.
-
-   3.  *Character Encoding:* - Implementations MUST handle UTF-8 encoded
-       strings correctly.  - Domain names SHOULD be handled in their
-       ASCII form after Punycode conversion.  - Usernames MUST be
-       compared using case-sensitive comparison.
-
-   4.  *Time Representation:* - Implementations SHOULD use UTC (Z
-       suffix) in all GeneralizedTime values, including those in X.509
-       certificates.  - When timezone information is absent from a
-       GeneralizedTime value in any DomainAuth structure,
-       implementations MUST interpret it as UTC.  - Implementations MUST
-       correctly handle and compare GeneralizedTime values with
-       different timezone representations.
-
-   5.  *Algorithm Support:* - Implementations MUST support all mandatory
-       cryptographic algorithms.  - Implementations MAY support
-       additional algorithms for future compatibility.  -
-       Implementations MUST reject signatures using unsupported
-       algorithms.
-
-   6.  *Version Handling:* - Implementations MUST check version fields
-       in all structures.  - Implementations MUST reject structures with
-       unsupported versions.  - Implementations SHOULD be designed to
-       accommodate future versions.
-
-   Regular interoperability testing between different implementations is
-   recommended to ensure ongoing compatibility.
-
-11.2.  Performance Optimisations
-
-   DomainAuth implementations can benefit from several performance
-   optimisations whilst maintaining security:
-
-   1.  *Caching Strategies:* - Cache parsed certificates and DNSSEC
-       chains to avoid repeated parsing.  - Cache verification results
-       for the duration of their validity.  - Use LRU (Least Recently
-       Used) or similar algorithms for cache management.  - Ensure cache
-       entries are invalidated when they expire.
-
-   2.  *Size Optimisations:* - Minimise the size of DNSSEC chains by
-       removing redundant records.  - Use the minimum required set of
-       certificates in signature bundles.  - Consider compression for
-       storage or transmission (whilst maintaining original formats for
-       cryptographic operations).
-
-   3.  *Computational Efficiency:* - Use efficient ASN.1 parsing
-       libraries.  - Implement lazy parsing for large structures.  -
-       Consider hardware acceleration for cryptographic operations when
-       available.  - Batch operations when processing multiple
-       signatures.
-
-   4.  *Memory Management:* - Implement streaming processing for large
-       documents.  - Avoid keeping entire documents in memory when
-       possible.  - Free resources promptly after use.  - Consider
-       memory constraints on resource-limited devices.
-
-   5.  *Parallel Processing:* - Parallelise independent verification
-       steps when possible.  - Consider using worker threads for CPU-
-       intensive operations.  - Balance parallelisation benefits against
-       overhead costs.
-
-   These optimisations MUST NOT compromise security or correctness.
-   Performance-critical applications SHOULD profile their verification
-   code to identify bottlenecks and focus optimisation efforts
-   accordingly.
-
-12.  Implementation Status
+11.  Implementation Status
 
    This section records the status of known implementations of the
    protocol defined by this specification at the time of posting of this
@@ -1445,7 +1374,7 @@ _domainauth.example.com. IN TXT "0 1 3 dGhpcyBpcyBub3QgYSByZWFsIGtleSBkaWdlc3Q 8
    audits as of this writing, and their respective reports are expected
    to be published in April 2025.
 
-12.1.  VeraId JavaScript Library
+11.1.  VeraId JavaScript Library
 
    *  Organisation: Relaycorp.
 
@@ -1464,7 +1393,7 @@ _domainauth.example.com. IN TXT "0 1 3 dGhpcyBpcyBub3QgYSByZWFsIGtleSBkaWdlc3Q 8
 
    *  Last updated: 2025
 
-12.2.  VeraId JVM Library
+11.2.  VeraId JVM Library
 
    *  Organisation: Relaycorp.
 
@@ -1483,7 +1412,7 @@ _domainauth.example.com. IN TXT "0 1 3 dGhpcyBpcyBub3QgYSByZWFsIGtleSBkaWdlc3Q 8
 
    *  Last updated: 2025
 
-12.3.  VeraId Authority
+11.3.  VeraId Authority
 
    *  Organisation: Relaycorp
 
@@ -1506,9 +1435,9 @@ _domainauth.example.com. IN TXT "0 1 3 dGhpcyBpcyBub3QgYSByZWFsIGtleSBkaWdlc3Q 8
 
    *  Last updated: 2025
 
-13.  Security Considerations
+12.  Security Considerations
 
-13.1.  DNSSEC Dependency
+12.1.  DNSSEC Dependency
 
    DomainAuth's security model relies fundamentally on DNSSEC, which
    introduces specific security considerations:
@@ -1569,7 +1498,7 @@ _domainauth.example.com. IN TXT "0 1 3 dGhpcyBpcyBub3QgYSByZWFsIGtleSBkaWdlc3Q 8
    compared to centralised PKI models, particularly for offline
    verification scenarios.
 
-13.2.  Homographic and Character Encoding Attacks
+12.2.  Homographic and Character Encoding Attacks
 
    User-friendly identifiers like domain names and usernames are
    susceptible to visual spoofing attacks:
@@ -1628,7 +1557,7 @@ _domainauth.example.com. IN TXT "0 1 3 dGhpcyBpcyBub3QgYSByZWFsIGtleSBkaWdlc3Q 8
    is critical to help users correctly identify the source of signed
    content.
 
-13.3.  Domain Ownership Changes
+12.3.  Domain Ownership Changes
 
    Domain transfers present specific security challenges for the
    DomainAuth protocol:
@@ -1679,7 +1608,7 @@ _domainauth.example.com. IN TXT "0 1 3 dGhpcyBpcyBub3QgYSByZWFsIGtleSBkaWdlc3Q 8
    limiting the time window during which historical signatures remain
    valid.
 
-13.4.  Offline Verification Limitations
+12.4.  Offline Verification Limitations
 
    Offline verification introduces specific security considerations:
 
@@ -1742,7 +1671,7 @@ _domainauth.example.com. IN TXT "0 1 3 dGhpcyBpcyBub3QgYSByZWFsIGtleSBkaWdlc3Q 8
    DomainAuth provides a balanced approach that offers strong
    verification guarantees whilst supporting offline operation.
 
-13.5.  Organisation Signatures and Member Attribution
+12.5.  Organisation Signatures and Member Attribution
 
    Organisation signatures with member attribution introduce specific
    security considerations that implementers and developers should be
@@ -1834,7 +1763,7 @@ _domainauth.example.com. IN TXT "0 1 3 dGhpcyBpcyBub3QgYSByZWFsIGtleSBkaWdlc3Q 8
       organisation signatures with member attribution in high-security
       contexts.
 
-13.6.  Key Management
+12.6.  Key Management
 
    Proper key management is essential for the security of the DomainAuth
    protocol.  The following requirements apply:
@@ -1870,13 +1799,13 @@ _domainauth.example.com. IN TXT "0 1 3 dGhpcyBpcyBub3QgYSByZWFsIGtleSBkaWdlc3Q 8
    secure key management practices appropriate to the security
    requirements of the organisation.
 
-14.  IANA Considerations
+13.  IANA Considerations
 
    This document has no IANA actions.
 
-15.  References
+14.  References
 
-15.1.  Normative References
+14.1.  Normative References
 
    [ASN.1]    International Telecommunications Union, "Information
               Technology — ASN.1 encoding rules: Specification of Basic
@@ -1916,7 +1845,7 @@ _domainauth.example.com. IN TXT "0 1 3 dGhpcyBpcyBub3QgYSByZWFsIGtleSBkaWdlc3Q 8
               (CRL) Profile", RFC 5280, DOI 10.17487/RFC5280, May 2008,
               <https://www.rfc-editor.org/rfc/rfc5280>.
 
-15.2.  Informative References
+14.2.  Informative References
 
    [AWALA]    Narea, G., "Awala", 2019, <https://specs.awala.network/>.
 
@@ -2033,6 +1962,65 @@ Appendix B.  OID Registry
    Services SHOULD use versioning in their OID structure to manage
    protocol evolution.  Major, incompatible changes SHOULD use a new
    OID, whilst minor, backward-compatible changes MAY use the same OID.
+
+Appendix C.  Implementation Guidance
+
+C.1.  Performance Optimisations
+
+   DomainAuth implementations can benefit from several performance
+   optimisations whilst maintaining security:
+
+   1.  *Caching Strategies:*
+
+       *  Cache parsed certificates and DNSSEC chains to avoid repeated
+          parsing.
+
+       *  Cache verification results for the duration of their validity.
+
+       *  Use LRU (Least Recently Used) or similar algorithms for cache
+          management.
+
+       *  Ensure cache entries are invalidated when they expire.
+
+   2.  *Size Optimisations:*
+
+       *  Minimise the size of DNSSEC chains by removing redundant
+          records.
+
+       *  Use the minimum required set of certificates in signature
+          bundles.
+
+       *  Consider compression for storage or transmission (whilst
+          maintaining original formats for cryptographic operations).
+
+   3.  *Computational Efficiency:*
+
+       *  Use efficient ASN.1 parsing libraries.
+
+       *  Implement lazy parsing for large structures.
+
+       *  Consider hardware acceleration for cryptographic operations
+          when available.
+
+       *  Batch operations when processing multiple signatures.
+
+   4.  *Memory Management:*
+
+       *  Implement streaming processing for large documents.
+
+       *  Avoid keeping entire documents in memory when possible.
+
+       *  Free resources promptly after use.
+
+       *  Consider memory constraints on resource-limited devices.
+
+   5.  *Parallel Processing:*
+
+       *  Parallelise independent verification steps when possible.
+
+       *  Consider using worker threads for CPU-intensive operations.
+
+       *  Balance parallelisation benefits against overhead costs.
 
 Acknowledgements
 

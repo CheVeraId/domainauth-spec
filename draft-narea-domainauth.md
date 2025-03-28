@@ -193,6 +193,8 @@ Similarly, an organisation would produce a signature bundle as follows:
 2. Resolve the DNSSEC chain from the DomainAuth TXT record, or use a cached chain valid during the intended validity period.
 3. Construct a signature bundle with the CMS SignedData structure, the organisation certificate, and the DNSSEC chain.
 
+In both cases, the signer can choose to encapsulate the plaintext in the CMS SignedData structure or distribute it separately.
+
 ### Signature Bundle Verification
 
 The verification process involves validating the entire chain of trust as follows:
@@ -431,8 +433,6 @@ Where:
 - `signature` is a CMS `ContentInfo` containing the SignedData structure.
 
 The specific contents of the `signature` field depend on whether it is a member signature or an organisation signature, as detailed in {{cms-signeddata-structure}}.
-
-For detached signatures, the plaintext MUST be provided separately during verification.
 
 ## Verification Procedure
 

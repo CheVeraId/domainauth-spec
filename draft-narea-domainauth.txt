@@ -94,42 +94,41 @@ Table of Contents
      4.2.  Member Certificate
      4.3.  Intermediate Certificate
    5.  Member Id Bundle
-   6.  Digital Signatures
-     6.1.  CMS SignedData Structure
-     6.2.  Signature Types
-       6.2.1.  Member Signatures
-       6.2.2.  Organisation Signatures
-     6.3.  Signature Bundle
-     6.4.  Signature Metadata
-     6.5.  Signature Verification
-       6.5.1.  Verification Process
-       6.5.2.  Implementation Recommendations
-       6.5.3.  User Interface Guidelines
-   7.  Cryptographic Algorithms
-     7.1.  Digital Signature Algorithms
-       7.1.1.  RSA-PSS
-     7.2.  Hash Functions
-   8.  Maximum Validity Period
-   9.  Naming Conventions and Restrictions
-   10. Services
-     10.1.  Service OIDs
-     10.2.  Service-Specific Validation Rules
-     10.3.  Implementation Guidelines
-   11. Implementation Status
-     11.1.  VeraId JavaScript Library
-     11.2.  VeraId JVM Library
-     11.3.  VeraId Authority
-   12. Security Considerations
-     12.1.  DNSSEC Dependency
-     12.2.  Homographic and Character Encoding Attacks
-     12.3.  Domain Ownership Changes
-     12.4.  Offline Verification Limitations
-     12.5.  Organisation Signatures and Member Attribution
-     12.6.  Key Management
-   13. IANA Considerations
-   14. References
-     14.1.  Normative References
-     14.2.  Informative References
+   6.  CMS SignedData Structure
+     6.1.  Signature Types
+       6.1.1.  Member Signatures
+       6.1.2.  Organisation Signatures
+     6.2.  Signature Metadata
+   7.  Signature Bundle
+     7.1.  Verification Process
+     7.2.  Implementation Recommendations
+     7.3.  User Interface Guidelines
+   8.  Cryptographic Algorithms
+     8.1.  Digital Signature Algorithms
+       8.1.1.  RSA-PSS
+     8.2.  Hash Functions
+   9.  Maximum Validity Period
+   10. Naming Conventions and Restrictions
+   11. Services
+     11.1.  Service OIDs
+     11.2.  Service-Specific Validation Rules
+     11.3.  Implementation Guidelines
+   12. Serialisation
+   13. Implementation Status
+     13.1.  VeraId JavaScript Library
+     13.2.  VeraId JVM Library
+     13.3.  VeraId Authority
+   14. Security Considerations
+     14.1.  DNSSEC Dependency
+     14.2.  Homographic and Character Encoding Attacks
+     14.3.  Domain Ownership Changes
+     14.4.  Offline Verification Limitations
+     14.5.  Organisation Signatures and Member Attribution
+     14.6.  Key Management
+   15. IANA Considerations
+   16. References
+     16.1.  Normative References
+     16.2.  Informative References
    Appendix A.  ASN.1 Schemas
    Appendix B.  OID Registry
    Appendix C.  Implementation Guidance
@@ -434,7 +433,7 @@ Table of Contents
    chain.
 
    For more detailed information on the verification process,
-   particularly regarding validity periods, see Section 6.5.1.
+   particularly regarding validity periods, see Section 7.1.
 
 2.3.  Trust Model
 
@@ -495,9 +494,10 @@ Table of Contents
    domain at any level in the DNS hierarchy, except the root zone, MAY
    implement DomainAuth.  Each participating domain operates entirely
    independently from its parent zones, with no hierarchical
-   relationship or inherited trust.  Throughout this document, the terms
-   "domain" and "domain name" refer to any such zone without regard to
-   its hierarchical position.
+   relationship or inherited trust.
+
+   Throughout this document, the terms "domain" and "domain name" refer
+   to any such zone without regard to its hierarchical position.
 
 3.1.  DNSSEC Configuration
 
@@ -505,7 +505,7 @@ Table of Contents
    the root zone to the DomainAuth TXT record.
 
    Newly registered domains SHOULD wait at least the maximum validity
-   period in Section 8 before enabling DomainAuth to prevent potential
+   period in Section 9 before enabling DomainAuth to prevent potential
    attacks using DNSSEC chains from previous domain owners.
 
 3.2.  TXT Record
@@ -528,7 +528,7 @@ Table of Contents
        *  3: RSA-PSS with modulus 4096 bits.
 
        More details on the RSA-PSS algorithm can be found in
-       Section 7.1.
+       Section 8.1.
 
    3.  *Key Id Type* (required): An integer denoting how the key is
        identified:
@@ -539,7 +539,7 @@ Table of Contents
 
        *  3: The key id is the SHA-512 digest of the key.
 
-       More details on hash functions can be found in Section 7.2.
+       More details on hash functions can be found in Section 8.2.
 
    4.  *Key Id* (required): The Base64-encoded (unpadded) representation
        of the key digest, as specified by the Key Id Type.
@@ -547,7 +547,7 @@ Table of Contents
    5.  *TTL Override* (required): A positive integer representing the
        number of seconds for the maximum validity period of signatures.
        This value MUST be at least 1 second and not exceed the limit
-       specified in Section 8.  Refer to Section 3.3 for more details.
+       specified in Section 9.  Refer to Section 3.3 for more details.
 
    6.  *Service OID* (optional): An Object Identifier (in dotted decimal
        notation) binding the key to a specific service.  If omitted, the
@@ -577,7 +577,7 @@ _domainauth.example.com. IN TXT "0 1 3 dGhpcyBpcyBub3QgYSByZWFsIGtleSBkaWdlc3Q 8
    be as short as a few minutes or hours.  The TTL override mechanism
    allows the DNSSEC chain to remain verifiable for a significantly
    longer period, regardless of the TTL in such records.  Refer to
-   Section 8 for the maximum validity period.
+   Section 9 for the maximum validity period.
 
    During verification, the TTL override creates a restricted time
    window that extends backwards from the end of the requested
@@ -604,7 +604,7 @@ _domainauth.example.com. IN TXT "0 1 3 dGhpcyBpcyBub3QgYSByZWFsIGtleSBkaWdlc3Q 8
    This chain MUST include all DNSSEC responses necessary to validate
    the _domainauth.<domain>/TXT record from the trust anchor.  However,
    the root zone DS records SHOULD be omitted, since they will be
-   ignored by verifiers as described in Section 6.5.1.
+   ignored by verifiers as described in Section 7.1.
 
    Implementations SHOULD optimise the serialisation to minimise
    redundancy and size whilst ensuring completeness for offline
@@ -616,9 +616,9 @@ _domainauth.example.com. IN TXT "0 1 3 dGhpcyBpcyBub3QgYSByZWFsIGtleSBkaWdlc3Q 8
    certificate MUST:
 
    *  Have a validity period of at least 1 second and not exceeding the
-      limit specified in Section 8.
+      limit specified in Section 9.
 
-   *  Only use the algorithms specified in Section 7.
+   *  Only use the algorithms specified in Section 8.
 
    *  Contain the following extensions marked as critical:
 
@@ -677,8 +677,7 @@ _domainauth.example.com. IN TXT "0 1 3 dGhpcyBpcyBub3QgYSByZWFsIGtleSBkaWdlc3Q 8
 
    The Member Id Bundle is a self-contained message that provides all
    the information needed for a member to produce verifiable signatures.
-   It is serialised using ASN.1 DER encoding with the following
-   structure:
+   It is serialised using ASN.1 with the following structure:
 
    MemberIdBundle ::= SEQUENCE {
        version                  [0] INTEGER,
@@ -718,19 +717,16 @@ _domainauth.example.com. IN TXT "0 1 3 dGhpcyBpcyBub3QgYSByZWFsIGtleSBkaWdlc3Q 8
    only public information, but their integrity is critical for secure
    signature production.
 
-6.  Digital Signatures
-
-6.1.  CMS SignedData Structure
+6.  CMS SignedData Structure
 
    DomainAuth signatures use CMS SignedData structures as defined in
-   Section 5 of [CMS], with specific requirements and recommendations
-   for the DomainAuth protocol:
+   Section 5 of [CMS], with additional requirements and recommendations:
 
    *  signerInfos field:
 
       -  There MUST be exactly one SignerInfo.
 
-      -  The digest and signature algorithms MUST comply with Section 7.
+      -  The digest and signature algorithms MUST comply with Section 8.
 
       -  The following signed attributes MUST be included:
 
@@ -740,7 +736,7 @@ _domainauth.example.com. IN TXT "0 1 3 dGhpcyBpcyBub3QgYSByZWFsIGtleSBkaWdlc3Q 8
             [CMS].
 
          o  DomainAuth signature metadata attribute as defined in
-            Section 6.4.
+            Section 6.2.
 
    *  certificates field:
 
@@ -753,12 +749,12 @@ _domainauth.example.com. IN TXT "0 1 3 dGhpcyBpcyBub3QgYSByZWFsIGtleSBkaWdlc3Q 8
       -  Certificates outside the certification path between the
          organisation and the signer SHOULD NOT be included.
 
-6.2.  Signature Types
+6.1.  Signature Types
 
    DomainAuth supports two distinct types of signatures, offering
    different levels of assurance and operational flexibility:
 
-6.2.1.  Member Signatures
+6.1.1.  Member Signatures
 
    Member signatures are produced by members (users or bots) using their
    own private key.  They are suitable for scenarios requiring strong
@@ -768,13 +764,14 @@ _domainauth.example.com. IN TXT "0 1 3 dGhpcyBpcyBub3QgYSByZWFsIGtleSBkaWdlc3Q 8
    The member's certificate MUST be included in the
    SignedData.certificates field.
 
-6.2.2.  Organisation Signatures
+6.1.2.  Organisation Signatures
 
-   Organisation signatures are produced by the organisation using its
-   private key or by a delegated signing key.  Such signatures are
-   suitable for scenarios where individual member certificate management
-   is impractical, or when the organisation takes direct responsibility
-   for the content.
+   Organisation signatures are produced using either the organisation's
+   private key or a delegated signing key.  All organisation signatures
+   include mandatory member attribution to indicate content authorship.
+   These signatures are suitable for scenarios where individual member
+   certificate management is impractical or when the organisation takes
+   direct responsibility for content.
 
    The SignerInfo structure MUST include the DomainAuth member
    attribution in its signed attributes, using the OID
@@ -783,36 +780,53 @@ _domainauth.example.com. IN TXT "0 1 3 dGhpcyBpcyBub3QgYSByZWFsIGtleSBkaWdlc3Q 8
 
    MemberAttribution ::= UTF8String
 
-   The member attribution attribute serves the following purposes:
-
-   *  *Content authorship:* Indicates which member authored the content,
-      even when the organisation signs directly.
-
-   *  *Operational flexibility:* Allows organisations to produce
-      signatures on behalf of members without requiring certificate
-      management.
-
-   *  *Accountability:* Maintains a record of which member is
-      responsible for the content, even when using organisation
-      signatures.
-
-   *  *Signature type identification:* Enables reliable determination of
-      the signature type during verification.
-
-   The member attribution value MUST conform to the same naming
-   conventions defined in Section 9.  For users, this is the username;
-   for bots, this is the at sign (@).
+   The member attribution value MUST conform to the naming conventions
+   defined in Section 10.  For users, this is the username; for bots,
+   this is the at sign (@).
 
    Member attribution is a claim made by the organisation, not
    cryptographically proven by the member.  Verifiers SHOULD present
    this distinction clearly to end users.
 
-6.3.  Signature Bundle
+6.2.  Signature Metadata
+
+   Each SignedData structure includes metadata that binds the signature
+   to a specific service and validity period.  This metadata is included
+   as a signed attribute in the SignerInfo structure.
+
+   The signature metadata attribute MUST use the OID
+   1.3.6.1.4.1.58708.1.0 and be encoded as the SignatureMetadata ASN.1
+   structure below:
+
+   SignatureMetadata ::= SEQUENCE {
+       serviceOid      [0] OBJECT IDENTIFIER,
+       validityPeriod  [1] DatePeriod
+   }
+
+   DatePeriod ::= SEQUENCE {
+       start  [0] GeneralizedTime,
+       end    [1] GeneralizedTime
+   }
+
+   Where:
+
+   *  serviceOid is the Object Identifier of the service for which the
+      signature is valid.
+
+   *  validityPeriod specifies the time period during which the
+      signature is considered valid.  The start and end fields MUST be
+      expressed in Greenwich Mean Time (GMT) and MUST include seconds.
+      Therefore, both times will follow the format YYYYMMDDHHMMSSZ.
+      Both the start and end times are inclusive, meaning the signature
+      is valid at exactly the start time and remains valid until exactly
+      the end time.
+
+7.  Signature Bundle
 
    The Signature Bundle is the primary artefact of the DomainAuth
    protocol, containing a digital signature and all the information
-   needed to verify it offline.  It is serialised using ASN.1 DER
-   encoding with the following structure:
+   needed to verify it offline.  It is serialised using ASN.1 with the
+   following structure:
 
    SignatureBundle ::= SEQUENCE {
        version                  [0] INTEGER,
@@ -836,7 +850,7 @@ _domainauth.example.com. IN TXT "0 1 3 dGhpcyBpcyBub3QgYSByZWFsIGtleSBkaWdlc3Q 8
 
    The specific contents of the signature field depend on whether it is
    a member signature or an organisation signature, as detailed in
-   Section 6.2 and Section 6.1.
+   Section 6.1 and Section 6.
 
    The signature type is determined by the presence of the member
    attribution attribute within the SignedData structure: if present,
@@ -849,57 +863,7 @@ _domainauth.example.com. IN TXT "0 1 3 dGhpcyBpcyBub3QgYSByZWFsIGtleSBkaWdlc3Q 8
    information needed for offline verification of the signature, without
    requiring any network lookups or external data sources.
 
-6.4.  Signature Metadata
-
-   Each DomainAuth signature includes metadata that binds it to a
-   specific service and validity period.  This metadata is included as a
-   signed attribute in the CMS SignedData structure, ensuring it cannot
-   be modified without invalidating the signature.
-
-   The signature metadata is encoded as an ASN.1 structure:
-
-   SignatureMetadata ::= SEQUENCE {
-       serviceOid      [0] OBJECT IDENTIFIER,
-       validityPeriod  [1] DatePeriod
-   }
-
-   DatePeriod ::= SEQUENCE {
-       start  [0] GeneralizedTime,
-       end    [1] GeneralizedTime
-   }
-
-   Where:
-
-   *  serviceOid is the Object Identifier of the service for which the
-      signature is valid.
-
-   *  validityPeriod specifies the time period during which the
-      signature is considered valid.  The start and end fields MUST be
-      expressed in Greenwich Mean Time (GMT) and MUST include seconds.
-      Therefore, both times will follow the format YYYYMMDDHHMMSSZ.
-
-   The signature metadata serves several key purposes:
-
-   1.  *Service binding:* Prevents signatures created for one service
-       from being reused in another context.
-
-   2.  *Temporal scoping:* Allows signers to limit the validity period
-       of signatures independent of certificate lifetimes.
-
-   3.  *Freshness indication:* Provides verifiers with information about
-       when the signature was created.
-
-   Verifiers MUST check that the signature metadata's service OID
-   matches the expected service and that the verification time falls
-   within the specified validity period.
-
-   The validity period in the signature metadata is intersected with the
-   validity periods of certificates and DNSSEC records to determine the
-   overall validity period of the signature.
-
-6.5.  Signature Verification
-
-6.5.1.  Verification Process
+7.1.  Verification Process
 
    The verification of a DomainAuth signature involves multiple steps
    that validate the entire chain of trust from the DNSSEC
@@ -1072,7 +1036,7 @@ _domainauth.example.com. IN TXT "0 1 3 dGhpcyBpcyBub3QgYSByZWFsIGtleSBkaWdlc3Q 8
    any steps, to ensure the security properties of the DomainAuth
    protocol.
 
-6.5.2.  Implementation Recommendations
+7.2.  Implementation Recommendations
 
    1.  *Library/SDK Design:* - DomainAuth libraries and SDKs SHOULD
        provide distinct functions for creating member signatures and
@@ -1094,7 +1058,7 @@ _domainauth.example.com. IN TXT "0 1 3 dGhpcyBpcyBub3QgYSByZWFsIGtleSBkaWdlc3Q 8
        the specific context or user role.  - In hybrid implementations,
        clear policies should govern when each signature type is used.
 
-6.5.3.  User Interface Guidelines
+7.3.  User Interface Guidelines
 
    1.  *Signature Type Indication:* User interfaces SHOULD clearly
        indicate whether a signature is a member signature or an
@@ -1118,15 +1082,15 @@ _domainauth.example.com. IN TXT "0 1 3 dGhpcyBpcyBub3QgYSByZWFsIGtleSBkaWdlc3Q 8
        Different error handling may be appropriate for different
        signature types, reflecting their distinct trust models.
 
-7.  Cryptographic Algorithms
+8.  Cryptographic Algorithms
 
    This section describes the cryptographic algorithms used in the
    DomainAuth protocol.  It applies to the X.509 certificates and CMS
    SignedData structures, but not to the DNSSEC chain.
 
-7.1.  Digital Signature Algorithms
+8.1.  Digital Signature Algorithms
 
-7.1.1.  RSA-PSS
+8.1.1.  RSA-PSS
 
    DomainAuth uses RSA-PSS (Probabilistic Signature Scheme) as the
    digital signature algorithm with the following parameters:
@@ -1154,7 +1118,7 @@ _domainauth.example.com. IN TXT "0 1 3 dGhpcyBpcyBub3QgYSByZWFsIGtleSBkaWdlc3Q 8
    and testing and MUST use a cryptographically secure random number
    generator.
 
-7.2.  Hash Functions
+8.2.  Hash Functions
 
    DomainAuth uses the following hash functions:
 
@@ -1173,7 +1137,7 @@ _domainauth.example.com. IN TXT "0 1 3 dGhpcyBpcyBub3QgYSByZWFsIGtleSBkaWdlc3Q 8
    algorithms to those with well-established security properties and
    widespread implementation support.
 
-8.  Maximum Validity Period
+9.  Maximum Validity Period
 
    Digital signatures MUST NOT have a validity period greater than
    7,776,000 seconds (90 days).  This limit applies to DNSSEC RRSIG
@@ -1183,7 +1147,7 @@ _domainauth.example.com. IN TXT "0 1 3 dGhpcyBpcyBub3QgYSByZWFsIGtleSBkaWdlc3Q 8
    Similarly, verifiers MUST NOT allow a validity period greater than
    this limit when verifying signatures over a time period.
 
-9.  Naming Conventions and Restrictions
+10.  Naming Conventions and Restrictions
 
    DomainAuth imposes specific restrictions on member names to prevent
    phishing attacks and ensure consistent processing across
@@ -1215,9 +1179,9 @@ _domainauth.example.com. IN TXT "0 1 3 dGhpcyBpcyBub3QgYSByZWFsIGtleSBkaWdlc3Q 8
    Organisations SHOULD establish and enforce consistent naming policies
    for their users to maintain clarity and prevent confusion.
 
-10.  Services
+11.  Services
 
-10.1.  Service OIDs
+11.1.  Service OIDs
 
    DomainAuth uses Object Identifiers (OIDs) to uniquely identify
    services and applications that use the protocol.  Service OIDs serve
@@ -1249,7 +1213,7 @@ _domainauth.example.com. IN TXT "0 1 3 dGhpcyBpcyBub3QgYSByZWFsIGtleSBkaWdlc3Q 8
    are valid.  This provides important namespace isolation and prevents
    cross-service attacks.
 
-10.2.  Service-Specific Validation Rules
+11.2.  Service-Specific Validation Rules
 
    Services using DomainAuth MAY define additional validation rules
    beyond the core protocol requirements.  These rules allow services to
@@ -1257,7 +1221,7 @@ _domainauth.example.com. IN TXT "0 1 3 dGhpcyBpcyBub3QgYSByZWFsIGtleSBkaWdlc3Q 8
 
    1.  *TTL Constraints:* - Services MUST specify a maximum TTL for
        signatures.  - The TTL MUST be within the range of 1 second to
-       the limit specified in Section 8.  - For the minimum TTL, several
+       the limit specified in Section 9.  - For the minimum TTL, several
        minutes is recommended to account for clock drift.  - Services
        SHOULD choose the shortest TTL that meets their requirements.
 
@@ -1282,7 +1246,7 @@ _domainauth.example.com. IN TXT "0 1 3 dGhpcyBpcyBub3QgYSByZWFsIGtleSBkaWdlc3Q 8
    properties of the DomainAuth protocol while addressing service-
    specific requirements.
 
-10.3.  Implementation Guidelines
+11.3.  Implementation Guidelines
 
    Service developers integrating DomainAuth should adhere to the
    following guidelines to ensure secure and consistent implementation:
@@ -1321,7 +1285,16 @@ _domainauth.example.com. IN TXT "0 1 3 dGhpcyBpcyBub3QgYSByZWFsIGtleSBkaWdlc3Q 8
    consistent security properties and user experience across different
    implementations and platforms.
 
-11.  Implementation Status
+12.  Serialisation
+
+   All data structures in the DomainAuth protocol are defined using
+   Abstract Syntax Notation One (ASN.1), as referenced in [ASN.1].
+
+   Implementations MAY use any standard ASN.1 encoding rules for storage
+   and transmission, including Distinguished Encoding Rules (DER) as
+   defined in [ASN.1].
+
+13.  Implementation Status
 
    This section records the status of known implementations of the
    protocol defined by this specification at the time of posting of this
@@ -1365,6 +1338,8 @@ _domainauth.example.com. IN TXT "0 1 3 dGhpcyBpcyBub3QgYSByZWFsIGtleSBkaWdlc3Q 8
       intermediateCertificates field in the Member Id Bundle is not
       present in VeraId.
 
+   *  VeraId only allows ASN.1 DER serialisation.
+
    VeraId is led by the author of this document, who intends to
    deprecate the VeraId specification in favour of DomainAuth and update
    the reference implementations to fully comply with this
@@ -1374,7 +1349,7 @@ _domainauth.example.com. IN TXT "0 1 3 dGhpcyBpcyBub3QgYSByZWFsIGtleSBkaWdlc3Q 8
    audits as of this writing, and their respective reports are expected
    to be published in April 2025.
 
-11.1.  VeraId JavaScript Library
+13.1.  VeraId JavaScript Library
 
    *  Organisation: Relaycorp.
 
@@ -1393,7 +1368,7 @@ _domainauth.example.com. IN TXT "0 1 3 dGhpcyBpcyBub3QgYSByZWFsIGtleSBkaWdlc3Q 8
 
    *  Last updated: 2025
 
-11.2.  VeraId JVM Library
+13.2.  VeraId JVM Library
 
    *  Organisation: Relaycorp.
 
@@ -1412,7 +1387,7 @@ _domainauth.example.com. IN TXT "0 1 3 dGhpcyBpcyBub3QgYSByZWFsIGtleSBkaWdlc3Q 8
 
    *  Last updated: 2025
 
-11.3.  VeraId Authority
+13.3.  VeraId Authority
 
    *  Organisation: Relaycorp
 
@@ -1435,9 +1410,9 @@ _domainauth.example.com. IN TXT "0 1 3 dGhpcyBpcyBub3QgYSByZWFsIGtleSBkaWdlc3Q 8
 
    *  Last updated: 2025
 
-12.  Security Considerations
+14.  Security Considerations
 
-12.1.  DNSSEC Dependency
+14.1.  DNSSEC Dependency
 
    DomainAuth's security model relies fundamentally on DNSSEC, which
    introduces specific security considerations:
@@ -1498,7 +1473,7 @@ _domainauth.example.com. IN TXT "0 1 3 dGhpcyBpcyBub3QgYSByZWFsIGtleSBkaWdlc3Q 8
    compared to centralised PKI models, particularly for offline
    verification scenarios.
 
-12.2.  Homographic and Character Encoding Attacks
+14.2.  Homographic and Character Encoding Attacks
 
    User-friendly identifiers like domain names and usernames are
    susceptible to visual spoofing attacks:
@@ -1557,7 +1532,7 @@ _domainauth.example.com. IN TXT "0 1 3 dGhpcyBpcyBub3QgYSByZWFsIGtleSBkaWdlc3Q 8
    is critical to help users correctly identify the source of signed
    content.
 
-12.3.  Domain Ownership Changes
+14.3.  Domain Ownership Changes
 
    Domain transfers present specific security challenges for the
    DomainAuth protocol:
@@ -1565,7 +1540,7 @@ _domainauth.example.com. IN TXT "0 1 3 dGhpcyBpcyBub3QgYSByZWFsIGtleSBkaWdlc3Q 8
    1.  *Waiting Period:*
 
        *  Organisations SHOULD delay implementing DomainAuth until at
-          least the period specified in Section 8 has elapsed since the
+          least the period specified in Section 9 has elapsed since the
           domain was registered or acquired.
 
        *  This prevents the DNSSEC chain from the previous owner from
@@ -1608,7 +1583,7 @@ _domainauth.example.com. IN TXT "0 1 3 dGhpcyBpcyBub3QgYSByZWFsIGtleSBkaWdlc3Q 8
    limiting the time window during which historical signatures remain
    valid.
 
-12.4.  Offline Verification Limitations
+14.4.  Offline Verification Limitations
 
    Offline verification introduces specific security considerations:
 
@@ -1671,7 +1646,7 @@ _domainauth.example.com. IN TXT "0 1 3 dGhpcyBpcyBub3QgYSByZWFsIGtleSBkaWdlc3Q 8
    DomainAuth provides a balanced approach that offers strong
    verification guarantees whilst supporting offline operation.
 
-12.5.  Organisation Signatures and Member Attribution
+14.5.  Organisation Signatures and Member Attribution
 
    Organisation signatures with member attribution introduce specific
    security considerations that implementers and developers should be
@@ -1763,7 +1738,7 @@ _domainauth.example.com. IN TXT "0 1 3 dGhpcyBpcyBub3QgYSByZWFsIGtleSBkaWdlc3Q 8
       organisation signatures with member attribution in high-security
       contexts.
 
-12.6.  Key Management
+14.6.  Key Management
 
    Proper key management is essential for the security of the DomainAuth
    protocol.  The following requirements apply:
@@ -1799,13 +1774,13 @@ _domainauth.example.com. IN TXT "0 1 3 dGhpcyBpcyBub3QgYSByZWFsIGtleSBkaWdlc3Q 8
    secure key management practices appropriate to the security
    requirements of the organisation.
 
-13.  IANA Considerations
+15.  IANA Considerations
 
    This document has no IANA actions.
 
-14.  References
+16.  References
 
-14.1.  Normative References
+16.1.  Normative References
 
    [ASN.1]    International Telecommunications Union, "Information
               Technology — ASN.1 encoding rules: Specification of Basic
@@ -1845,7 +1820,7 @@ _domainauth.example.com. IN TXT "0 1 3 dGhpcyBpcyBub3QgYSByZWFsIGtleSBkaWdlc3Q 8
               (CRL) Profile", RFC 5280, DOI 10.17487/RFC5280, May 2008,
               <https://www.rfc-editor.org/rfc/rfc5280>.
 
-14.2.  Informative References
+16.2.  Informative References
 
    [AWALA]    Narea, G., "Awala", 2019, <https://specs.awala.network/>.
 
@@ -1904,9 +1879,8 @@ DatePeriod ::= SEQUENCE {
 -- Member attribution (included as a signed attribute in organisation signatures)
 MemberAttribution ::= UTF8String
 
-   All DomainAuth data structures MUST be encoded using ASN.1
-   Distinguished Encoding Rules (DER).  Implementations MUST reject
-   structures that are not valid DER.
+   All DomainAuth data structures MUST be encoded using ASN.1 as
+   specified in Section 12.
 
    The ASN.1 structures reference standard types from other
    specifications:

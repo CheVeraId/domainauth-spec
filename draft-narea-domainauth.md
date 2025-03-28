@@ -449,11 +449,12 @@ Implementations MUST verify every syntactically-valid signature bundle as follow
 
    The verifier MAY override the root zone DNSSEC DS record(s) for testing purposes only.
 2. **Identify the relevant DomainAuth TXT record and determine the verification time window for the DNSSEC chain:**
-   1. Extract all records in the RRSet for `_domainauth.<domain>/TXT`.
-   2. Parse each TXT record rdata, per the rules in {{txt-record}}.
-   3. Locate records matching the subject key specification from the organisation certificate (key algorithm and key id) and the service OID specified by the verifier (either matching exactly or with an absent service OID). If multiple matching records exist, use the one with the specific service OID; if none exists, use the wildcard record. If multiple records of the same type (specific or wildcard) match, verification MUST fail.
-   4. Extract the TTL override value from the identified TXT record.
-   5. Calculate a verification time window for the DNSSEC chain as follows:
+   1. Extract the domain name from the Common Name attribute in the organisation certificate's Distinguished Name.
+   2. Extract all records in the RRSet for `_domainauth.<domain>/TXT`.
+   3. Parse each TXT record rdata, per the rules in {{txt-record}}.
+   4. Locate records matching the subject key specification from the organisation certificate (key algorithm and key id) and the service OID specified by the verifier (either matching exactly or with an absent service OID). If multiple matching records exist, use the one with the specific service OID; if none exists, use the wildcard record. If multiple records of the same type (specific or wildcard) match, verification MUST fail.
+   5. Extract the TTL override value from the identified TXT record.
+   6. Calculate a verification time window for the DNSSEC chain as follows:
       - End time: The end of the required verification period (as specified by the verifier).
       - Start time: The maximum (later) of:
          - The start of the required verification period (as specified by the verifier).

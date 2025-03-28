@@ -61,13 +61,6 @@ informative:
       name: Gus Narea
       org: Relaycorp
     date: 2023
-  LETRO-SERVER:
-    title: Letro Server
-    target: https://docs.relaycorp.tech/letro-server/
-    author:
-      name: Gus Narea
-      org: Relaycorp
-    date: 2023
   AWALA:
     title: Awala
     target: https://specs.awala.network/
@@ -443,7 +436,7 @@ For detached signatures, the plaintext MUST be provided separately during verifi
 
 ## Verification Process
 
-The verification of a DomainAuth signature involves multiple steps that validate the entire chain of trust from the DNSSEC infrastructure to the signature itself. Implementations MUST perform the following verification steps:
+The verification of a signature bundle involves multiple steps that validate the entire chain of trust from the DNSSEC infrastructure to the signature itself. Implementations MUST perform the following verification steps:
 
 1. **Establish the required validity period:**
    - The verification process involves tracking the intersection of the required validity period and the validity period of all the components of the signature bundle (i.e. DNSSEC `RRSIG` records, X.509 certificates, and the digital signature).
@@ -506,26 +499,6 @@ The verification of a DomainAuth signature involves multiple steps that validate
 If all these steps succeed, the signature is considered valid, and the content is confirmed to originate from the identified member of the specified organisation or from the organisation itself.
 
 The verification process MUST be performed in full, without skipping any steps, to ensure the security properties of the DomainAuth protocol.
-
-## Implementation Recommendations
-
-1. **Library/SDK Design:**
-  - DomainAuth libraries and SDKs SHOULD provide distinct functions for creating member signatures and organisation signatures.
-  - Verification functions SHOULD be unified, with the signature type included in the verification output.
-  - Libraries SHOULD NOT require developers to specify the signature type during verification, as this should be determined automatically from the signature bundle.
-2. **Use Case Considerations:**
-  - Member signatures are recommended for applications where non-repudiation at the individual level is critical.
-  - Organisation signatures with member attribution are appropriate for applications where certificate management for individual members is impractical or where organisational accountability is sufficient.
-3. **Hybrid Approaches:**
-  - Some applications may benefit from supporting both signature types, allowing flexibility based on the specific context or user role.
-  - In hybrid implementations, clear policies should govern when each signature type is used.
-
-## User Interface Guidelines
-
-1. **Signature Type Indication:** User interfaces SHOULD clearly indicate whether a signature is a member signature or an organisation signature with member attribution. Different visual indicators (icons, colors, labels) SHOULD be used to distinguish between the two signature types.
-2. **Attribution Presentation:** For organisation signatures, interfaces SHOULD clearly indicate that the member attribution is a claim made by the organisation, not cryptographic proof. Example phrasing: `Signed by example.com on behalf of alice` rather than `Signed by alice of example.com`.
-3. **Verification Details:** Interfaces SHOULD provide access to detailed verification information, including the full certification path and validity periods. Advanced users SHOULD be able to view the complete verification process and results.
-4. **Error Handling:** Clear error messages SHOULD be displayed when verification fails, with appropriate guidance for users. Different error handling may be appropriate for different signature types, reflecting their distinct trust models.
 
 # Cryptographic Algorithms
 
@@ -672,11 +645,13 @@ Service developers integrating DomainAuth should adhere to the following guideli
 
 These guidelines help ensure that DomainAuth integrations provide consistent security properties and user experience across different implementations and platforms.
 
-# Serialisation
+## Data Serialisation
 
 All data structures in the DomainAuth protocol are defined using Abstract Syntax Notation One (ASN.1), as referenced in {{ASN.1}}.
 
-Implementations MAY use any standard ASN.1 encoding rules for storage and transmission, including Distinguished Encoding Rules (DER) as defined in {{ASN.1}}.
+Implementations MUST support Distinguished Encoding Rules (DER) as defined in {{ASN.1}} for storage and transmission.
+
+Services MAY require or support additional ASN.1 encoding rules. In such cases, service implementations MUST handle the conversion between DER and the alternative encoding rules.
 
 # Implementation Status
 
@@ -712,7 +687,7 @@ All implementations listed below are undergoing independent security audits as o
 
 - Organisation: Relaycorp.
 - URL: https://github.com/relaycorp/veraid-jvm
-- Level of maturity: Used in production in the Android-based offline messaging application {{LETRO}}.
+- Level of maturity: Used in the Android version of Letro as described in {{letro}}.
 - Coverage: The implementation covers the entire protocol as defined in {{VERAID}}, except for Organisation Signature Bundles.
 - Licensing: Freely distributable with acknowledgement (Apache 2.0 licence).
 - Contact: https://relaycorp.tech/
@@ -723,11 +698,25 @@ All implementations listed below are undergoing independent security audits as o
 - Organisation: Relaycorp
 - URL: https://github.com/relaycorp/veraid-authority
 - Description: A multi-tenant, cloud-native application that allows organisations to manage their members and the issuance of their respective Member Id Bundles.
-- Level of maturity: Used in production in the server-side component of Letro as documented in {{LETRO-SERVER}}.
+- Level of maturity: Used in production in the server-side component of Letro as described in {{letro}}.
 - Coverage: The implementation leverages the VeraId JavaScript Library to issue Member Id Bundles and Organisation Signature Bundles.
 - Licensing: Business Source License version 1.1
 - Contact: https://relaycorp.tech/
 - Last updated: 2025
+
+## Letro
+
+{{LETRO}} is the only VeraId service as of this writing.
+
+- Organisation: Relaycorp
+- URLs:
+  - https://github.com/relaycorp/letro-android
+  - https://docs.relaycorp.tech/letro-server/
+- Level of maturity: Experimental.
+- Coverage: The implementation exercises the entire protocol as defined in {{VERAID}}, except for organisation signatures and bot members. It uses the VeraId JVM Library to issue member signatures on Android, and the VeraId Authority to issue Member Id Bundles under a variety of domain names operated by Relaycorp (e.g. `applepie.rocks`, `cuppa.fans`).
+- Licensing: Freely distributable with acknowledgement (GNU GPLv3 and Apache 2.0 licences).
+- Contact: https://relaycorp.tech/
+- Last updated: 2024
 
 # Security Considerations
 
@@ -907,7 +896,6 @@ The following ASN.1 schemas define the data structures used in the DomainAuth pr
 -- DNSSEC chain is a set of DNS messages
 DnssecChain ::= SET OF OCTET STRING
 
--- Default tag defines all tags as IMPLICIT
 -- Member Id Bundle
 MemberIdBundle ::= SEQUENCE {
     version                  [0] INTEGER,
@@ -940,7 +928,7 @@ DatePeriod ::= SEQUENCE {
 MemberAttribution ::= UTF8String
 ~~~~~~~
 
-All DomainAuth data structures MUST be encoded using ASN.1 as specified in {{serialisation}}.
+All DomainAuth data structures MUST be encoded using ASN.1 as specified in {{data-serialisation}}.
 
 The ASN.1 structures reference standard types from other specifications:
 
@@ -1001,6 +989,26 @@ DomainAuth implementations can benefit from several performance optimisations wh
    - Parallelise independent verification steps when possible.
    - Consider using worker threads for CPU-intensive operations.
    - Balance parallelisation benefits against overhead costs.
+
+## Implementation Recommendations
+
+1. **Library/SDK Design:**
+  - DomainAuth libraries and SDKs SHOULD provide distinct functions for creating member signatures and organisation signatures.
+  - Verification functions SHOULD be unified, with the signature type included in the verification output.
+  - Libraries SHOULD NOT require developers to specify the signature type during verification, as this should be determined automatically from the signature bundle.
+2. **Use Case Considerations:**
+  - Member signatures are recommended for applications where non-repudiation at the individual level is critical.
+  - Organisation signatures with member attribution are appropriate for applications where certificate management for individual members is impractical or where organisational accountability is sufficient.
+3. **Hybrid Approaches:**
+  - Some applications may benefit from supporting both signature types, allowing flexibility based on the specific context or user role.
+  - In hybrid implementations, clear policies should govern when each signature type is used.
+
+## User Interface Guidelines
+
+1. **Signature Type Indication:** User interfaces SHOULD clearly indicate whether a signature is a member signature or an organisation signature with member attribution. Different visual indicators (icons, colors, labels) SHOULD be used to distinguish between the two signature types.
+2. **Attribution Presentation:** For organisation signatures, interfaces SHOULD clearly indicate that the member attribution is a claim made by the organisation, not cryptographic proof. Example phrasing: `Signed by example.com on behalf of alice` rather than `Signed by alice of example.com`.
+3. **Verification Details:** Interfaces SHOULD provide access to detailed verification information, including the full certification path and validity periods. Advanced users SHOULD be able to view the complete verification process and results.
+4. **Error Handling:** Clear error messages SHOULD be displayed when verification fails, with appropriate guidance for users. Different error handling may be appropriate for different signature types, reflecting their distinct trust models.
 
 # Acknowledgements
 {:numbered="false"}

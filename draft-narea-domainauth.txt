@@ -111,23 +111,23 @@ Table of Contents
      11.1.  Service OIDs
      11.2.  Service-Specific Validation Rules
      11.3.  Implementation Guidelines
-     11.4.  Data Serialisation
-   12. Implementation Status
-     12.1.  VeraId JavaScript Library
-     12.2.  VeraId JVM Library
-     12.3.  VeraId Authority
-     12.4.  Letro
-   13. Security Considerations
-     13.1.  DNSSEC Dependency
-     13.2.  Homographic and Character Encoding Attacks
-     13.3.  Domain Ownership Changes
-     13.4.  Offline Verification Limitations
-     13.5.  Organisation Signatures and Member Attribution
-     13.6.  Key Management
-   14. IANA Considerations
-   15. References
-     15.1.  Normative References
-     15.2.  Informative References
+   12. Data Serialisation
+   13. Implementation Status
+     13.1.  VeraId JavaScript Library
+     13.2.  VeraId JVM Library
+     13.3.  VeraId Authority
+     13.4.  Letro
+   14. Security Considerations
+     14.1.  DNSSEC Dependency
+     14.2.  Homographic and Character Encoding Attacks
+     14.3.  Domain Ownership Changes
+     14.4.  Offline Verification Limitations
+     14.5.  Organisation Signatures and Member Attribution
+     14.6.  Key Management
+   15. IANA Considerations
+   16. References
+     16.1.  Normative References
+     16.2.  Informative References
    Appendix A.  ASN.1 Schemas
    Appendix B.  OID Registry
    Appendix C.  Implementation Guidance
@@ -1231,19 +1231,20 @@ _domainauth.example.com. IN TXT "0 1 3 dGhpcyBpcyBub3QgYSByZWFsIGtleSBkaWdlc3Q 8
    consistent security properties and user experience across different
    implementations and platforms.
 
-11.4.  Data Serialisation
+12.  Data Serialisation
 
    All data structures in the DomainAuth protocol are defined using
    Abstract Syntax Notation One (ASN.1), as referenced in [ASN.1].
 
    Implementations MUST support Distinguished Encoding Rules (DER) as
-   defined in [ASN.1] for storage and transmission.
+   defined in [ASN.1].
 
-   Services MAY require or support additional ASN.1 encoding rules.  In
-   such cases, service implementations MUST handle the conversion
-   between DER and the alternative encoding rules.
+   Services MAY require or recommend additional ASN.1 encoding rules.
+   In such cases, service implementations MUST handle the conversion
+   between DER and the alternative encoding rules, if the additional
+   rules are not supported by the DomainAuth implementation.
 
-12.  Implementation Status
+13.  Implementation Status
 
    This section records the status of known implementations of the
    protocol defined by this specification at the time of posting of this
@@ -1298,7 +1299,7 @@ _domainauth.example.com. IN TXT "0 1 3 dGhpcyBpcyBub3QgYSByZWFsIGtleSBkaWdlc3Q 8
    audits as of this writing, and their respective reports are expected
    to be published in April 2025.
 
-12.1.  VeraId JavaScript Library
+13.1.  VeraId JavaScript Library
 
    *  Organisation: Relaycorp.
 
@@ -1317,14 +1318,14 @@ _domainauth.example.com. IN TXT "0 1 3 dGhpcyBpcyBub3QgYSByZWFsIGtleSBkaWdlc3Q 8
 
    *  Last updated: 2025
 
-12.2.  VeraId JVM Library
+13.2.  VeraId JVM Library
 
    *  Organisation: Relaycorp.
 
    *  URL: https://github.com/relaycorp/veraid-jvm
 
    *  Level of maturity: Used in the Android version of Letro as
-      described in Section 12.4.
+      described in Section 13.4.
 
    *  Coverage: The implementation covers the entire protocol as defined
       in [VERAID], except for Organisation Signature Bundles.
@@ -1336,7 +1337,7 @@ _domainauth.example.com. IN TXT "0 1 3 dGhpcyBpcyBub3QgYSByZWFsIGtleSBkaWdlc3Q 8
 
    *  Last updated: 2025
 
-12.3.  VeraId Authority
+13.3.  VeraId Authority
 
    *  Organisation: Relaycorp
 
@@ -1347,7 +1348,7 @@ _domainauth.example.com. IN TXT "0 1 3 dGhpcyBpcyBub3QgYSByZWFsIGtleSBkaWdlc3Q 8
       respective Member Id Bundles.
 
    *  Level of maturity: Used in production in the server-side component
-      of Letro as described in Section 12.4.
+      of Letro as described in Section 13.4.
 
    *  Coverage: The implementation leverages the VeraId JavaScript
       Library to issue Member Id Bundles and Organisation Signature
@@ -1359,7 +1360,7 @@ _domainauth.example.com. IN TXT "0 1 3 dGhpcyBpcyBub3QgYSByZWFsIGtleSBkaWdlc3Q 8
 
    *  Last updated: 2025
 
-12.4.  Letro
+13.4.  Letro
 
    [LETRO] is the only VeraId service as of this writing.
 
@@ -1387,9 +1388,9 @@ _domainauth.example.com. IN TXT "0 1 3 dGhpcyBpcyBub3QgYSByZWFsIGtleSBkaWdlc3Q 8
 
    *  Last updated: 2024
 
-13.  Security Considerations
+14.  Security Considerations
 
-13.1.  DNSSEC Dependency
+14.1.  DNSSEC Dependency
 
    DomainAuth's security model relies fundamentally on DNSSEC, which
    introduces specific security considerations:
@@ -1450,7 +1451,7 @@ _domainauth.example.com. IN TXT "0 1 3 dGhpcyBpcyBub3QgYSByZWFsIGtleSBkaWdlc3Q 8
    compared to centralised PKI models, particularly for offline
    verification scenarios.
 
-13.2.  Homographic and Character Encoding Attacks
+14.2.  Homographic and Character Encoding Attacks
 
    User-friendly identifiers like domain names and usernames are
    susceptible to visual spoofing attacks:
@@ -1509,7 +1510,7 @@ _domainauth.example.com. IN TXT "0 1 3 dGhpcyBpcyBub3QgYSByZWFsIGtleSBkaWdlc3Q 8
    is critical to help users correctly identify the source of signed
    content.
 
-13.3.  Domain Ownership Changes
+14.3.  Domain Ownership Changes
 
    Domain transfers present specific security challenges for the
    DomainAuth protocol:
@@ -1560,7 +1561,7 @@ _domainauth.example.com. IN TXT "0 1 3 dGhpcyBpcyBub3QgYSByZWFsIGtleSBkaWdlc3Q 8
    limiting the time window during which historical signatures remain
    valid.
 
-13.4.  Offline Verification Limitations
+14.4.  Offline Verification Limitations
 
    Offline verification introduces specific security considerations:
 
@@ -1623,7 +1624,7 @@ _domainauth.example.com. IN TXT "0 1 3 dGhpcyBpcyBub3QgYSByZWFsIGtleSBkaWdlc3Q 8
    DomainAuth provides a balanced approach that offers strong
    verification guarantees whilst supporting offline operation.
 
-13.5.  Organisation Signatures and Member Attribution
+14.5.  Organisation Signatures and Member Attribution
 
    Organisation signatures with member attribution introduce specific
    security considerations that implementers and developers should be
@@ -1715,7 +1716,7 @@ _domainauth.example.com. IN TXT "0 1 3 dGhpcyBpcyBub3QgYSByZWFsIGtleSBkaWdlc3Q 8
       organisation signatures with member attribution in high-security
       contexts.
 
-13.6.  Key Management
+14.6.  Key Management
 
    Proper key management is essential for the security of the DomainAuth
    protocol.  The following requirements apply:
@@ -1751,13 +1752,13 @@ _domainauth.example.com. IN TXT "0 1 3 dGhpcyBpcyBub3QgYSByZWFsIGtleSBkaWdlc3Q 8
    secure key management practices appropriate to the security
    requirements of the organisation.
 
-14.  IANA Considerations
+15.  IANA Considerations
 
    This document has no IANA actions.
 
-15.  References
+16.  References
 
-15.1.  Normative References
+16.1.  Normative References
 
    [ASN.1]    International Telecommunications Union, "Information
               Technology — ASN.1 encoding rules: Specification of Basic
@@ -1797,7 +1798,7 @@ _domainauth.example.com. IN TXT "0 1 3 dGhpcyBpcyBub3QgYSByZWFsIGtleSBkaWdlc3Q 8
               (CRL) Profile", RFC 5280, DOI 10.17487/RFC5280, May 2008,
               <https://www.rfc-editor.org/rfc/rfc5280>.
 
-15.2.  Informative References
+16.2.  Informative References
 
    [AWALA]    Narea, G., "Awala", 2019, <https://specs.awala.network/>.
 
@@ -1852,7 +1853,7 @@ DatePeriod ::= SEQUENCE {
 MemberAttribution ::= UTF8String
 
    All DomainAuth data structures MUST be encoded using ASN.1 as
-   specified in Section 11.4.
+   specified in Section 12.
 
    The ASN.1 structures reference standard types from other
    specifications:

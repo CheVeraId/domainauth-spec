@@ -79,7 +79,7 @@ informative:
 
 --- abstract
 
-This document defines DomainAuth, a protocol to attribute digital signatures to domain names in such a way that signatures can be verified entirely offline without a prior distribution of public keys.
+This document defines DomainAuth, a protocol to attribute digital signatures to domain names in such a way that verification can occur entirely offline without a prior distribution of public keys.
 
 Each signature is distributed as part of a self-contained "signature bundle" that encapsulates a complete chain of trust comprising: (1) a DNSSEC chain from the root zone to a TXT record containing a public key or its digest, (2) an X.509 certificate chain from the key specified in the TXT record to the final signing key, and (3) the digital signature in the form of a CMS SignedData structure.
 
@@ -100,13 +100,13 @@ This specification defines the protocol components, data structures, and verific
 
 The protocol was initially designed and implemented to provide users of the offline messaging application Letro {{LETRO}} with identifiers that are customisable, user friendly, universally unique, and verifiable.
 
-Letro is powered by the delay-tolerant network Awala {{AWALA}}, which offers an end-to-end encrypted sneakernet to transport data between a region disconnected from the Internet and a location with access to the Internet. In the most extreme cases, this physical transport may take a short number of months. Consequently, users should be able to produce and verify digital signatures during that time period without relying on online services.
+Letro is powered by the delay-tolerant network Awala {{AWALA}}, which offers an end-to-end encrypted sneakernet to transport data between a region disconnected from the Internet and a location with access to the Internet. In the most extreme cases, this physical transport may take several weeks, during which users should be able to produce and verify digital signatures without relying on online services.
 
 Attacks by powerful adversaries, such as nation-state actors, are part of the threat model, given that Awala and Letro explicitly target people disconnected from the Internet due to conflict or government-sponsored censorship.
 
 Despite its origin in delay-tolerant networking, DomainAuth has broader applicability and can be useful when the Internet is available, such as the following use cases:
 
-- Client authentication. A client could prove its identity to its server by sending a short-lived token signed with DomainAuth; this would be analogous to using a JSON Web Token {{JWT}}, except that it can be verified without a prior distribution of public keys or remote operations. Alternatively, the client could sign each message sent to the server.
+- Client authentication. A client could prove its identity to a server by sending a short-lived token signed with DomainAuth; this would be analogous to using a JSON Web Token {{JWT}}, except that it can be verified without a prior distribution of public keys or remote operations. Alternatively, the client could sign each message sent to the server.
 - Artefact signing. Documents, applications, libraries, and other files could be signed on behalf of a domain name, without vendor-specific gatekeeping mechanisms. This could unlock further use cases, such as enabling users to share original content whilst proving authenticity and integrity, instead of sharing URLs to resources that could be blocked at the network level.
 - Peer-to-peer web hosting. A next-generation of websites could be hosted on a peer-to-peer network, with files reliably attributed to their respective domain names.
 
@@ -119,12 +119,9 @@ DomainAuth is designed with the following primary goals:
 1. **Decentralisation:** The protocol avoids the need for centralised authorities beyond the DNS hierarchy itself. Each domain owner has exclusive control over their domain and its associated members.
 2. **Offline verification:** All signature bundles contain sufficient information to be independently verified without requiring external network queries.
 3. **User-friendly identifiers:** Identities are based on familiar, human-readable domain names and usernames rather than cryptographically-derived values.
-4. **Build upon well-established standards:**
-   - DNSSEC for securing DNS responses.
-   - X.509 for certificate management.
-   - Cryptographic Message Syntax (CMS) for digital signatures.
-5. **Minimal trust assumptions:** The protocol ensures that no entity can issue credentials on behalf of domains they do not control, unlike traditional PKIs where any CA can issue certificates for any domain.
-6. **Contextual binding:** Signatures are bound to specific "services" (see below), preventing their unauthorised use across different contexts.
+4. **Build upon well-established standards:** DNSSEC for securing DNS responses, X.509 for certificate management, and CMS for digital signatures.
+5. **Minimal trust assumptions:** The protocol reduces trust dependencies by leveraging DNSSEC, limiting potential credential issuance attacks to DNS hierarchy operators (primarily IANA and TLD operators).
+6. **Contextual binding:** Signatures are bound to specific "services", preventing their unauthorised use across different contexts.
 
 ## Conventions and Terminology
 

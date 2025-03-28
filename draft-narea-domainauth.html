@@ -1246,7 +1246,7 @@ svg :is([fill="white"], [fill^="#fff"]) {
             <p id="section-toc.1-1.7.1"><a href="#section-7" class="auto internal xref">7</a>.  <a href="#name-signature-bundle" class="internal xref">Signature Bundle</a></p>
 <ul class="compact toc ulBare ulEmpty">
 <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.7.2.1">
-                <p id="section-toc.1-1.7.2.1.1"><a href="#section-7.1" class="auto internal xref">7.1</a>.  <a href="#name-verification-process" class="internal xref">Verification Process</a></p>
+                <p id="section-toc.1-1.7.2.1.1"><a href="#section-7.1" class="auto internal xref">7.1</a>.  <a href="#name-verification-procedure" class="internal xref">Verification Procedure</a></p>
 </li>
             </ul>
 </li>
@@ -1635,7 +1635,7 @@ appear in all capitals, as shown here.<a href="#section-1.3-1" class="pilcrow">�
 </li>
           </ol>
 <p id="section-2.2.4-3">Alternatively, the verifier can start with the digital signature, then verify the organisation certificate and finally the DNSSEC chain.<a href="#section-2.2.4-3" class="pilcrow">¶</a></p>
-<p id="section-2.2.4-4">For more detailed information on the verification process, particularly regarding validity periods, see <a href="#verification-process" class="auto internal xref">Section 7.1</a>.<a href="#section-2.2.4-4" class="pilcrow">¶</a></p>
+<p id="section-2.2.4-4">For more detailed information on the verification process, particularly regarding validity periods, see <a href="#verification-procedure" class="auto internal xref">Section 7.1</a>.<a href="#section-2.2.4-4" class="pilcrow">¶</a></p>
 </section>
 </div>
 </section>
@@ -1777,7 +1777,7 @@ _domainauth.example.com. IN TXT "0 1 3 dGhpcyBpcyBub3QgYSByZWFsIGtleSBkaWdlc3Q 8
 DnssecChain ::= SET OF OCTET STRING
 </pre><a href="#section-3.4-2" class="pilcrow">¶</a>
 </div>
-<p id="section-3.4-3">This chain <span class="bcp14">MUST</span> include all DNSSEC responses necessary to validate the <code>_domainauth.&lt;domain&gt;/TXT</code> record from the trust anchor. However, the root zone DS records <span class="bcp14">SHOULD</span> be omitted, since they will be ignored by verifiers as described in <a href="#verification-process" class="auto internal xref">Section 7.1</a>.<a href="#section-3.4-3" class="pilcrow">¶</a></p>
+<p id="section-3.4-3">This chain <span class="bcp14">MUST</span> include all DNSSEC responses necessary to validate the <code>_domainauth.&lt;domain&gt;/TXT</code> record from the trust anchor. However, the root zone DS records <span class="bcp14">SHOULD</span> be omitted, since they will be ignored by verifiers as described in <a href="#verification-procedure" class="auto internal xref">Section 7.1</a>.<a href="#section-3.4-3" class="pilcrow">¶</a></p>
 <p id="section-3.4-4">Implementations <span class="bcp14">SHOULD</span> optimise the serialisation to minimise redundancy and size whilst ensuring completeness for offline verification.<a href="#section-3.4-4" class="pilcrow">¶</a></p>
 </section>
 </div>
@@ -2040,215 +2040,136 @@ SignatureBundle ::= SEQUENCE {
       </ul>
 <p id="section-7-5">The specific contents of the <code>signature</code> field depend on whether it is a member signature or an organisation signature, as detailed in <a href="#cms-signeddata-structure" class="auto internal xref">Section 6</a>.<a href="#section-7-5" class="pilcrow">¶</a></p>
 <p id="section-7-6">For detached signatures, the plaintext <span class="bcp14">MUST</span> be provided separately during verification.<a href="#section-7-6" class="pilcrow">¶</a></p>
-<div id="verification-process">
+<div id="verification-procedure">
 <section id="section-7.1">
-        <h3 id="name-verification-process">
-<a href="#section-7.1" class="section-number selfRef">7.1. </a><a href="#name-verification-process" class="section-name selfRef">Verification Process</a>
+        <h3 id="name-verification-procedure">
+<a href="#section-7.1" class="section-number selfRef">7.1. </a><a href="#name-verification-procedure" class="section-name selfRef">Verification Procedure</a>
         </h3>
-<p id="section-7.1-1">The verification of a signature bundle involves multiple steps that validate the entire chain of trust from the DNSSEC infrastructure to the signature itself. Implementations <span class="bcp14">MUST</span> perform the following verification steps:<a href="#section-7.1-1" class="pilcrow">¶</a></p>
-<ol start="1" type="1" class="normal type-1" id="section-7.1-2">
-<li id="section-7.1-2.1">
-            <p id="section-7.1-2.1.1"><strong>Establish the required validity period:</strong><a href="#section-7.1-2.1.1" class="pilcrow">¶</a></p>
+<p id="section-7.1-1">Implementations <span class="bcp14">MUST</span> verify the syntactic validity of the signature bundle against its ASN.1 schema and reject malformed values. Refer to <a href="#data-serialisation" class="auto internal xref">Section 12</a> for more information on serialisation formats.<a href="#section-7.1-1" class="pilcrow">¶</a></p>
+<p id="section-7.1-2">A fundamental aspect of the verification procedure is to establish that all components—the DNSSEC chain, X.509 certificate path and the signature itself—were simultaneously valid for at least one second within the specified verification period. This temporal intersection of validity periods ensures the cryptographic continuity of the trust chain at the time of verification.<a href="#section-7.1-2" class="pilcrow">¶</a></p>
+<p id="section-7.1-3">Implementations <span class="bcp14">MUST</span> verify every syntactically-valid signature bundle as follows, and fail if any step fails:<a href="#section-7.1-3" class="pilcrow">¶</a></p>
+<ol start="1" type="1" class="normal type-1" id="section-7.1-4">
+<li id="section-7.1-4.1">
+            <p id="section-7.1-4.1.1"><strong>Establish the verification parameters.</strong> The verifier <span class="bcp14">MUST</span> specify the following parameters:<a href="#section-7.1-4.1.1" class="pilcrow">¶</a></p>
 <ul class="normal">
-<li class="normal" id="section-7.1-2.1.2.1">
-                <p id="section-7.1-2.1.2.1.1">The verification process involves tracking the intersection of the required validity period and the validity period of all the components of the signature bundle (i.e. DNSSEC <code>RRSIG</code> records, X.509 certificates, and the digital signature).<a href="#section-7.1-2.1.2.1.1" class="pilcrow">¶</a></p>
+<li class="normal" id="section-7.1-4.1.2.1">
+                <p id="section-7.1-4.1.2.1.1">Plaintext: The content to be verified if it is detached from the SignedData structure (i.e. the field <code>SignedData.encapContentInfo.eContent</code> is absent). This value <span class="bcp14">MUST NOT</span> be provided if the plaintext is encapsulated.<a href="#section-7.1-4.1.2.1.1" class="pilcrow">¶</a></p>
 </li>
-              <li class="normal" id="section-7.1-2.1.2.2">
-                <p id="section-7.1-2.1.2.2.1">The required validity period can be a specific time (e.g. the current time), or a time range where the signature bundle needs to be valid for at least some moment within that range.<a href="#section-7.1-2.1.2.2.1" class="pilcrow">¶</a></p>
+              <li class="normal" id="section-7.1-4.1.2.2">
+                <p id="section-7.1-4.1.2.2.1">Service: The OID of the service for which the signature must be valid.<a href="#section-7.1-4.1.2.2.1" class="pilcrow">¶</a></p>
 </li>
-              <li class="normal" id="section-7.1-2.1.2.3">
-                <p id="section-7.1-2.1.2.3.1">Even a brief one-second overlap between the bundle's validity period and the required period is sufficient.<a href="#section-7.1-2.1.2.3.1" class="pilcrow">¶</a></p>
-</li>
-              <li class="normal" id="section-7.1-2.1.2.4">
-                <p id="section-7.1-2.1.2.4.1">Service requirements heavily influence this; for example, an offline service might accept a bundle valid at any point in the past 30 days, whilst an online service might require validity at verification time.<a href="#section-7.1-2.1.2.4.1" class="pilcrow">¶</a></p>
-</li>
-              <li class="normal" id="section-7.1-2.1.2.5">
-                <p id="section-7.1-2.1.2.5.1">If there is no intersection between the required period and the validity periods of all components, the signature bundle is invalid.<a href="#section-7.1-2.1.2.5.1" class="pilcrow">¶</a></p>
+              <li class="normal" id="section-7.1-4.1.2.3">
+                <p id="section-7.1-4.1.2.3.1">Validity period: The inclusive time range during which the signature bundle must be valid for at least one second (e.g. 1st January 1970 00:00:00 UTC to 31st January 1970 23:59:59 UTC). This period <span class="bcp14">MAY</span> be specified as a specific time (e.g. 1st January 1970 00:00:00 UTC), in which case it <span class="bcp14">MUST</span> be converted to a 1-second period where the start and end are the same as the specified time.<a href="#section-7.1-4.1.2.3.1" class="pilcrow">¶</a></p>
 </li>
             </ul>
+<p id="section-7.1-4.1.3">
+The verifier <span class="bcp14">MAY</span> override the root zone DNSSEC DS record(s) for testing purposes only.<a href="#section-7.1-4.1.3" class="pilcrow">¶</a></p>
 </li>
-          <li id="section-7.1-2.2">
-            <p id="section-7.1-2.2.1"><strong>Parse the Signature Bundle:</strong><a href="#section-7.1-2.2.1" class="pilcrow">¶</a></p>
+          <li id="section-7.1-4.2">
+            <p id="section-7.1-4.2.1"><strong>Identify the relevant DomainAuth TXT record and determine the verification time window for the DNSSEC chain:</strong><a href="#section-7.1-4.2.1" class="pilcrow">¶</a></p>
+<ol start="1" type="1" class="normal type-1" id="section-7.1-4.2.2">
+<li id="section-7.1-4.2.2.1">
+                <p id="section-7.1-4.2.2.1.1">Extract all records in the RRSet for <code>_domainauth.&lt;domain&gt;/TXT</code>.<a href="#section-7.1-4.2.2.1.1" class="pilcrow">¶</a></p>
+</li>
+              <li id="section-7.1-4.2.2.2">
+                <p id="section-7.1-4.2.2.2.1">Parse each TXT record rdata, per the rules in <a href="#txt-record" class="auto internal xref">Section 3.2</a>.<a href="#section-7.1-4.2.2.2.1" class="pilcrow">¶</a></p>
+</li>
+              <li id="section-7.1-4.2.2.3">
+                <p id="section-7.1-4.2.2.3.1">Locate records matching the subject key specification from the organisation certificate (key algorithm and key id) and the service OID specified by the verifier (either matching exactly or with an absent service OID). If multiple matching records exist, use the one with the specific service OID; if none exists, use the wildcard record. If multiple records of the same type (specific or wildcard) match, verification <span class="bcp14">MUST</span> fail.<a href="#section-7.1-4.2.2.3.1" class="pilcrow">¶</a></p>
+</li>
+              <li id="section-7.1-4.2.2.4">
+                <p id="section-7.1-4.2.2.4.1">Extract the TTL override value from the identified TXT record.<a href="#section-7.1-4.2.2.4.1" class="pilcrow">¶</a></p>
+</li>
+              <li id="section-7.1-4.2.2.5">
+                <p id="section-7.1-4.2.2.5.1">Calculate a verification time window for the DNSSEC chain as follows:<a href="#section-7.1-4.2.2.5.1" class="pilcrow">¶</a></p>
 <ul class="normal">
-<li class="normal" id="section-7.1-2.2.2.1">
-                <p id="section-7.1-2.2.2.1.1">Extract the DNSSEC chain, organisation certificate, and CMS signature.<a href="#section-7.1-2.2.2.1.1" class="pilcrow">¶</a></p>
+<li class="normal" id="section-7.1-4.2.2.5.2.1">
+                    <p id="section-7.1-4.2.2.5.2.1.1">End time: The end of the required verification period (as specified by the verifier).<a href="#section-7.1-4.2.2.5.2.1.1" class="pilcrow">¶</a></p>
 </li>
-              <li class="normal" id="section-7.1-2.2.2.2">
-                <p id="section-7.1-2.2.2.2.1">Validate the structure of each component.<a href="#section-7.1-2.2.2.2.1" class="pilcrow">¶</a></p>
-</li>
-            </ul>
-</li>
-          <li id="section-7.1-2.3">
-            <p id="section-7.1-2.3.1"><strong>Validate the DNSSEC chain:</strong><a href="#section-7.1-2.3.1" class="pilcrow">¶</a></p>
+                  <li class="normal" id="section-7.1-4.2.2.5.2.2">
+                    <p id="section-7.1-4.2.2.5.2.2.1">Start time: The maximum (later) of:<a href="#section-7.1-4.2.2.5.2.2.1" class="pilcrow">¶</a></p>
 <ul class="normal">
-<li class="normal" id="section-7.1-2.3.2.1">
-                <p id="section-7.1-2.3.2.1.1">Verify that the chain starts from a trusted DNSSEC anchor.<a href="#section-7.1-2.3.2.1.1" class="pilcrow">¶</a></p>
+<li class="normal" id="section-7.1-4.2.2.5.2.2.2.1">
+                        <p id="section-7.1-4.2.2.5.2.2.2.1.1">The start of the required verification period (as specified by the verifier).<a href="#section-7.1-4.2.2.5.2.2.2.1.1" class="pilcrow">¶</a></p>
 </li>
-              <li class="normal" id="section-7.1-2.3.2.2">
-                <p id="section-7.1-2.3.2.2.1">The root zone DS records <span class="bcp14">MUST</span> be provided by the verifier. Any root zone DS records included in the DNSSEC chain <span class="bcp14">MUST</span> be ignored.<a href="#section-7.1-2.3.2.2.1" class="pilcrow">¶</a></p>
+                      <li class="normal" id="section-7.1-4.2.2.5.2.2.2.2">
+                        <p id="section-7.1-4.2.2.5.2.2.2.2.1">The end time minus the TTL override value in seconds.<a href="#section-7.1-4.2.2.5.2.2.2.2.1" class="pilcrow">¶</a></p>
 </li>
-              <li class="normal" id="section-7.1-2.3.2.3">
-                <p id="section-7.1-2.3.2.3.1">Verify all DNSSEC signatures in the chain.<a href="#section-7.1-2.3.2.3.1" class="pilcrow">¶</a></p>
-</li>
-              <li class="normal" id="section-7.1-2.3.2.4">
-                <p id="section-7.1-2.3.2.4.1">Confirm that the chain leads to the <code>_domainauth.&lt;domain&gt;</code> TXT record.<a href="#section-7.1-2.3.2.4.1" class="pilcrow">¶</a></p>
-</li>
-              <li class="normal" id="section-7.1-2.3.2.5">
-                <p id="section-7.1-2.3.2.5.1">Extract the organisation's public key information from the TXT record.<a href="#section-7.1-2.3.2.5.1" class="pilcrow">¶</a></p>
-</li>
-            </ul>
-</li>
-          <li id="section-7.1-2.4">
-            <p id="section-7.1-2.4.1"><strong>Validate the organisation certificate:</strong><a href="#section-7.1-2.4.1" class="pilcrow">¶</a></p>
-<ul class="normal">
-<li class="normal" id="section-7.1-2.4.2.1">
-                <p id="section-7.1-2.4.2.1.1">Verify that the certificate's public key matches the key identified in the TXT record.<a href="#section-7.1-2.4.2.1.1" class="pilcrow">¶</a></p>
-</li>
-              <li class="normal" id="section-7.1-2.4.2.2">
-                <p id="section-7.1-2.4.2.2.1">Verify that the certificate's CommonName matches the domain name.<a href="#section-7.1-2.4.2.2.1" class="pilcrow">¶</a></p>
-</li>
-              <li class="normal" id="section-7.1-2.4.2.3">
-                <p id="section-7.1-2.4.2.3.1">Confirm that the certificate is self-signed and valid.<a href="#section-7.1-2.4.2.3.1" class="pilcrow">¶</a></p>
-</li>
-              <li class="normal" id="section-7.1-2.4.2.4">
-                <p id="section-7.1-2.4.2.4.1">Check that the certificate has the CA flag set in the Basic Constraints extension.<a href="#section-7.1-2.4.2.4.1" class="pilcrow">¶</a></p>
-</li>
-            </ul>
-</li>
-          <li id="section-7.1-2.5">
-            <p id="section-7.1-2.5.1"><strong>Determine the signature type:</strong><a href="#section-7.1-2.5.1" class="pilcrow">¶</a></p>
-<ul class="normal">
-<li class="normal" id="section-7.1-2.5.2.1">
-                <p id="section-7.1-2.5.2.1.1">Extract the signed attributes from the CMS SignedData structure.<a href="#section-7.1-2.5.2.1.1" class="pilcrow">¶</a></p>
-</li>
-              <li class="normal" id="section-7.1-2.5.2.2">
-                <p id="section-7.1-2.5.2.2.1">Check for the presence of the member attribution attribute (<code>1.3.6.1.4.1.58708.1.2</code>).<a href="#section-7.1-2.5.2.2.1" class="pilcrow">¶</a></p>
-</li>
-              <li class="normal" id="section-7.1-2.5.2.3">
-                <p id="section-7.1-2.5.2.3.1">If the member attribution attribute is present, it is an organisation signature.<a href="#section-7.1-2.5.2.3.1" class="pilcrow">¶</a></p>
-</li>
-              <li class="normal" id="section-7.1-2.5.2.4">
-                <p id="section-7.1-2.5.2.4.1">If the member attribution attribute is absent, it is a member signature.<a href="#section-7.1-2.5.2.4.1" class="pilcrow">¶</a></p>
-</li>
-            </ul>
-</li>
-          <li id="section-7.1-2.6">
-            <p id="section-7.1-2.6.1"><strong>Extract and validate certificates:</strong><a href="#section-7.1-2.6.1" class="pilcrow">¶</a></p>
-<ul class="normal">
-<li class="normal" id="section-7.1-2.6.2.1">
-                <p id="section-7.1-2.6.2.1.1">Extract the organisation certificate from the signature bundle.<a href="#section-7.1-2.6.2.1.1" class="pilcrow">¶</a></p>
-</li>
-              <li class="normal" id="section-7.1-2.6.2.2">
-                <p id="section-7.1-2.6.2.2.1">Extract the signer's certificate from the CMS SignedData structure if present.<a href="#section-7.1-2.6.2.2.1" class="pilcrow">¶</a></p>
-<ul class="normal">
-<li class="normal" id="section-7.1-2.6.2.2.2.1">
-                    <p id="section-7.1-2.6.2.2.2.1.1">For member signatures, the signer's certificate <span class="bcp14">MUST</span> be present.<a href="#section-7.1-2.6.2.2.2.1.1" class="pilcrow">¶</a></p>
-</li>
-                  <li class="normal" id="section-7.1-2.6.2.2.2.2">
-                    <p id="section-7.1-2.6.2.2.2.2.1">For organisation signatures, the signer's certificate <span class="bcp14">MAY</span> be present if it differs from the organisation certificate.<a href="#section-7.1-2.6.2.2.2.2.1" class="pilcrow">¶</a></p>
+                    </ul>
 </li>
                 </ul>
 </li>
-              <li class="normal" id="section-7.1-2.6.2.3">
-                <p id="section-7.1-2.6.2.3.1">Construct and validate the certification path:<a href="#section-7.1-2.6.2.3.1" class="pilcrow">¶</a></p>
+            </ol>
+</li>
+          <li id="section-7.1-4.3">
+            <p id="section-7.1-4.3.1"><strong>Verify the DNSSEC chain</strong> from the root zone to the <code>_domainauth.&lt;domain&gt;/TXT</code> RRSet as described in <span>[<a href="#DNSSEC" class="cite xref">DNSSEC</a>]</span>, ensuring that the chain was valid for at least one second within the verification time window calculated in the previous step.<a href="#section-7.1-4.3.1" class="pilcrow">¶</a></p>
+</li>
+          <li id="section-7.1-4.4">
+            <p id="section-7.1-4.4.1"><strong>Verify the X.509 certificate chain</strong> from the organisation certificate to the signer's certificate as specified in <span>[<a href="#X.509" class="cite xref">X.509</a>]</span>, using any additional certificates in the <code>SignedData.certificates</code> field as potential intermediate certificates when constructing the chain. Note that the chain will comprise a single certificate when the organisation itself is the signer.<a href="#section-7.1-4.4.1" class="pilcrow">¶</a></p>
+<p id="section-7.1-4.4.2">
+The certificate chain <span class="bcp14">MUST</span> overlap with the verification time window and the DNSSEC chain for at least one second.<a href="#section-7.1-4.4.2" class="pilcrow">¶</a></p>
+</li>
+          <li id="section-7.1-4.5">
+            <p id="section-7.1-4.5.1"><strong>Verify the CMS SignedData structure</strong> as described in <span><a href="https://rfc-editor.org/rfc/rfc5652#section-5.6" class="relref">Section 5.6</a> of [<a href="#CMS" class="cite xref">CMS</a>]</span>, using the signer's certificate from the <code>SignedData.certificates</code> field or the organisation certificate if the signer is the organisation itself.<a href="#section-7.1-4.5.1" class="pilcrow">¶</a></p>
+<p id="section-7.1-4.5.2">
+The signature metadata attribute <span class="bcp14">MUST</span> be present in the signed attributes of the SignerInfo structure. Additionally:<a href="#section-7.1-4.5.2" class="pilcrow">¶</a></p>
 <ul class="normal">
-<li class="normal" id="section-7.1-2.6.2.3.2.1">
-                    <p id="section-7.1-2.6.2.3.2.1.1">The path starts with the organisation certificate from the signature bundle.<a href="#section-7.1-2.6.2.3.2.1.1" class="pilcrow">¶</a></p>
+<li class="normal" id="section-7.1-4.5.3.1">
+                <p id="section-7.1-4.5.3.1.1">The service OID <span class="bcp14">MUST</span> match that specified by the verifier.<a href="#section-7.1-4.5.3.1.1" class="pilcrow">¶</a></p>
 </li>
-                  <li class="normal" id="section-7.1-2.6.2.3.2.2">
-                    <p id="section-7.1-2.6.2.3.2.2.1">The path ends with the signer's certificate (which may be the organisation certificate itself for organisation signatures).<a href="#section-7.1-2.6.2.3.2.2.1" class="pilcrow">¶</a></p>
+              <li class="normal" id="section-7.1-4.5.3.2">
+                <p id="section-7.1-4.5.3.2.1">The validity period <span class="bcp14">MUST</span> overlap with the verification time window, the X.509 certificate chain and the DNSSEC chain for at least one second.<a href="#section-7.1-4.5.3.2.1" class="pilcrow">¶</a></p>
 </li>
-                  <li class="normal" id="section-7.1-2.6.2.3.2.3">
-                    <p id="section-7.1-2.6.2.3.2.3.1">Any intermediate certificates in the SignedData structure <span class="bcp14">MUST</span> be included in the path.<a href="#section-7.1-2.6.2.3.2.3.1" class="pilcrow">¶</a></p>
+            </ul>
+<p id="section-7.1-4.5.4">
+If present, the member attribution attribute <span class="bcp14">MUST</span> be in the signed attributes of the SignerInfo structure, and its value <span class="bcp14">MUST</span> be a valid member name as specified in <a href="#naming-conventions-and-restrictions" class="auto internal xref">Section 10</a>. If absent, the signer <span class="bcp14">MUST</span> be a member whose certificate meets the requirements specified in <a href="#member-certificate" class="auto internal xref">Section 4.2</a>.<a href="#section-7.1-4.5.4" class="pilcrow">¶</a></p>
+</li>
+          <li id="section-7.1-4.6">
+            <p id="section-7.1-4.6.1"><strong>Produce verification output:</strong><a href="#section-7.1-4.6.1" class="pilcrow">¶</a></p>
+<ul class="normal">
+<li class="normal" id="section-7.1-4.6.2.1">
+                <p id="section-7.1-4.6.2.1.1">The organisation name without a trailing dot (e.g. <code>example.com</code>).<a href="#section-7.1-4.6.2.1.1" class="pilcrow">¶</a></p>
+</li>
+              <li class="normal" id="section-7.1-4.6.2.2">
+                <p id="section-7.1-4.6.2.2.1">The member name (for users only, not for bots):<a href="#section-7.1-4.6.2.2.1" class="pilcrow">¶</a></p>
+<ul class="normal">
+<li class="normal" id="section-7.1-4.6.2.2.2.1">
+                    <p id="section-7.1-4.6.2.2.2.1.1">For member signatures, from the signer certificate.<a href="#section-7.1-4.6.2.2.2.1.1" class="pilcrow">¶</a></p>
+</li>
+                  <li class="normal" id="section-7.1-4.6.2.2.2.2">
+                    <p id="section-7.1-4.6.2.2.2.2.1">For organisation signatures, from the member attribution.<a href="#section-7.1-4.6.2.2.2.2.1" class="pilcrow">¶</a></p>
 </li>
                 </ul>
 </li>
-              <li class="normal" id="section-7.1-2.6.2.4">
-                <p id="section-7.1-2.6.2.4.1">Verify that all certificates in the path are valid at the verification time.<a href="#section-7.1-2.6.2.4.1" class="pilcrow">¶</a></p>
-</li>
-            </ul>
-</li>
-          <li id="section-7.1-2.7">
-            <p id="section-7.1-2.7.1"><strong>Validate the signature metadata:</strong><a href="#section-7.1-2.7.1" class="pilcrow">¶</a></p>
-<ul class="normal">
-<li class="normal" id="section-7.1-2.7.2.1">
-                <p id="section-7.1-2.7.2.1.1">Extract the service OID and validity period from the signature metadata attribute.<a href="#section-7.1-2.7.2.1.1" class="pilcrow">¶</a></p>
-</li>
-              <li class="normal" id="section-7.1-2.7.2.2">
-                <p id="section-7.1-2.7.2.2.1">Verify that the service OID matches the expected service.<a href="#section-7.1-2.7.2.2.1" class="pilcrow">¶</a></p>
-</li>
-              <li class="normal" id="section-7.1-2.7.2.3">
-                <p id="section-7.1-2.7.2.3.1">Confirm that the verification time falls within the signature validity period.<a href="#section-7.1-2.7.2.3.1" class="pilcrow">¶</a></p>
-</li>
-            </ul>
-</li>
-          <li id="section-7.1-2.8">
-            <p id="section-7.1-2.8.1"><strong>Determine the overall validity period:</strong><a href="#section-7.1-2.8.1" class="pilcrow">¶</a></p>
-<ul class="normal">
-<li class="normal" id="section-7.1-2.8.2.1">
-                <p id="section-7.1-2.8.2.1.1">Calculate the intersection of:<a href="#section-7.1-2.8.2.1.1" class="pilcrow">¶</a></p>
-<ul class="normal">
-<li class="normal" id="section-7.1-2.8.2.1.2.1">
-                    <p id="section-7.1-2.8.2.1.2.1.1">The validity periods of all certificates in the certification path, from the organisation certificate to the signer's certificate (if different).<a href="#section-7.1-2.8.2.1.2.1.1" class="pilcrow">¶</a></p>
-</li>
-                  <li class="normal" id="section-7.1-2.8.2.1.2.2">
-                    <p id="section-7.1-2.8.2.1.2.2.1">The signature metadata validity period.<a href="#section-7.1-2.8.2.1.2.2.1" class="pilcrow">¶</a></p>
-</li>
-                  <li class="normal" id="section-7.1-2.8.2.1.2.3">
-                    <p id="section-7.1-2.8.2.1.2.3.1">The DNSSEC chain validity period, applying the TTL override from <a href="#ttl-override" class="auto internal xref">Section 3.3</a>.<a href="#section-7.1-2.8.2.1.2.3.1" class="pilcrow">¶</a></p>
-</li>
-                </ul>
-</li>
-              <li class="normal" id="section-7.1-2.8.2.2">
-                <p id="section-7.1-2.8.2.2.1">Verifiers <span class="bcp14">MAY</span> enforce a TTL shorter than that required by the service, but not shorter than the 1-second minimum.<a href="#section-7.1-2.8.2.2.1" class="pilcrow">¶</a></p>
-</li>
-              <li class="normal" id="section-7.1-2.8.2.3">
-                <p id="section-7.1-2.8.2.3.1">Verifiers <span class="bcp14">MAY</span> allow their end users to specify a shorter TTL (but still not shorter than 1 second) than the one in the TXT record.<a href="#section-7.1-2.8.2.3.1" class="pilcrow">¶</a></p>
-</li>
-              <li class="normal" id="section-7.1-2.8.2.4">
-                <p id="section-7.1-2.8.2.4.1">Verify that the verification time falls within this intersection.<a href="#section-7.1-2.8.2.4.1" class="pilcrow">¶</a></p>
-</li>
-            </ul>
-</li>
-          <li id="section-7.1-2.9">
-            <p id="section-7.1-2.9.1"><strong>Verify the digital signature:</strong><a href="#section-7.1-2.9.1" class="pilcrow">¶</a></p>
-<ul class="normal">
-<li class="normal" id="section-7.1-2.9.2.1">
-                <p id="section-7.1-2.9.2.1.1">Use the signer's public key to verify the signature over the content.<a href="#section-7.1-2.9.2.1.1" class="pilcrow">¶</a></p>
-</li>
-              <li class="normal" id="section-7.1-2.9.2.2">
-                <p id="section-7.1-2.9.2.2.1">For detached signatures, use the externally provided content.<a href="#section-7.1-2.9.2.2.1" class="pilcrow">¶</a></p>
-</li>
-              <li class="normal" id="section-7.1-2.9.2.3">
-                <p id="section-7.1-2.9.2.3.1">For encapsulated signatures, extract the content from the CMS structure.<a href="#section-7.1-2.9.2.3.1" class="pilcrow">¶</a></p>
-</li>
-            </ul>
-</li>
-          <li id="section-7.1-2.10">
-            <p id="section-7.1-2.10.1"><strong>Produce verification output:</strong><a href="#section-7.1-2.10.1" class="pilcrow">¶</a></p>
-<ul class="normal">
-<li class="normal" id="section-7.1-2.10.2.1">
-                <p id="section-7.1-2.10.2.1.1">Always include the organisation name.<a href="#section-7.1-2.10.2.1.1" class="pilcrow">¶</a></p>
-</li>
-              <li class="normal" id="section-7.1-2.10.2.2">
-                <p id="section-7.1-2.10.2.2.1">Include the member name (for users only, not for bots):<a href="#section-7.1-2.10.2.2.1" class="pilcrow">¶</a></p>
-<ul class="normal">
-<li class="normal" id="section-7.1-2.10.2.2.2.1">
-                    <p id="section-7.1-2.10.2.2.2.1.1">For member signatures, from the signer certificate.<a href="#section-7.1-2.10.2.2.2.1.1" class="pilcrow">¶</a></p>
-</li>
-                  <li class="normal" id="section-7.1-2.10.2.2.2.2">
-                    <p id="section-7.1-2.10.2.2.2.2.1">For organisation signatures, from the member attribution.<a href="#section-7.1-2.10.2.2.2.2.1" class="pilcrow">¶</a></p>
-</li>
-                </ul>
-</li>
-              <li class="normal" id="section-7.1-2.10.2.3">
-                <p id="section-7.1-2.10.2.3.1">Always include the signature type (member or organisation).<a href="#section-7.1-2.10.2.3.1" class="pilcrow">¶</a></p>
+              <li class="normal" id="section-7.1-4.6.2.3">
+                <p id="section-7.1-4.6.2.3.1">Whether the signature was produced by the member or the organisation.<a href="#section-7.1-4.6.2.3.1" class="pilcrow">¶</a></p>
 </li>
             </ul>
 </li>
         </ol>
-<p id="section-7.1-3">If all these steps succeed, the signature is considered valid, and the content is confirmed to originate from the identified member of the specified organisation or from the organisation itself.<a href="#section-7.1-3" class="pilcrow">¶</a></p>
-<p id="section-7.1-4">The verification process <span class="bcp14">MUST</span> be performed in full, without skipping any steps, to ensure the security properties of the DomainAuth protocol.<a href="#section-7.1-4" class="pilcrow">¶</a></p>
+<p id="section-7.1-5">Alternatively, the verification <span class="bcp14">MAY</span> start with the SignedData structure and end with the DNSSEC chain as described below, as long as the validity periods across all components overlap for at least one second:<a href="#section-7.1-5" class="pilcrow">¶</a></p>
+<ol start="1" type="1" class="normal type-1" id="section-7.1-6">
+<li id="section-7.1-6.1">
+            <p id="section-7.1-6.1.1">Establish the verification parameters.<a href="#section-7.1-6.1.1" class="pilcrow">¶</a></p>
+</li>
+          <li id="section-7.1-6.2">
+            <p id="section-7.1-6.2.1">Verify the CMS SignedData structure.<a href="#section-7.1-6.2.1" class="pilcrow">¶</a></p>
+</li>
+          <li id="section-7.1-6.3">
+            <p id="section-7.1-6.3.1">Verify the X.509 certificate chain.<a href="#section-7.1-6.3.1" class="pilcrow">¶</a></p>
+</li>
+          <li id="section-7.1-6.4">
+            <p id="section-7.1-6.4.1">Identify the relevant DomainAuth TXT record and determine the verification time window for the DNSSEC chain.<a href="#section-7.1-6.4.1" class="pilcrow">¶</a></p>
+</li>
+          <li id="section-7.1-6.5">
+            <p id="section-7.1-6.5.1">Verify the DNSSEC chain.<a href="#section-7.1-6.5.1" class="pilcrow">¶</a></p>
+</li>
+          <li id="section-7.1-6.6">
+            <p id="section-7.1-6.6.1">Produce verification output.<a href="#section-7.1-6.6.1" class="pilcrow">¶</a></p>
+</li>
+        </ol>
+<p id="section-7.1-7">If all these steps succeed, the signature is considered valid, and the content is confirmed to originate from the identified member of the specified organisation or from the organisation itself.<a href="#section-7.1-7" class="pilcrow">¶</a></p>
+<p id="section-7.1-8">The verification process <span class="bcp14">MUST</span> be performed in full, without skipping any steps, to ensure the security properties of the DomainAuth protocol.<a href="#section-7.1-8" class="pilcrow">¶</a></p>
 </section>
 </div>
 </section>

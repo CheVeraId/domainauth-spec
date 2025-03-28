@@ -101,8 +101,6 @@ Table of Contents
      6.2.  Signature Metadata
    7.  Signature Bundle
      7.1.  Verification Process
-     7.2.  Implementation Recommendations
-     7.3.  User Interface Guidelines
    8.  Cryptographic Algorithms
      8.1.  Digital Signature Algorithms
        8.1.1.  RSA-PSS
@@ -113,26 +111,29 @@ Table of Contents
      11.1.  Service OIDs
      11.2.  Service-Specific Validation Rules
      11.3.  Implementation Guidelines
-   12. Serialisation
-   13. Implementation Status
-     13.1.  VeraId JavaScript Library
-     13.2.  VeraId JVM Library
-     13.3.  VeraId Authority
-   14. Security Considerations
-     14.1.  DNSSEC Dependency
-     14.2.  Homographic and Character Encoding Attacks
-     14.3.  Domain Ownership Changes
-     14.4.  Offline Verification Limitations
-     14.5.  Organisation Signatures and Member Attribution
-     14.6.  Key Management
-   15. IANA Considerations
-   16. References
-     16.1.  Normative References
-     16.2.  Informative References
+     11.4.  Data Serialisation
+   12. Implementation Status
+     12.1.  VeraId JavaScript Library
+     12.2.  VeraId JVM Library
+     12.3.  VeraId Authority
+     12.4.  Letro
+   13. Security Considerations
+     13.1.  DNSSEC Dependency
+     13.2.  Homographic and Character Encoding Attacks
+     13.3.  Domain Ownership Changes
+     13.4.  Offline Verification Limitations
+     13.5.  Organisation Signatures and Member Attribution
+     13.6.  Key Management
+   14. IANA Considerations
+   15. References
+     15.1.  Normative References
+     15.2.  Informative References
    Appendix A.  ASN.1 Schemas
    Appendix B.  OID Registry
    Appendix C.  Implementation Guidance
      C.1.  Performance Optimisations
+     C.2.  Implementation Recommendations
+     C.3.  User Interface Guidelines
    Acknowledgements
    Author's Address
 
@@ -844,29 +845,22 @@ _domainauth.example.com. IN TXT "0 1 3 dGhpcyBpcyBub3QgYSByZWFsIGtleSBkaWdlc3Q 8
 
    *  organisationCertificate is the organisation's X.509 certificate.
 
-   *  signature is a CMS ContentInfo containing a SignedData structure.
+   *  signature is a CMS ContentInfo containing the SignedData
+      structure.
 
    The specific contents of the signature field depend on whether it is
    a member signature or an organisation signature, as detailed in
-   Section 6.1 and Section 6.
+   Section 6.
 
-   The signature type is determined by the presence of the member
-   attribution attribute within the SignedData structure: if present,
-   it's an organisation signature; if absent, it's a member signature.
-
-   For detached signatures, the plaintext content must be provided
-   separately during verification.
-
-   The Signature Bundle is self-contained and provides all the
-   information needed for offline verification of the signature, without
-   requiring any network lookups or external data sources.
+   For detached signatures, the plaintext MUST be provided separately
+   during verification.
 
 7.1.  Verification Process
 
-   The verification of a DomainAuth signature involves multiple steps
-   that validate the entire chain of trust from the DNSSEC
-   infrastructure to the signature itself.  Implementations MUST perform
-   the following verification steps:
+   The verification of a signature bundle involves multiple steps that
+   validate the entire chain of trust from the DNSSEC infrastructure to
+   the signature itself.  Implementations MUST perform the following
+   verification steps:
 
    1.   *Establish the required validity period:*
 
@@ -1033,52 +1027,6 @@ _domainauth.example.com. IN TXT "0 1 3 dGhpcyBpcyBub3QgYSByZWFsIGtleSBkaWdlc3Q 8
    The verification process MUST be performed in full, without skipping
    any steps, to ensure the security properties of the DomainAuth
    protocol.
-
-7.2.  Implementation Recommendations
-
-   1.  *Library/SDK Design:* - DomainAuth libraries and SDKs SHOULD
-       provide distinct functions for creating member signatures and
-       organisation signatures.  - Verification functions SHOULD be
-       unified, with the signature type included in the verification
-       output.  - Libraries SHOULD NOT require developers to specify the
-       signature type during verification, as this should be determined
-       automatically from the signature bundle.
-
-   2.  *Use Case Considerations:* - Member signatures are recommended
-       for applications where non-repudiation at the individual level is
-       critical.  - Organisation signatures with member attribution are
-       appropriate for applications where certificate management for
-       individual members is impractical or where organisational
-       accountability is sufficient.
-
-   3.  *Hybrid Approaches:* - Some applications may benefit from
-       supporting both signature types, allowing flexibility based on
-       the specific context or user role.  - In hybrid implementations,
-       clear policies should govern when each signature type is used.
-
-7.3.  User Interface Guidelines
-
-   1.  *Signature Type Indication:* User interfaces SHOULD clearly
-       indicate whether a signature is a member signature or an
-       organisation signature with member attribution.  Different visual
-       indicators (icons, colors, labels) SHOULD be used to distinguish
-       between the two signature types.
-
-   2.  *Attribution Presentation:* For organisation signatures,
-       interfaces SHOULD clearly indicate that the member attribution is
-       a claim made by the organisation, not cryptographic proof.
-       Example phrasing: Signed by example.com on behalf of alice rather
-       than Signed by alice of example.com.
-
-   3.  *Verification Details:* Interfaces SHOULD provide access to
-       detailed verification information, including the full
-       certification path and validity periods.  Advanced users SHOULD
-       be able to view the complete verification process and results.
-
-   4.  *Error Handling:* Clear error messages SHOULD be displayed when
-       verification fails, with appropriate guidance for users.
-       Different error handling may be appropriate for different
-       signature types, reflecting their distinct trust models.
 
 8.  Cryptographic Algorithms
 
@@ -1283,16 +1231,19 @@ _domainauth.example.com. IN TXT "0 1 3 dGhpcyBpcyBub3QgYSByZWFsIGtleSBkaWdlc3Q 8
    consistent security properties and user experience across different
    implementations and platforms.
 
-12.  Serialisation
+11.4.  Data Serialisation
 
    All data structures in the DomainAuth protocol are defined using
    Abstract Syntax Notation One (ASN.1), as referenced in [ASN.1].
 
-   Implementations MAY use any standard ASN.1 encoding rules for storage
-   and transmission, including Distinguished Encoding Rules (DER) as
-   defined in [ASN.1].
+   Implementations MUST support Distinguished Encoding Rules (DER) as
+   defined in [ASN.1] for storage and transmission.
 
-13.  Implementation Status
+   Services MAY require or support additional ASN.1 encoding rules.  In
+   such cases, service implementations MUST handle the conversion
+   between DER and the alternative encoding rules.
+
+12.  Implementation Status
 
    This section records the status of known implementations of the
    protocol defined by this specification at the time of posting of this
@@ -1347,7 +1298,7 @@ _domainauth.example.com. IN TXT "0 1 3 dGhpcyBpcyBub3QgYSByZWFsIGtleSBkaWdlc3Q 8
    audits as of this writing, and their respective reports are expected
    to be published in April 2025.
 
-13.1.  VeraId JavaScript Library
+12.1.  VeraId JavaScript Library
 
    *  Organisation: Relaycorp.
 
@@ -1366,14 +1317,14 @@ _domainauth.example.com. IN TXT "0 1 3 dGhpcyBpcyBub3QgYSByZWFsIGtleSBkaWdlc3Q 8
 
    *  Last updated: 2025
 
-13.2.  VeraId JVM Library
+12.2.  VeraId JVM Library
 
    *  Organisation: Relaycorp.
 
    *  URL: https://github.com/relaycorp/veraid-jvm
 
-   *  Level of maturity: Used in production in the Android-based offline
-      messaging application [LETRO].
+   *  Level of maturity: Used in the Android version of Letro as
+      described in Section 12.4.
 
    *  Coverage: The implementation covers the entire protocol as defined
       in [VERAID], except for Organisation Signature Bundles.
@@ -1385,7 +1336,7 @@ _domainauth.example.com. IN TXT "0 1 3 dGhpcyBpcyBub3QgYSByZWFsIGtleSBkaWdlc3Q 8
 
    *  Last updated: 2025
 
-13.3.  VeraId Authority
+12.3.  VeraId Authority
 
    *  Organisation: Relaycorp
 
@@ -1396,7 +1347,7 @@ _domainauth.example.com. IN TXT "0 1 3 dGhpcyBpcyBub3QgYSByZWFsIGtleSBkaWdlc3Q 8
       respective Member Id Bundles.
 
    *  Level of maturity: Used in production in the server-side component
-      of Letro as documented in [LETRO-SERVER].
+      of Letro as described in Section 12.4.
 
    *  Coverage: The implementation leverages the VeraId JavaScript
       Library to issue Member Id Bundles and Organisation Signature
@@ -1408,9 +1359,37 @@ _domainauth.example.com. IN TXT "0 1 3 dGhpcyBpcyBub3QgYSByZWFsIGtleSBkaWdlc3Q 8
 
    *  Last updated: 2025
 
-14.  Security Considerations
+12.4.  Letro
 
-14.1.  DNSSEC Dependency
+   [LETRO] is the only VeraId service as of this writing.
+
+   *  Organisation: Relaycorp
+
+   *  URLs:
+
+      -  https://github.com/relaycorp/letro-android
+
+      -  https://docs.relaycorp.tech/letro-server/
+
+   *  Level of maturity: Experimental.
+
+   *  Coverage: The implementation exercises the entire protocol as
+      defined in [VERAID], except for organisation signatures and bot
+      members.  It uses the VeraId JVM Library to issue member
+      signatures on Android, and the VeraId Authority to issue Member Id
+      Bundles under a variety of domain names operated by Relaycorp
+      (e.g. applepie.rocks, cuppa.fans).
+
+   *  Licensing: Freely distributable with acknowledgement (GNU GPLv3
+      and Apache 2.0 licences).
+
+   *  Contact: https://relaycorp.tech/
+
+   *  Last updated: 2024
+
+13.  Security Considerations
+
+13.1.  DNSSEC Dependency
 
    DomainAuth's security model relies fundamentally on DNSSEC, which
    introduces specific security considerations:
@@ -1471,7 +1450,7 @@ _domainauth.example.com. IN TXT "0 1 3 dGhpcyBpcyBub3QgYSByZWFsIGtleSBkaWdlc3Q 8
    compared to centralised PKI models, particularly for offline
    verification scenarios.
 
-14.2.  Homographic and Character Encoding Attacks
+13.2.  Homographic and Character Encoding Attacks
 
    User-friendly identifiers like domain names and usernames are
    susceptible to visual spoofing attacks:
@@ -1530,7 +1509,7 @@ _domainauth.example.com. IN TXT "0 1 3 dGhpcyBpcyBub3QgYSByZWFsIGtleSBkaWdlc3Q 8
    is critical to help users correctly identify the source of signed
    content.
 
-14.3.  Domain Ownership Changes
+13.3.  Domain Ownership Changes
 
    Domain transfers present specific security challenges for the
    DomainAuth protocol:
@@ -1581,7 +1560,7 @@ _domainauth.example.com. IN TXT "0 1 3 dGhpcyBpcyBub3QgYSByZWFsIGtleSBkaWdlc3Q 8
    limiting the time window during which historical signatures remain
    valid.
 
-14.4.  Offline Verification Limitations
+13.4.  Offline Verification Limitations
 
    Offline verification introduces specific security considerations:
 
@@ -1644,7 +1623,7 @@ _domainauth.example.com. IN TXT "0 1 3 dGhpcyBpcyBub3QgYSByZWFsIGtleSBkaWdlc3Q 8
    DomainAuth provides a balanced approach that offers strong
    verification guarantees whilst supporting offline operation.
 
-14.5.  Organisation Signatures and Member Attribution
+13.5.  Organisation Signatures and Member Attribution
 
    Organisation signatures with member attribution introduce specific
    security considerations that implementers and developers should be
@@ -1736,7 +1715,7 @@ _domainauth.example.com. IN TXT "0 1 3 dGhpcyBpcyBub3QgYSByZWFsIGtleSBkaWdlc3Q 8
       organisation signatures with member attribution in high-security
       contexts.
 
-14.6.  Key Management
+13.6.  Key Management
 
    Proper key management is essential for the security of the DomainAuth
    protocol.  The following requirements apply:
@@ -1772,13 +1751,13 @@ _domainauth.example.com. IN TXT "0 1 3 dGhpcyBpcyBub3QgYSByZWFsIGtleSBkaWdlc3Q 8
    secure key management practices appropriate to the security
    requirements of the organisation.
 
-15.  IANA Considerations
+14.  IANA Considerations
 
    This document has no IANA actions.
 
-16.  References
+15.  References
 
-16.1.  Normative References
+15.1.  Normative References
 
    [ASN.1]    International Telecommunications Union, "Information
               Technology — ASN.1 encoding rules: Specification of Basic
@@ -1818,7 +1797,7 @@ _domainauth.example.com. IN TXT "0 1 3 dGhpcyBpcyBub3QgYSByZWFsIGtleSBkaWdlc3Q 8
               (CRL) Profile", RFC 5280, DOI 10.17487/RFC5280, May 2008,
               <https://www.rfc-editor.org/rfc/rfc5280>.
 
-16.2.  Informative References
+15.2.  Informative References
 
    [AWALA]    Narea, G., "Awala", 2019, <https://specs.awala.network/>.
 
@@ -1827,10 +1806,6 @@ _domainauth.example.com. IN TXT "0 1 3 dGhpcyBpcyBub3QgYSByZWFsIGtleSBkaWdlc3Q 8
               <https://www.rfc-editor.org/rfc/rfc7519>.
 
    [LETRO]    Narea, G., "Letro", 2023, <https://letro.app/en/>.
-
-   [LETRO-SERVER]
-              Narea, G., "Letro Server", 2023,
-              <https://docs.relaycorp.tech/letro-server/>.
 
    [VERAID]   Narea, G., "VeraId V1 Specification", 2025,
               <https://veraid.net/spec/>.
@@ -1845,7 +1820,6 @@ Appendix A.  ASN.1 Schemas
 -- DNSSEC chain is a set of DNS messages
 DnssecChain ::= SET OF OCTET STRING
 
--- Default tag defines all tags as IMPLICIT
 -- Member Id Bundle
 MemberIdBundle ::= SEQUENCE {
     version                  [0] INTEGER,
@@ -1878,7 +1852,7 @@ DatePeriod ::= SEQUENCE {
 MemberAttribution ::= UTF8String
 
    All DomainAuth data structures MUST be encoded using ASN.1 as
-   specified in Section 12.
+   specified in Section 11.4.
 
    The ASN.1 structures reference standard types from other
    specifications:
@@ -1993,6 +1967,52 @@ C.1.  Performance Optimisations
        *  Consider using worker threads for CPU-intensive operations.
 
        *  Balance parallelisation benefits against overhead costs.
+
+C.2.  Implementation Recommendations
+
+   1.  *Library/SDK Design:* - DomainAuth libraries and SDKs SHOULD
+       provide distinct functions for creating member signatures and
+       organisation signatures.  - Verification functions SHOULD be
+       unified, with the signature type included in the verification
+       output.  - Libraries SHOULD NOT require developers to specify the
+       signature type during verification, as this should be determined
+       automatically from the signature bundle.
+
+   2.  *Use Case Considerations:* - Member signatures are recommended
+       for applications where non-repudiation at the individual level is
+       critical.  - Organisation signatures with member attribution are
+       appropriate for applications where certificate management for
+       individual members is impractical or where organisational
+       accountability is sufficient.
+
+   3.  *Hybrid Approaches:* - Some applications may benefit from
+       supporting both signature types, allowing flexibility based on
+       the specific context or user role.  - In hybrid implementations,
+       clear policies should govern when each signature type is used.
+
+C.3.  User Interface Guidelines
+
+   1.  *Signature Type Indication:* User interfaces SHOULD clearly
+       indicate whether a signature is a member signature or an
+       organisation signature with member attribution.  Different visual
+       indicators (icons, colors, labels) SHOULD be used to distinguish
+       between the two signature types.
+
+   2.  *Attribution Presentation:* For organisation signatures,
+       interfaces SHOULD clearly indicate that the member attribution is
+       a claim made by the organisation, not cryptographic proof.
+       Example phrasing: Signed by example.com on behalf of alice rather
+       than Signed by alice of example.com.
+
+   3.  *Verification Details:* Interfaces SHOULD provide access to
+       detailed verification information, including the full
+       certification path and validity periods.  Advanced users SHOULD
+       be able to view the complete verification process and results.
+
+   4.  *Error Handling:* Clear error messages SHOULD be displayed when
+       verification fails, with appropriate guidance for users.
+       Different error handling may be appropriate for different
+       signature types, reflecting their distinct trust models.
 
 Acknowledgements
 

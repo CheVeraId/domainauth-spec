@@ -1609,6 +1609,7 @@ appear in all capitals, as shown here.<a href="#section-1.3-1" class="pilcrow">�
               <p id="section-2.2.3-4.3.1">Construct a signature bundle with the CMS SignedData structure, the organisation certificate, and the DNSSEC chain.<a href="#section-2.2.3-4.3.1" class="pilcrow">¶</a></p>
 </li>
           </ol>
+<p id="section-2.2.3-5">In both cases, the signer can choose to encapsulate the plaintext in the CMS SignedData structure or distribute it separately.<a href="#section-2.2.3-5" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="signature-bundle-verification">
@@ -2039,7 +2040,6 @@ SignatureBundle ::= SEQUENCE {
 </li>
       </ul>
 <p id="section-7-5">The specific contents of the <code>signature</code> field depend on whether it is a member signature or an organisation signature, as detailed in <a href="#cms-signeddata-structure" class="auto internal xref">Section 6</a>.<a href="#section-7-5" class="pilcrow">¶</a></p>
-<p id="section-7-6">For detached signatures, the plaintext <span class="bcp14">MUST</span> be provided separately during verification.<a href="#section-7-6" class="pilcrow">¶</a></p>
 <div id="verification-procedure">
 <section id="section-7.1">
         <h3 id="name-verification-procedure">
@@ -2069,31 +2069,34 @@ The verifier <span class="bcp14">MAY</span> override the root zone DNSSEC DS rec
             <p id="section-7.1-4.2.1"><strong>Identify the relevant DomainAuth TXT record and determine the verification time window for the DNSSEC chain:</strong><a href="#section-7.1-4.2.1" class="pilcrow">¶</a></p>
 <ol start="1" type="1" class="normal type-1" id="section-7.1-4.2.2">
 <li id="section-7.1-4.2.2.1">
-                <p id="section-7.1-4.2.2.1.1">Extract all records in the RRSet for <code>_domainauth.&lt;domain&gt;/TXT</code>.<a href="#section-7.1-4.2.2.1.1" class="pilcrow">¶</a></p>
+                <p id="section-7.1-4.2.2.1.1">Extract the domain name from the Common Name attribute in the organisation certificate's Distinguished Name.<a href="#section-7.1-4.2.2.1.1" class="pilcrow">¶</a></p>
 </li>
               <li id="section-7.1-4.2.2.2">
-                <p id="section-7.1-4.2.2.2.1">Parse each TXT record rdata, per the rules in <a href="#txt-record" class="auto internal xref">Section 3.2</a>.<a href="#section-7.1-4.2.2.2.1" class="pilcrow">¶</a></p>
+                <p id="section-7.1-4.2.2.2.1">Extract all records in the RRSet for <code>_domainauth.&lt;domain&gt;/TXT</code>.<a href="#section-7.1-4.2.2.2.1" class="pilcrow">¶</a></p>
 </li>
               <li id="section-7.1-4.2.2.3">
-                <p id="section-7.1-4.2.2.3.1">Locate records matching the subject key specification from the organisation certificate (key algorithm and key id) and the service OID specified by the verifier (either matching exactly or with an absent service OID). If multiple matching records exist, use the one with the specific service OID; if none exists, use the wildcard record. If multiple records of the same type (specific or wildcard) match, verification <span class="bcp14">MUST</span> fail.<a href="#section-7.1-4.2.2.3.1" class="pilcrow">¶</a></p>
+                <p id="section-7.1-4.2.2.3.1">Parse each TXT record rdata, per the rules in <a href="#txt-record" class="auto internal xref">Section 3.2</a>.<a href="#section-7.1-4.2.2.3.1" class="pilcrow">¶</a></p>
 </li>
               <li id="section-7.1-4.2.2.4">
-                <p id="section-7.1-4.2.2.4.1">Extract the TTL override value from the identified TXT record.<a href="#section-7.1-4.2.2.4.1" class="pilcrow">¶</a></p>
+                <p id="section-7.1-4.2.2.4.1">Locate records matching the subject key specification from the organisation certificate (key algorithm and key id) and the service OID specified by the verifier (either matching exactly or with an absent service OID). If multiple matching records exist, use the one with the specific service OID; if none exists, use the wildcard record. If multiple records of the same type (specific or wildcard) match, verification <span class="bcp14">MUST</span> fail.<a href="#section-7.1-4.2.2.4.1" class="pilcrow">¶</a></p>
 </li>
               <li id="section-7.1-4.2.2.5">
-                <p id="section-7.1-4.2.2.5.1">Calculate a verification time window for the DNSSEC chain as follows:<a href="#section-7.1-4.2.2.5.1" class="pilcrow">¶</a></p>
-<ul class="normal">
-<li class="normal" id="section-7.1-4.2.2.5.2.1">
-                    <p id="section-7.1-4.2.2.5.2.1.1">End time: The end of the required verification period (as specified by the verifier).<a href="#section-7.1-4.2.2.5.2.1.1" class="pilcrow">¶</a></p>
+                <p id="section-7.1-4.2.2.5.1">Extract the TTL override value from the identified TXT record.<a href="#section-7.1-4.2.2.5.1" class="pilcrow">¶</a></p>
 </li>
-                  <li class="normal" id="section-7.1-4.2.2.5.2.2">
-                    <p id="section-7.1-4.2.2.5.2.2.1">Start time: The maximum (later) of:<a href="#section-7.1-4.2.2.5.2.2.1" class="pilcrow">¶</a></p>
+              <li id="section-7.1-4.2.2.6">
+                <p id="section-7.1-4.2.2.6.1">Calculate a verification time window for the DNSSEC chain as follows:<a href="#section-7.1-4.2.2.6.1" class="pilcrow">¶</a></p>
 <ul class="normal">
-<li class="normal" id="section-7.1-4.2.2.5.2.2.2.1">
-                        <p id="section-7.1-4.2.2.5.2.2.2.1.1">The start of the required verification period (as specified by the verifier).<a href="#section-7.1-4.2.2.5.2.2.2.1.1" class="pilcrow">¶</a></p>
+<li class="normal" id="section-7.1-4.2.2.6.2.1">
+                    <p id="section-7.1-4.2.2.6.2.1.1">End time: The end of the required verification period (as specified by the verifier).<a href="#section-7.1-4.2.2.6.2.1.1" class="pilcrow">¶</a></p>
 </li>
-                      <li class="normal" id="section-7.1-4.2.2.5.2.2.2.2">
-                        <p id="section-7.1-4.2.2.5.2.2.2.2.1">The end time minus the TTL override value in seconds.<a href="#section-7.1-4.2.2.5.2.2.2.2.1" class="pilcrow">¶</a></p>
+                  <li class="normal" id="section-7.1-4.2.2.6.2.2">
+                    <p id="section-7.1-4.2.2.6.2.2.1">Start time: The maximum (later) of:<a href="#section-7.1-4.2.2.6.2.2.1" class="pilcrow">¶</a></p>
+<ul class="normal">
+<li class="normal" id="section-7.1-4.2.2.6.2.2.2.1">
+                        <p id="section-7.1-4.2.2.6.2.2.2.1.1">The start of the required verification period (as specified by the verifier).<a href="#section-7.1-4.2.2.6.2.2.2.1.1" class="pilcrow">¶</a></p>
+</li>
+                      <li class="normal" id="section-7.1-4.2.2.6.2.2.2.2">
+                        <p id="section-7.1-4.2.2.6.2.2.2.2.1">The end time minus the TTL override value in seconds.<a href="#section-7.1-4.2.2.6.2.2.2.2.1" class="pilcrow">¶</a></p>
 </li>
                     </ul>
 </li>

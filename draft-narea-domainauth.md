@@ -141,8 +141,7 @@ The following terms are used:
 - **Member Signature Bundle:** A signature bundle containing a signature produced by a member using their private key.
 - **Organisation Signature Bundle:** A signature bundle containing a signature produced directly by an organisation using its private key, with a required member attribution that assigns authorship of the content to a specific member.
 - **DNSSEC Chain:** A sequence of DNS responses that allows a verifier to cryptographically validate the authenticity of a DNS record.
-- **Service OID:** An Object Identifier (OID) that uniquely identifies a service or application context where a DomainAuth signature is valid.
-
+- **Service:** A protocol or system that employs DomainAuth signatures for a specific use case. Each service defines the context in which a signature is valid, and its own rules for signature creation and verification.
 
 # Protocol Overview
 

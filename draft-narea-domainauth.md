@@ -149,15 +149,15 @@ The following terms are used:
 
 DomainAuth is built on three foundational layers:
 
-1. **DNS and DNSSEC Layer:** 
+1. **DNS and DNSSEC Layer:**
    - Provides the domain name hierarchy and DNSSEC-based verification of domain ownership.
    - The DNSSEC chain connects the DNS root of trust to the organisation's domain, enabling offline validation without prior key distribution.
    - The DomainAuth TXT record bridges DNSSEC and PKI by publishing the organisation's public key information in a standardised, discoverable way.
-2. **PKI Layer:** 
+2. **PKI Layer:**
    - Establishes a per-organisation PKI where each organisation issues certificates to its members.
    - The Organisation certificate functions as the domain-specific trust anchor that binds the organisation's public key to its domain name.
    - Member certificates extend the organisation's trust to specific members, containing identity information that enables them to produce signatures.
-3. **Signature Layer:** 
+3. **Signature Layer:**
    - Enables members to produce digital signatures on behalf of their organisation.
    - Signature bundles package digital signatures with all verification material, enabling offline validation.
 

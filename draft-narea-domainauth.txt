@@ -4,8 +4,8 @@
 
 Network Working Group                                           G. Narea
 Internet-Draft                                                 Relaycorp
-Intended status: Standards Track                           27 March 2025
-Expires: 28 September 2025
+Intended status: Standards Track                           28 March 2025
+Expires: 29 September 2025
 
 
                           DomainAuth Version 1
@@ -14,9 +14,8 @@ Expires: 28 September 2025
 Abstract
 
    This document defines DomainAuth, a protocol to attribute digital
-   signatures to domain names in such a way that signatures can be
-   verified entirely offline without a prior distribution of public
-   keys.
+   signatures to domain names in such a way that verification can occur
+   entirely offline without a prior distribution of public keys.
 
    Each signature is distributed as part of a self-contained "signature
    bundle" that encapsulates a complete chain of trust comprising: (1) a
@@ -55,7 +54,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 28 September 2025.
+   This Internet-Draft will expire on 29 September 2025.
 
 Copyright Notice
 
@@ -79,13 +78,12 @@ Table of Contents
      1.3.  Conventions and Terminology
    2.  Protocol Overview
      2.1.  Architecture
-     2.2.  Trust Model
-     2.3.  Key Components
-     2.4.  Workflow Summary
-       2.4.1.  Organisation Setup
-       2.4.2.  Certificate Issuance
-       2.4.3.  Signature Bundle Production
-       2.4.4.  Signature Bundle Verification
+     2.2.  Workflow Summary
+       2.2.1.  Organisation Setup
+       2.2.2.  Certificate Issuance
+       2.2.3.  Signature Bundle Production
+       2.2.4.  Signature Bundle Verification
+     2.3.  Trust Model
    3.  DNS Integration
      3.1.  DNSSEC Configuration
      3.2.  TXT Record
@@ -178,9 +176,8 @@ Table of Contents
    offers an end-to-end encrypted sneakernet to transport data between a
    region disconnected from the Internet and a location with access to
    the Internet.  In the most extreme cases, this physical transport may
-   take a short number of months.  Consequently, users should be able to
-   produce and verify digital signatures during that time period without
-   relying on online services.
+   take several weeks, during which users should be able to produce and
+   verify digital signatures without relying on online services.
 
    Attacks by powerful adversaries, such as nation-state actors, are
    part of the threat model, given that Awala and Letro explicitly
@@ -191,7 +188,7 @@ Table of Contents
    broader applicability and can be useful when the Internet is
    available, such as the following use cases:
 
-   *  Client authentication.  A client could prove its identity to its
+   *  Client authentication.  A client could prove its identity to a
       server by sending a short-lived token signed with DomainAuth; this
       would be analogous to using a JSON Web Token [JWT], except that it
       can be verified without a prior distribution of public keys or
@@ -229,21 +226,17 @@ Table of Contents
        human-readable domain names and usernames rather than
        cryptographically-derived values.
 
-   4.  *Build upon well-established standards:*
+   4.  *Build upon well-established standards:* DNSSEC for securing DNS
+       responses, X.509 for certificate management, and CMS for digital
+       signatures.
 
-       *  DNSSEC for securing DNS responses.
+   5.  *Minimal trust assumptions:* The protocol reduces trust
+       dependencies by leveraging DNSSEC, limiting potential credential
+       issuance attacks to DNS hierarchy operators (primarily IANA and
+       TLD operators).
 
-       *  X.509 for certificate management.
-
-       *  Cryptographic Message Syntax (CMS) for digital signatures.
-
-   5.  *Minimal trust assumptions:* The protocol ensures that no entity
-       can issue credentials on behalf of domains they do not control,
-       unlike traditional PKIs where any CA can issue certificates for
-       any domain.
-
-   6.  *Contextual binding:* Signatures are bound to specific "services"
-       (see below), preventing their unauthorised use across different
+   6.  *Contextual binding:* Signatures are bound to specific
+       "services", preventing their unauthorised use across different
        contexts.
 
 1.3.  Conventions and Terminology
@@ -260,14 +253,14 @@ Table of Contents
       protocol by configuring DNSSEC and publishing the necessary
       DomainAuth TXT record(s).
 
-   *  *Member:* An entity (user or bot) that produces signatures on
-      behalf of an organisation.
+   *  *Member:* An entity that produces signatures on behalf of an
+      organisation.  There are two types of members:
 
-   *  *User:* A specific type of member identified by a username within
-      an organisation.
+      -  *User:* A member identified by a unique username within an
+         organisation.
 
-   *  *Bot:* A special type of member that acts on behalf of the
-      organisation as a whole.  Bots do not have usernames.
+      -  *Bot:* A special type of member that acts on behalf of the
+         organisation as a whole.  Bots do not have usernames.
 
    *  *DomainAuth TXT Record:* A DNS TXT record at _domainauth.<domain>
       that contains the organisation's public key information.
@@ -286,50 +279,165 @@ Table of Contents
 
    *  *Signature Bundle:* A data structure containing a digital
       signature and all the information needed to verify it offline.
+      There are two types of signature bundles:
 
-   *  *Member Signature Bundle:* A signature bundle containing a
-      signature produced by a member using their private key.
+      -  *Member Signature Bundle:* A signature bundle containing a
+         signature produced by a member using their private key.
 
-   *  *Organisation Signature Bundle:* A signature bundle containing a
-      signature produced directly by an organisation using its private
-      key, with a required member attribution that assigns authorship of
-      the content to a specific member.
+      -  *Organisation Signature Bundle:* A signature bundle containing
+         a signature produced directly by an organisation using its
+         private key, with a required member attribution that assigns
+         authorship of the content to a specific member.
 
    *  *DNSSEC Chain:* A sequence of DNS responses that allows a verifier
       to cryptographically validate the authenticity of a DNS record.
 
-   *  *Service OID:* An Object Identifier (OID) that uniquely identifies
-      a service or application context where a DomainAuth signature is
-      valid.
+   *  *Service:* A protocol or system that employs DomainAuth signatures
+      for a specific use case.  Each service defines the context in
+      which a signature is valid, and its own rules for signature
+      creation and verification.
 
 2.  Protocol Overview
 
 2.1.  Architecture
 
-   DomainAuth combines DNSSEC, X.509 certificates, and CMS signatures to
-   create a decentralised authentication system.  The architecture
-   consists of several layered components:
+   DomainAuth is built on three foundational layers:
 
-   1.  *DNS Layer:* Provides the domain name hierarchy and DNSSEC-based
-       verification of domain ownership.
+   1.  *DNS and DNSSEC Layer:*
 
-   2.  *PKI Layer:* Establishes a per-organisation Public Key
-       Infrastructure where each organisation issues certificates to its
-       members.
+       *  Provides the domain name hierarchy and DNSSEC-based
+          verification of domain ownership.
 
-   3.  *Signature Layer:* Enables members to produce unforgeable digital
-       signatures on behalf of their organisation.
+       *  The DNSSEC chain connects the DNS root of trust to the
+          organisation's domain, enabling offline validation without
+          prior key distribution.
 
-   Each organisation serves as an independent trust anchor, responsible
-   for managing its own members and certificates.  The DNSSEC
-   infrastructure provides a secure foundation for verifying the
-   authenticity of the organisation's public key.
+       *  The DomainAuth TXT record bridges DNSSEC and PKI by publishing
+          the organisation's public key information in a standardised,
+          discoverable way.
 
-   DomainAuth's self-contained verification model allows signature
-   bundles to be verified independently, without requiring connectivity
-   to the Internet or the organisation's infrastructure.
+   2.  *PKI Layer:*
 
-2.2.  Trust Model
+       *  Establishes a per-organisation PKI where each organisation
+          issues certificates to its members.
+
+       *  The Organisation certificate functions as the domain-specific
+          trust anchor that binds the organisation's public key to its
+          domain name.
+
+       *  Member certificates extend the organisation's trust to
+          specific members, containing identity information that enables
+          them to produce signatures.
+
+   3.  *Signature Layer:*
+
+       *  Enables members to produce digital signatures on behalf of
+          their organisation.
+
+       *  Signature bundles package digital signatures with all
+          verification material, enabling offline validation.
+
+   These layers interact differently depending on the signature type:
+
+   *  In *member signatures*, the chain of trust flows from the DNSSEC
+      chain to the organisation certificate, then to the member
+      certificate, and finally to the signature, providing end-to-end
+      cryptographic proof of authorship.
+
+   *  In *organisation signatures*, the chain of trust flows from the
+      DNSSEC chain directly to the organisation certificate and then to
+      the signature, with member attribution provided as a claim rather
+      than a cryptographic proof.
+
+   Furthermore, Member Id Bundles are a key architectural component that
+   packages the complete chain of trust (DNSSEC chain, organisation
+   certificate, and member certificate) into a single message, enabling
+   members to produce verifiable signatures offline.
+
+2.2.  Workflow Summary
+
+   The DomainAuth protocol involves the following key workflows:
+
+2.2.1.  Organisation Setup
+
+   First, the organisation must have DNSSEC properly configured for its
+   domain.
+
+   Then, the organisation must generate an asymmetric key pair and
+   publish its public key information in a DomainAuth TXT record at
+   _domainauth.<domain> as described in Section 3.2.
+
+   Multiple such records are allowed, which can be useful for key
+   rotation or binding different keys to different services.
+
+2.2.2.  Certificate Issuance
+
+   The organisation must self-issue an X.509 certificate using its
+   private key, or reuse an existing certificate valid during the
+   intended validity period.
+
+   When issuing a member certificate, the organisation must distribute
+   it along with the organisation certificate.  This can be done with a
+   member id bundle as defined in Section 5, which is desirable in
+   services meant to be used offline as it also contains the DNSSEC
+   chain.
+
+2.2.3.  Signature Bundle Production
+
+   A member would produce a signature bundle as follows:
+
+   1.  Use their private key to produce a CMS SignedData structure,
+       encapsulating the member's certificate.
+
+   2.  Obtain the DNSSEC chain from the DomainAuth TXT record.  If not
+       provided by the organisation (e.g. in the form of a member id
+       bundle), the member will have to resolve it or retrieve it from a
+       cache.
+
+   3.  Construct a signature bundle with the CMS SignedData structure,
+       the organisation certificate, and the DNSSEC chain.
+
+   Similarly, an organisation would produce a signature bundle as
+   follows:
+
+   1.  Use its private key to produce a CMS SignedData structure,
+       without encapsulating the organisation's certificate.
+
+   2.  Resolve the DNSSEC chain from the DomainAuth TXT record, or use a
+       cached chain valid during the intended validity period.
+
+   3.  Construct a signature bundle with the CMS SignedData structure,
+       the organisation certificate, and the DNSSEC chain.
+
+2.2.4.  Signature Bundle Verification
+
+   The verification process involves validating the entire chain of
+   trust as follows:
+
+   1.  Verify the DNSSEC chain.
+
+   2.  Verify the organisation certificate using the public key from the
+       TXT record.
+
+   3.  Determine the certificate of the signer of the CMS SignedData
+       structure.  If it is an organisation signature, use the
+       organisation certificate.  Otherwise, use the certificate of the
+       member, which is encapsulated in the CMS SignedData structure.
+
+   4.  Verify the CMS SignedData structure against the certificate of
+       the signer.
+
+   5.  Verify that the signature is valid for the intended service and
+       time period.
+
+   Alternatively, the verifier can start with the digital signature,
+   then verify the organisation certificate and finally the DNSSEC
+   chain.
+
+   For more detailed information on the verification process,
+   particularly regarding validity periods, see Section 6.5.1.
+
+2.3.  Trust Model
 
    DomainAuth's trust model differs significantly from traditional PKIs
    such as the one used for TLS:
@@ -374,131 +482,6 @@ Table of Contents
    By relying on DNSSEC, DomainAuth inherits its security properties and
    limitations.  The protocol's trust is ultimately rooted in the DNS
    hierarchy, including the root zone and TLD operators.
-
-2.3.  Key Components
-
-   The DomainAuth protocol consists of the following core components:
-
-   1.  *DomainAuth TXT Record:* A DNS TXT record at _domainauth.<domain>
-       containing the organisation's public key information, including
-       key algorithm, key id type, key id, TTL override, and optional
-       service OID.
-
-   2.  *Organisation Certificate:* A self-issued X.509 certificate
-       containing the organisation's public key.  This certificate
-       serves as the root Certificate Authority (CA) for all
-       certification paths and digital signatures under the
-       organisation's domain.
-
-   3.  *Member Certificates:* X.509 certificates issued by the
-       organisation to individual users or bots.  User certificates
-       include the username in the Common Name field, whilst bot
-       certificates use the at sign (@) as their Common Name.
-
-   4.  *DNSSEC Chain:* A serialised collection of DNS responses that
-       provide cryptographic proof of the authenticity of the
-       organisation's DomainAuth TXT record.
-
-   5.  *Member Id Bundle:* A structure containing a member certificate,
-       the issuing organisation certificate, and the DNSSEC chain
-       necessary to verify the organisation's authority.
-
-   6.  *Signature Bundle:* A structure containing a CMS SignedData
-       value, the organisation certificate, and the DNSSEC chain.  There
-       are two types of bundles, which determine the signer of the
-       SignedData value:
-
-       *  *Member Signature Bundles* are signed by a member.
-
-       *  *Organisation Signature Bundles* are signed directly by the
-          organisation, but attributed to a specific member.
-
-   These components work together to create a secure chain of trust from
-   the DNS root to the individual signatures produced by organisation
-   members or by the organisation itself.
-
-2.4.  Workflow Summary
-
-   The DomainAuth protocol involves the following key workflows:
-
-2.4.1.  Organisation Setup
-
-   First, the organisation must have DNSSEC properly configured for its
-   domain.
-
-   Then, the organisation must generate an asymmetric key pair and
-   publish its public key information in a DomainAuth TXT record at
-   _domainauth.<domain> as described in Section 3.2.
-
-   Multiple such records are allowed, which can be useful for key
-   rotation or binding different keys to different services.
-
-2.4.2.  Certificate Issuance
-
-   The organisation must self-issue an X.509 certificate using its
-   private key, or reuse an existing certificate valid during the
-   intended validity period.
-
-   When issuing a member certificate, the organisation must distribute
-   it along with the organisation certificate.  This can be done with a
-   member id bundle as defined in Section 5, which is desirable in
-   services meant to be used offline as it also contains the DNSSEC
-   chain.
-
-2.4.3.  Signature Bundle Production
-
-   A member would produce a signature bundle as follows:
-
-   1.  Use their private key to produce a CMS SignedData structure,
-       encapsulating the member's certificate.
-
-   2.  Obtain the DNSSEC chain from the DomainAuth TXT record.  If not
-       provided by the organisation (e.g. in the form of a member id
-       bundle), the member will have to resolve it or retrieve it from a
-       cache.
-
-   3.  Construct a signature bundle with the CMS SignedData structure,
-       the organisation certificate, and the DNSSEC chain.
-
-   Similarly, an organisation would produce a signature bundle as
-   follows:
-
-   1.  Use its private key to produce a CMS SignedData structure,
-       without encapsulating the organisation's certificate.
-
-   2.  Resolve the DNSSEC chain from the DomainAuth TXT record, or use a
-       cached chain valid during the intended validity period.
-
-   3.  Construct a signature bundle with the CMS SignedData structure,
-       the organisation certificate, and the DNSSEC chain.
-
-2.4.4.  Signature Bundle Verification
-
-   The verification process involves validating the entire chain of
-   trust as follows:
-
-   1.  Verify the DNSSEC chain.
-
-   2.  Verify the organisation certificate using the public key from the
-       TXT record.
-
-   3.  Determine the certificate of the signer of the CMS SignedData
-       structure.  If it is an organisation signature, use the
-       organisation certificate.  Otherwise, use the certificate of the
-       member, which is encapsulated in the CMS SignedData structure.
-
-   4.  Verify the CMS SignedData structure against the certificate of
-       the signer.
-
-   5.  Verify that the signature is valid for the intended service and
-       time period.
-
-   Alternatively, the verifier can start with the digital signature,
-   then verify the organisation certificate and finally the DNSSEC
-   chain.
-
-   For more detailed information on the verification process,
-   particularly regarding validity periods, see Section 6.5.1.
 
 3.  DNS Integration
 

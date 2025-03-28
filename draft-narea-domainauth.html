@@ -7,7 +7,7 @@
 <title>DomainAuth Version 1</title>
 <meta content="Gus Narea" name="author">
 <meta content='
-       This document defines DomainAuth, a protocol to attribute digital signatures to domain names in such a way that signatures can be verified entirely offline without a prior distribution of public keys. 
+       This document defines DomainAuth, a protocol to attribute digital signatures to domain names in such a way that verification can occur entirely offline without a prior distribution of public keys. 
        Each signature is distributed as part of a self-contained "signature bundle" that encapsulates a complete chain of trust comprising: (1) a DNSSEC chain from the root zone to a TXT record containing a public key or its digest, (2) an X.509 certificate chain from the key specified in the TXT record to the final signing key, and (3) the digital signature in the form of a CMS SignedData structure. 
        Finally, signatures can be attributed to the domain name itself (e.g. "example.com") or specific users (e.g. "alice" of "example.com"). 
     ' name="description">
@@ -1053,7 +1053,7 @@ svg :is([fill="white"], [fill^="#fff"]) {
 </tr></thead>
 <tfoot><tr>
 <td class="left">Narea</td>
-<td class="center">Expires 28 September 2025</td>
+<td class="center">Expires 29 September 2025</td>
 <td class="right">[Page]</td>
 </tr></tfoot>
 </table>
@@ -1066,12 +1066,12 @@ svg :is([fill="white"], [fill^="#fff"]) {
 <dd class="internet-draft">draft-narea-domainauth-latest</dd>
 <dt class="label-published">Published:</dt>
 <dd class="published">
-<time datetime="2025-03-27" class="published">27 March 2025</time>
+<time datetime="2025-03-28" class="published">28 March 2025</time>
     </dd>
 <dt class="label-intended-status">Intended Status:</dt>
 <dd class="intended-status">Standards Track</dd>
 <dt class="label-expires">Expires:</dt>
-<dd class="expires"><time datetime="2025-09-28">28 September 2025</time></dd>
+<dd class="expires"><time datetime="2025-09-29">29 September 2025</time></dd>
 <dt class="label-authors">Author:</dt>
 <dd class="authors">
 <div class="author">
@@ -1084,7 +1084,7 @@ svg :is([fill="white"], [fill^="#fff"]) {
 <h1 id="title">DomainAuth Version 1</h1>
 <section id="section-abstract">
       <h2 id="abstract"><a href="#abstract" class="selfRef">Abstract</a></h2>
-<p id="section-abstract-1">This document defines DomainAuth, a protocol to attribute digital signatures to domain names in such a way that signatures can be verified entirely offline without a prior distribution of public keys.<a href="#section-abstract-1" class="pilcrow">¶</a></p>
+<p id="section-abstract-1">This document defines DomainAuth, a protocol to attribute digital signatures to domain names in such a way that verification can occur entirely offline without a prior distribution of public keys.<a href="#section-abstract-1" class="pilcrow">¶</a></p>
 <p id="section-abstract-2">Each signature is distributed as part of a self-contained "signature bundle" that encapsulates a complete chain of trust comprising: (1) a DNSSEC chain from the root zone to a TXT record containing a public key or its digest, (2) an X.509 certificate chain from the key specified in the TXT record to the final signing key, and (3) the digital signature in the form of a CMS SignedData structure.<a href="#section-abstract-2" class="pilcrow">¶</a></p>
 <p id="section-abstract-3">Finally, signatures can be attributed to the domain name itself (e.g. "example.com") or specific users (e.g. "alice" of "example.com").<a href="#section-abstract-3" class="pilcrow">¶</a></p>
 </section>
@@ -1118,7 +1118,7 @@ svg :is([fill="white"], [fill^="#fff"]) {
         time. It is inappropriate to use Internet-Drafts as reference
         material or to cite them other than as "work in progress."<a href="#section-boilerplate.1-3" class="pilcrow">¶</a></p>
 <p id="section-boilerplate.1-4">
-        This Internet-Draft will expire on 28 September 2025.<a href="#section-boilerplate.1-4" class="pilcrow">¶</a></p>
+        This Internet-Draft will expire on 29 September 2025.<a href="#section-boilerplate.1-4" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="copyright">
@@ -1168,27 +1168,24 @@ svg :is([fill="white"], [fill^="#fff"]) {
                 <p id="section-toc.1-1.2.2.1.1"><a href="#section-2.1" class="auto internal xref">2.1</a>.  <a href="#name-architecture" class="internal xref">Architecture</a></p>
 </li>
               <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.2.2.2">
-                <p id="section-toc.1-1.2.2.2.1"><a href="#section-2.2" class="auto internal xref">2.2</a>.  <a href="#name-trust-model" class="internal xref">Trust Model</a></p>
-</li>
-              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.2.2.3">
-                <p id="section-toc.1-1.2.2.3.1"><a href="#section-2.3" class="auto internal xref">2.3</a>.  <a href="#name-key-components" class="internal xref">Key Components</a></p>
-</li>
-              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.2.2.4">
-                <p id="section-toc.1-1.2.2.4.1"><a href="#section-2.4" class="auto internal xref">2.4</a>.  <a href="#name-workflow-summary" class="internal xref">Workflow Summary</a></p>
+                <p id="section-toc.1-1.2.2.2.1"><a href="#section-2.2" class="auto internal xref">2.2</a>.  <a href="#name-workflow-summary" class="internal xref">Workflow Summary</a></p>
 <ul class="compact toc ulBare ulEmpty">
-<li class="compact toc ulBare ulEmpty" id="section-toc.1-1.2.2.4.2.1">
-                    <p id="section-toc.1-1.2.2.4.2.1.1"><a href="#section-2.4.1" class="auto internal xref">2.4.1</a>.  <a href="#name-organisation-setup" class="internal xref">Organisation Setup</a></p>
+<li class="compact toc ulBare ulEmpty" id="section-toc.1-1.2.2.2.2.1">
+                    <p id="section-toc.1-1.2.2.2.2.1.1"><a href="#section-2.2.1" class="auto internal xref">2.2.1</a>.  <a href="#name-organisation-setup" class="internal xref">Organisation Setup</a></p>
 </li>
-                  <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.2.2.4.2.2">
-                    <p id="section-toc.1-1.2.2.4.2.2.1"><a href="#section-2.4.2" class="auto internal xref">2.4.2</a>.  <a href="#name-certificate-issuance" class="internal xref">Certificate Issuance</a></p>
+                  <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.2.2.2.2.2">
+                    <p id="section-toc.1-1.2.2.2.2.2.1"><a href="#section-2.2.2" class="auto internal xref">2.2.2</a>.  <a href="#name-certificate-issuance" class="internal xref">Certificate Issuance</a></p>
 </li>
-                  <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.2.2.4.2.3">
-                    <p id="section-toc.1-1.2.2.4.2.3.1"><a href="#section-2.4.3" class="auto internal xref">2.4.3</a>.  <a href="#name-signature-bundle-production" class="internal xref">Signature Bundle Production</a></p>
+                  <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.2.2.2.2.3">
+                    <p id="section-toc.1-1.2.2.2.2.3.1"><a href="#section-2.2.3" class="auto internal xref">2.2.3</a>.  <a href="#name-signature-bundle-production" class="internal xref">Signature Bundle Production</a></p>
 </li>
-                  <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.2.2.4.2.4">
-                    <p id="section-toc.1-1.2.2.4.2.4.1"><a href="#section-2.4.4" class="auto internal xref">2.4.4</a>.  <a href="#name-signature-bundle-verificati" class="internal xref">Signature Bundle Verification</a></p>
+                  <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.2.2.2.2.4">
+                    <p id="section-toc.1-1.2.2.2.2.4.1"><a href="#section-2.2.4" class="auto internal xref">2.2.4</a>.  <a href="#name-signature-bundle-verificati" class="internal xref">Signature Bundle Verification</a></p>
 </li>
                 </ul>
+</li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.2.2.3">
+                <p id="section-toc.1-1.2.2.3.1"><a href="#section-2.3" class="auto internal xref">2.3</a>.  <a href="#name-trust-model" class="internal xref">Trust Model</a></p>
 </li>
             </ul>
 </li>
@@ -1393,12 +1390,12 @@ svg :is([fill="white"], [fill^="#fff"]) {
 <a href="#section-1.1" class="section-number selfRef">1.1. </a><a href="#name-problem-statement" class="section-name selfRef">Problem Statement</a>
         </h3>
 <p id="section-1.1-1">The protocol was initially designed and implemented to provide users of the offline messaging application Letro <span>[<a href="#LETRO" class="cite xref">LETRO</a>]</span> with identifiers that are customisable, user friendly, universally unique, and verifiable.<a href="#section-1.1-1" class="pilcrow">¶</a></p>
-<p id="section-1.1-2">Letro is powered by the delay-tolerant network Awala <span>[<a href="#AWALA" class="cite xref">AWALA</a>]</span>, which offers an end-to-end encrypted sneakernet to transport data between a region disconnected from the Internet and a location with access to the Internet. In the most extreme cases, this physical transport may take a short number of months. Consequently, users should be able to produce and verify digital signatures during that time period without relying on online services.<a href="#section-1.1-2" class="pilcrow">¶</a></p>
+<p id="section-1.1-2">Letro is powered by the delay-tolerant network Awala <span>[<a href="#AWALA" class="cite xref">AWALA</a>]</span>, which offers an end-to-end encrypted sneakernet to transport data between a region disconnected from the Internet and a location with access to the Internet. In the most extreme cases, this physical transport may take several weeks, during which users should be able to produce and verify digital signatures without relying on online services.<a href="#section-1.1-2" class="pilcrow">¶</a></p>
 <p id="section-1.1-3">Attacks by powerful adversaries, such as nation-state actors, are part of the threat model, given that Awala and Letro explicitly target people disconnected from the Internet due to conflict or government-sponsored censorship.<a href="#section-1.1-3" class="pilcrow">¶</a></p>
 <p id="section-1.1-4">Despite its origin in delay-tolerant networking, DomainAuth has broader applicability and can be useful when the Internet is available, such as the following use cases:<a href="#section-1.1-4" class="pilcrow">¶</a></p>
 <ul class="normal">
 <li class="normal" id="section-1.1-5.1">
-            <p id="section-1.1-5.1.1">Client authentication. A client could prove its identity to its server by sending a short-lived token signed with DomainAuth; this would be analogous to using a JSON Web Token <span>[<a href="#JWT" class="cite xref">JWT</a>]</span>, except that it can be verified without a prior distribution of public keys or remote operations. Alternatively, the client could sign each message sent to the server.<a href="#section-1.1-5.1.1" class="pilcrow">¶</a></p>
+            <p id="section-1.1-5.1.1">Client authentication. A client could prove its identity to a server by sending a short-lived token signed with DomainAuth; this would be analogous to using a JSON Web Token <span>[<a href="#JWT" class="cite xref">JWT</a>]</span>, except that it can be verified without a prior distribution of public keys or remote operations. Alternatively, the client could sign each message sent to the server.<a href="#section-1.1-5.1.1" class="pilcrow">¶</a></p>
 </li>
           <li class="normal" id="section-1.1-5.2">
             <p id="section-1.1-5.2.1">Artefact signing. Documents, applications, libraries, and other files could be signed on behalf of a domain name, without vendor-specific gatekeeping mechanisms. This could unlock further use cases, such as enabling users to share original content whilst proving authenticity and integrity, instead of sharing URLs to resources that could be blocked at the network level.<a href="#section-1.1-5.2.1" class="pilcrow">¶</a></p>
@@ -1427,24 +1424,13 @@ svg :is([fill="white"], [fill^="#fff"]) {
             <p id="section-1.2-2.3.1"><strong>User-friendly identifiers:</strong> Identities are based on familiar, human-readable domain names and usernames rather than cryptographically-derived values.<a href="#section-1.2-2.3.1" class="pilcrow">¶</a></p>
 </li>
           <li id="section-1.2-2.4">
-            <p id="section-1.2-2.4.1"><strong>Build upon well-established standards:</strong><a href="#section-1.2-2.4.1" class="pilcrow">¶</a></p>
-<ul class="normal">
-<li class="normal" id="section-1.2-2.4.2.1">
-                <p id="section-1.2-2.4.2.1.1">DNSSEC for securing DNS responses.<a href="#section-1.2-2.4.2.1.1" class="pilcrow">¶</a></p>
-</li>
-              <li class="normal" id="section-1.2-2.4.2.2">
-                <p id="section-1.2-2.4.2.2.1">X.509 for certificate management.<a href="#section-1.2-2.4.2.2.1" class="pilcrow">¶</a></p>
-</li>
-              <li class="normal" id="section-1.2-2.4.2.3">
-                <p id="section-1.2-2.4.2.3.1">Cryptographic Message Syntax (CMS) for digital signatures.<a href="#section-1.2-2.4.2.3.1" class="pilcrow">¶</a></p>
-</li>
-            </ul>
+            <p id="section-1.2-2.4.1"><strong>Build upon well-established standards:</strong> DNSSEC for securing DNS responses, X.509 for certificate management, and CMS for digital signatures.<a href="#section-1.2-2.4.1" class="pilcrow">¶</a></p>
 </li>
           <li id="section-1.2-2.5">
-            <p id="section-1.2-2.5.1"><strong>Minimal trust assumptions:</strong> The protocol ensures that no entity can issue credentials on behalf of domains they do not control, unlike traditional PKIs where any CA can issue certificates for any domain.<a href="#section-1.2-2.5.1" class="pilcrow">¶</a></p>
+            <p id="section-1.2-2.5.1"><strong>Minimal trust assumptions:</strong> The protocol reduces trust dependencies by leveraging DNSSEC, limiting potential credential issuance attacks to DNS hierarchy operators (primarily IANA and TLD operators).<a href="#section-1.2-2.5.1" class="pilcrow">¶</a></p>
 </li>
           <li id="section-1.2-2.6">
-            <p id="section-1.2-2.6.1"><strong>Contextual binding:</strong> Signatures are bound to specific "services" (see below), preventing their unauthorised use across different contexts.<a href="#section-1.2-2.6.1" class="pilcrow">¶</a></p>
+            <p id="section-1.2-2.6.1"><strong>Contextual binding:</strong> Signatures are bound to specific "services", preventing their unauthorised use across different contexts.<a href="#section-1.2-2.6.1" class="pilcrow">¶</a></p>
 </li>
         </ol>
 </section>
@@ -1464,40 +1450,44 @@ appear in all capitals, as shown here.<a href="#section-1.3-1" class="pilcrow">�
             <p id="section-1.3-3.1.1"><strong>Organisation:</strong> A domain name that participates in the DomainAuth protocol by configuring DNSSEC and publishing the necessary DomainAuth TXT record(s).<a href="#section-1.3-3.1.1" class="pilcrow">¶</a></p>
 </li>
           <li class="normal" id="section-1.3-3.2">
-            <p id="section-1.3-3.2.1"><strong>Member:</strong> An entity (user or bot) that produces signatures on behalf of an organisation.<a href="#section-1.3-3.2.1" class="pilcrow">¶</a></p>
+            <p id="section-1.3-3.2.1"><strong>Member:</strong> An entity that produces signatures on behalf of an organisation. There are two types of members:<a href="#section-1.3-3.2.1" class="pilcrow">¶</a></p>
+<ul class="normal">
+<li class="normal" id="section-1.3-3.2.2.1">
+                <p id="section-1.3-3.2.2.1.1"><strong>User:</strong> A member identified by a unique username within an organisation.<a href="#section-1.3-3.2.2.1.1" class="pilcrow">¶</a></p>
+</li>
+              <li class="normal" id="section-1.3-3.2.2.2">
+                <p id="section-1.3-3.2.2.2.1"><strong>Bot:</strong> A special type of member that acts on behalf of the organisation as a whole. Bots do not have usernames.<a href="#section-1.3-3.2.2.2.1" class="pilcrow">¶</a></p>
+</li>
+            </ul>
 </li>
           <li class="normal" id="section-1.3-3.3">
-            <p id="section-1.3-3.3.1"><strong>User:</strong> A specific type of member identified by a username within an organisation.<a href="#section-1.3-3.3.1" class="pilcrow">¶</a></p>
+            <p id="section-1.3-3.3.1"><strong>DomainAuth TXT Record:</strong> A DNS TXT record at <code>_domainauth.&lt;domain&gt;</code> that contains the organisation's public key information.<a href="#section-1.3-3.3.1" class="pilcrow">¶</a></p>
 </li>
           <li class="normal" id="section-1.3-3.4">
-            <p id="section-1.3-3.4.1"><strong>Bot:</strong> A special type of member that acts on behalf of the organisation as a whole. Bots do not have usernames.<a href="#section-1.3-3.4.1" class="pilcrow">¶</a></p>
+            <p id="section-1.3-3.4.1"><strong>Organisation Certificate:</strong> A self-signed X.509 certificate owned by an organisation that serves as the root of trust for all signatures produced on behalf of that organisation.<a href="#section-1.3-3.4.1" class="pilcrow">¶</a></p>
 </li>
           <li class="normal" id="section-1.3-3.5">
-            <p id="section-1.3-3.5.1"><strong>DomainAuth TXT Record:</strong> A DNS TXT record at <code>_domainauth.&lt;domain&gt;</code> that contains the organisation's public key information.<a href="#section-1.3-3.5.1" class="pilcrow">¶</a></p>
+            <p id="section-1.3-3.5.1"><strong>Member Certificate:</strong> An X.509 certificate issued by the organisation certificate to a member.<a href="#section-1.3-3.5.1" class="pilcrow">¶</a></p>
 </li>
           <li class="normal" id="section-1.3-3.6">
-            <p id="section-1.3-3.6.1"><strong>Organisation Certificate:</strong> A self-signed X.509 certificate owned by an organisation that serves as the root of trust for all signatures produced on behalf of that organisation.<a href="#section-1.3-3.6.1" class="pilcrow">¶</a></p>
+            <p id="section-1.3-3.6.1"><strong>Member Id Bundle:</strong> A data structure containing a member certificate, its issuing organisation certificate, and the DNSSEC chain proving the authenticity of the organisation's DomainAuth TXT record.<a href="#section-1.3-3.6.1" class="pilcrow">¶</a></p>
 </li>
           <li class="normal" id="section-1.3-3.7">
-            <p id="section-1.3-3.7.1"><strong>Member Certificate:</strong> An X.509 certificate issued by the organisation certificate to a member.<a href="#section-1.3-3.7.1" class="pilcrow">¶</a></p>
+            <p id="section-1.3-3.7.1"><strong>Signature Bundle:</strong> A data structure containing a digital signature and all the information needed to verify it offline. There are two types of signature bundles:<a href="#section-1.3-3.7.1" class="pilcrow">¶</a></p>
+<ul class="normal">
+<li class="normal" id="section-1.3-3.7.2.1">
+                <p id="section-1.3-3.7.2.1.1"><strong>Member Signature Bundle:</strong> A signature bundle containing a signature produced by a member using their private key.<a href="#section-1.3-3.7.2.1.1" class="pilcrow">¶</a></p>
+</li>
+              <li class="normal" id="section-1.3-3.7.2.2">
+                <p id="section-1.3-3.7.2.2.1"><strong>Organisation Signature Bundle:</strong> A signature bundle containing a signature produced directly by an organisation using its private key, with a required member attribution that assigns authorship of the content to a specific member.<a href="#section-1.3-3.7.2.2.1" class="pilcrow">¶</a></p>
+</li>
+            </ul>
 </li>
           <li class="normal" id="section-1.3-3.8">
-            <p id="section-1.3-3.8.1"><strong>Member Id Bundle:</strong> A data structure containing a member certificate, its issuing organisation certificate, and the DNSSEC chain proving the authenticity of the organisation's DomainAuth TXT record.<a href="#section-1.3-3.8.1" class="pilcrow">¶</a></p>
+            <p id="section-1.3-3.8.1"><strong>DNSSEC Chain:</strong> A sequence of DNS responses that allows a verifier to cryptographically validate the authenticity of a DNS record.<a href="#section-1.3-3.8.1" class="pilcrow">¶</a></p>
 </li>
           <li class="normal" id="section-1.3-3.9">
-            <p id="section-1.3-3.9.1"><strong>Signature Bundle:</strong> A data structure containing a digital signature and all the information needed to verify it offline.<a href="#section-1.3-3.9.1" class="pilcrow">¶</a></p>
-</li>
-          <li class="normal" id="section-1.3-3.10">
-            <p id="section-1.3-3.10.1"><strong>Member Signature Bundle:</strong> A signature bundle containing a signature produced by a member using their private key.<a href="#section-1.3-3.10.1" class="pilcrow">¶</a></p>
-</li>
-          <li class="normal" id="section-1.3-3.11">
-            <p id="section-1.3-3.11.1"><strong>Organisation Signature Bundle:</strong> A signature bundle containing a signature produced directly by an organisation using its private key, with a required member attribution that assigns authorship of the content to a specific member.<a href="#section-1.3-3.11.1" class="pilcrow">¶</a></p>
-</li>
-          <li class="normal" id="section-1.3-3.12">
-            <p id="section-1.3-3.12.1"><strong>DNSSEC Chain:</strong> A sequence of DNS responses that allows a verifier to cryptographically validate the authenticity of a DNS record.<a href="#section-1.3-3.12.1" class="pilcrow">¶</a></p>
-</li>
-          <li class="normal" id="section-1.3-3.13">
-            <p id="section-1.3-3.13.1"><strong>Service OID:</strong> An Object Identifier (OID) that uniquely identifies a service or application context where a DomainAuth signature is valid.<a href="#section-1.3-3.13.1" class="pilcrow">¶</a></p>
+            <p id="section-1.3-3.9.1"><strong>Service:</strong> A protocol or system that employs DomainAuth signatures for a specific use case. Each service defines the context in which a signature is valid, and its own rules for signature creation and verification.<a href="#section-1.3-3.9.1" class="pilcrow">¶</a></p>
 </li>
         </ul>
 </section>
@@ -1514,176 +1504,177 @@ appear in all capitals, as shown here.<a href="#section-1.3-1" class="pilcrow">�
         <h3 id="name-architecture">
 <a href="#section-2.1" class="section-number selfRef">2.1. </a><a href="#name-architecture" class="section-name selfRef">Architecture</a>
         </h3>
-<p id="section-2.1-1">DomainAuth combines DNSSEC, X.509 certificates, and CMS signatures to create a decentralised authentication system. The architecture consists of several layered components:<a href="#section-2.1-1" class="pilcrow">¶</a></p>
+<p id="section-2.1-1">DomainAuth is built on three foundational layers:<a href="#section-2.1-1" class="pilcrow">¶</a></p>
 <ol start="1" type="1" class="normal type-1" id="section-2.1-2">
 <li id="section-2.1-2.1">
-            <p id="section-2.1-2.1.1"><strong>DNS Layer:</strong> Provides the domain name hierarchy and DNSSEC-based verification of domain ownership.<a href="#section-2.1-2.1.1" class="pilcrow">¶</a></p>
+            <p id="section-2.1-2.1.1"><strong>DNS and DNSSEC Layer:</strong><a href="#section-2.1-2.1.1" class="pilcrow">¶</a></p>
+<ul class="normal">
+<li class="normal" id="section-2.1-2.1.2.1">
+                <p id="section-2.1-2.1.2.1.1">Provides the domain name hierarchy and DNSSEC-based verification of domain ownership.<a href="#section-2.1-2.1.2.1.1" class="pilcrow">¶</a></p>
+</li>
+              <li class="normal" id="section-2.1-2.1.2.2">
+                <p id="section-2.1-2.1.2.2.1">The DNSSEC chain connects the DNS root of trust to the organisation's domain, enabling offline validation without prior key distribution.<a href="#section-2.1-2.1.2.2.1" class="pilcrow">¶</a></p>
+</li>
+              <li class="normal" id="section-2.1-2.1.2.3">
+                <p id="section-2.1-2.1.2.3.1">The DomainAuth TXT record bridges DNSSEC and PKI by publishing the organisation's public key information in a standardised, discoverable way.<a href="#section-2.1-2.1.2.3.1" class="pilcrow">¶</a></p>
+</li>
+            </ul>
 </li>
           <li id="section-2.1-2.2">
-            <p id="section-2.1-2.2.1"><strong>PKI Layer:</strong> Establishes a per-organisation Public Key Infrastructure where each organisation issues certificates to its members.<a href="#section-2.1-2.2.1" class="pilcrow">¶</a></p>
+            <p id="section-2.1-2.2.1"><strong>PKI Layer:</strong><a href="#section-2.1-2.2.1" class="pilcrow">¶</a></p>
+<ul class="normal">
+<li class="normal" id="section-2.1-2.2.2.1">
+                <p id="section-2.1-2.2.2.1.1">Establishes a per-organisation PKI where each organisation issues certificates to its members.<a href="#section-2.1-2.2.2.1.1" class="pilcrow">¶</a></p>
+</li>
+              <li class="normal" id="section-2.1-2.2.2.2">
+                <p id="section-2.1-2.2.2.2.1">The Organisation certificate functions as the domain-specific trust anchor that binds the organisation's public key to its domain name.<a href="#section-2.1-2.2.2.2.1" class="pilcrow">¶</a></p>
+</li>
+              <li class="normal" id="section-2.1-2.2.2.3">
+                <p id="section-2.1-2.2.2.3.1">Member certificates extend the organisation's trust to specific members, containing identity information that enables them to produce signatures.<a href="#section-2.1-2.2.2.3.1" class="pilcrow">¶</a></p>
+</li>
+            </ul>
 </li>
           <li id="section-2.1-2.3">
-            <p id="section-2.1-2.3.1"><strong>Signature Layer:</strong> Enables members to produce unforgeable digital signatures on behalf of their organisation.<a href="#section-2.1-2.3.1" class="pilcrow">¶</a></p>
-</li>
-        </ol>
-<p id="section-2.1-3">Each organisation serves as an independent trust anchor, responsible for managing its own members and certificates. The DNSSEC infrastructure provides a secure foundation for verifying the authenticity of the organisation's public key.<a href="#section-2.1-3" class="pilcrow">¶</a></p>
-<p id="section-2.1-4">DomainAuth's self-contained verification model allows signature bundles to be verified independently, without requiring connectivity to the Internet or the organisation's infrastructure.<a href="#section-2.1-4" class="pilcrow">¶</a></p>
-</section>
-</div>
-<div id="trust-model">
-<section id="section-2.2">
-        <h3 id="name-trust-model">
-<a href="#section-2.2" class="section-number selfRef">2.2. </a><a href="#name-trust-model" class="section-name selfRef">Trust Model</a>
-        </h3>
-<p id="section-2.2-1">DomainAuth's trust model differs significantly from traditional PKIs such as the one used for TLS:<a href="#section-2.2-1" class="pilcrow">¶</a></p>
-<ol start="1" type="1" class="normal type-1" id="section-2.2-2">
-<li id="section-2.2-2.1">
-            <p id="section-2.2-2.1.1"><strong>Domain-specific trust roots:</strong> Each organisation is only able to issue certificates for itself and its members. Unlike traditional PKIs where any Certificate Authority can issue certificates for any domain, DomainAuth enforces a strict hierarchy where domain control is the only path to certificate issuance.<a href="#section-2.2-2.1.1" class="pilcrow">¶</a></p>
-</li>
-          <li id="section-2.2-2.2">
-            <p id="section-2.2-2.2.1"><strong>DNSSEC as the foundation:</strong> Trust is anchored in DNSSEC, relying on the hierarchical nature of DNS to establish domain control. The chain of trust begins with the DNS root zone and extends through each DNS subdelegation to the organisation's domain.<a href="#section-2.2-2.2.1" class="pilcrow">¶</a></p>
-</li>
-          <li id="section-2.2-2.3">
-            <p id="section-2.2-2.3.1"><strong>Self-contained verification:</strong> Signature bundles include all necessary information (DNSSEC chains, certificates) to allow completely offline verification.<a href="#section-2.2-2.3.1" class="pilcrow">¶</a></p>
-</li>
-          <li id="section-2.2-2.4">
-            <p id="section-2.2-2.4.1"><strong>Short-lived credentials:</strong> DomainAuth favours short-lived credentials over revocation mechanisms, reducing complexity and vulnerability to disconnected operation. However, what constitutes "short-lived" will be entirely dependent on the nature of the service.<a href="#section-2.2-2.4.1" class="pilcrow">¶</a></p>
-</li>
-          <li id="section-2.2-2.5">
-            <p id="section-2.2-2.5.1"><strong>Two signature types with different trust models:</strong><a href="#section-2.2-2.5.1" class="pilcrow">¶</a></p>
+            <p id="section-2.1-2.3.1"><strong>Signature Layer:</strong><a href="#section-2.1-2.3.1" class="pilcrow">¶</a></p>
 <ul class="normal">
-<li class="normal" id="section-2.2-2.5.2.1">
-                <p id="section-2.2-2.5.2.1.1"><strong>Member signatures:</strong> Produced by members using their private keys, these signatures cryptographically prove that a specific member created the content. The verification chain goes from DNSSEC to the organisation certificate to the member certificate to the signature.<a href="#section-2.2-2.5.2.1.1" class="pilcrow">¶</a></p>
+<li class="normal" id="section-2.1-2.3.2.1">
+                <p id="section-2.1-2.3.2.1.1">Enables members to produce digital signatures on behalf of their organisation.<a href="#section-2.1-2.3.2.1.1" class="pilcrow">¶</a></p>
 </li>
-              <li class="normal" id="section-2.2-2.5.2.2">
-                <p id="section-2.2-2.5.2.2.1"><strong>Organisation signatures:</strong> Produced directly by organisations using their private keys, these signatures prove that the organisation vouches for the content. When including user attribution, the organisation claims (but does not cryptographically prove) that a specific user created the content.<a href="#section-2.2-2.5.2.2.1" class="pilcrow">¶</a></p>
+              <li class="normal" id="section-2.1-2.3.2.2">
+                <p id="section-2.1-2.3.2.2.1">Signature bundles package digital signatures with all verification material, enabling offline validation.<a href="#section-2.1-2.3.2.2.1" class="pilcrow">¶</a></p>
 </li>
             </ul>
 </li>
         </ol>
-<p id="section-2.2-3">By relying on DNSSEC, DomainAuth inherits its security properties and limitations. The protocol's trust is ultimately rooted in the DNS hierarchy, including the root zone and TLD operators.<a href="#section-2.2-3" class="pilcrow">¶</a></p>
-</section>
-</div>
-<div id="key-components">
-<section id="section-2.3">
-        <h3 id="name-key-components">
-<a href="#section-2.3" class="section-number selfRef">2.3. </a><a href="#name-key-components" class="section-name selfRef">Key Components</a>
-        </h3>
-<p id="section-2.3-1">The DomainAuth protocol consists of the following core components:<a href="#section-2.3-1" class="pilcrow">¶</a></p>
-<ol start="1" type="1" class="normal type-1" id="section-2.3-2">
-<li id="section-2.3-2.1">
-            <p id="section-2.3-2.1.1"><strong>DomainAuth TXT Record:</strong> A DNS TXT record at <code>_domainauth.&lt;domain&gt;</code> containing the organisation's public key information, including key algorithm, key id type, key id, TTL override, and optional service OID.<a href="#section-2.3-2.1.1" class="pilcrow">¶</a></p>
-</li>
-          <li id="section-2.3-2.2">
-            <p id="section-2.3-2.2.1"><strong>Organisation Certificate:</strong> A self-issued X.509 certificate containing the organisation's public key. This certificate serves as the root Certificate Authority (CA) for all certification paths and digital signatures under the organisation's domain.<a href="#section-2.3-2.2.1" class="pilcrow">¶</a></p>
-</li>
-          <li id="section-2.3-2.3">
-            <p id="section-2.3-2.3.1"><strong>Member Certificates:</strong> X.509 certificates issued by the organisation to individual users or bots. User certificates include the username in the Common Name field, whilst bot certificates use the at sign (<code>@</code>) as their Common Name.<a href="#section-2.3-2.3.1" class="pilcrow">¶</a></p>
-</li>
-          <li id="section-2.3-2.4">
-            <p id="section-2.3-2.4.1"><strong>DNSSEC Chain:</strong> A serialised collection of DNS responses that provide cryptographic proof of the authenticity of the organisation's DomainAuth TXT record.<a href="#section-2.3-2.4.1" class="pilcrow">¶</a></p>
-</li>
-          <li id="section-2.3-2.5">
-            <p id="section-2.3-2.5.1"><strong>Member Id Bundle:</strong> A structure containing a member certificate, the issuing organisation certificate, and the DNSSEC chain necessary to verify the organisation's authority.<a href="#section-2.3-2.5.1" class="pilcrow">¶</a></p>
-</li>
-          <li id="section-2.3-2.6">
-            <p id="section-2.3-2.6.1"><strong>Signature Bundle:</strong> A structure containing a CMS SignedData value, the organisation certificate, and the DNSSEC chain. There are two types of bundles, which determine the signer of the SignedData value:<a href="#section-2.3-2.6.1" class="pilcrow">¶</a></p>
+<p id="section-2.1-3">These layers interact differently depending on the signature type:<a href="#section-2.1-3" class="pilcrow">¶</a></p>
 <ul class="normal">
-<li class="normal" id="section-2.3-2.6.2.1">
-                <p id="section-2.3-2.6.2.1.1"><strong>Member Signature Bundles</strong> are signed by a member.<a href="#section-2.3-2.6.2.1.1" class="pilcrow">¶</a></p>
+<li class="normal" id="section-2.1-4.1">
+            <p id="section-2.1-4.1.1">In <strong>member signatures</strong>, the chain of trust flows from the DNSSEC chain to the organisation certificate, then to the member certificate, and finally to the signature, providing end-to-end cryptographic proof of authorship.<a href="#section-2.1-4.1.1" class="pilcrow">¶</a></p>
 </li>
-              <li class="normal" id="section-2.3-2.6.2.2">
-                <p id="section-2.3-2.6.2.2.1"><strong>Organisation Signature Bundles</strong> are signed directly by the organisation, but attributed to a specific member.<a href="#section-2.3-2.6.2.2.1" class="pilcrow">¶</a></p>
+          <li class="normal" id="section-2.1-4.2">
+            <p id="section-2.1-4.2.1">In <strong>organisation signatures</strong>, the chain of trust flows from the DNSSEC chain directly to the organisation certificate and then to the signature, with member attribution provided as a claim rather than a cryptographic proof.<a href="#section-2.1-4.2.1" class="pilcrow">¶</a></p>
 </li>
-            </ul>
-</li>
-        </ol>
-<p id="section-2.3-3">These components work together to create a secure chain of trust from the DNS root to the individual signatures produced by organisation members or by the organisation itself.<a href="#section-2.3-3" class="pilcrow">¶</a></p>
+        </ul>
+<p id="section-2.1-5">Furthermore, Member Id Bundles are a key architectural component that packages the complete chain of trust (DNSSEC chain, organisation certificate, and member certificate) into a single message, enabling members to produce verifiable signatures offline.<a href="#section-2.1-5" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="workflow-summary">
-<section id="section-2.4">
+<section id="section-2.2">
         <h3 id="name-workflow-summary">
-<a href="#section-2.4" class="section-number selfRef">2.4. </a><a href="#name-workflow-summary" class="section-name selfRef">Workflow Summary</a>
+<a href="#section-2.2" class="section-number selfRef">2.2. </a><a href="#name-workflow-summary" class="section-name selfRef">Workflow Summary</a>
         </h3>
-<p id="section-2.4-1">The DomainAuth protocol involves the following key workflows:<a href="#section-2.4-1" class="pilcrow">¶</a></p>
+<p id="section-2.2-1">The DomainAuth protocol involves the following key workflows:<a href="#section-2.2-1" class="pilcrow">¶</a></p>
 <div id="organisation-setup">
-<section id="section-2.4.1">
+<section id="section-2.2.1">
           <h4 id="name-organisation-setup">
-<a href="#section-2.4.1" class="section-number selfRef">2.4.1. </a><a href="#name-organisation-setup" class="section-name selfRef">Organisation Setup</a>
+<a href="#section-2.2.1" class="section-number selfRef">2.2.1. </a><a href="#name-organisation-setup" class="section-name selfRef">Organisation Setup</a>
           </h4>
-<p id="section-2.4.1-1">First, the organisation must have DNSSEC properly configured for its domain.<a href="#section-2.4.1-1" class="pilcrow">¶</a></p>
-<p id="section-2.4.1-2">Then, the organisation must generate an asymmetric key pair and publish its public key information in a DomainAuth TXT record at <code>_domainauth.&lt;domain&gt;</code> as described in <a href="#txt-record" class="auto internal xref">Section 3.2</a>.<a href="#section-2.4.1-2" class="pilcrow">¶</a></p>
-<p id="section-2.4.1-3">Multiple such records are allowed, which can be useful for key rotation or binding different keys to different services.<a href="#section-2.4.1-3" class="pilcrow">¶</a></p>
+<p id="section-2.2.1-1">First, the organisation must have DNSSEC properly configured for its domain.<a href="#section-2.2.1-1" class="pilcrow">¶</a></p>
+<p id="section-2.2.1-2">Then, the organisation must generate an asymmetric key pair and publish its public key information in a DomainAuth TXT record at <code>_domainauth.&lt;domain&gt;</code> as described in <a href="#txt-record" class="auto internal xref">Section 3.2</a>.<a href="#section-2.2.1-2" class="pilcrow">¶</a></p>
+<p id="section-2.2.1-3">Multiple such records are allowed, which can be useful for key rotation or binding different keys to different services.<a href="#section-2.2.1-3" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="certificate-issuance">
-<section id="section-2.4.2">
+<section id="section-2.2.2">
           <h4 id="name-certificate-issuance">
-<a href="#section-2.4.2" class="section-number selfRef">2.4.2. </a><a href="#name-certificate-issuance" class="section-name selfRef">Certificate Issuance</a>
+<a href="#section-2.2.2" class="section-number selfRef">2.2.2. </a><a href="#name-certificate-issuance" class="section-name selfRef">Certificate Issuance</a>
           </h4>
-<p id="section-2.4.2-1">The organisation must self-issue an X.509 certificate using its private key, or reuse an existing certificate valid during the intended validity period.<a href="#section-2.4.2-1" class="pilcrow">¶</a></p>
-<p id="section-2.4.2-2">When issuing a member certificate, the organisation must distribute it along with the organisation certificate. This can be done with a member id bundle as defined in <a href="#member-id-bundle" class="auto internal xref">Section 5</a>, which is desirable in services meant to be used offline as it also contains the DNSSEC chain.<a href="#section-2.4.2-2" class="pilcrow">¶</a></p>
+<p id="section-2.2.2-1">The organisation must self-issue an X.509 certificate using its private key, or reuse an existing certificate valid during the intended validity period.<a href="#section-2.2.2-1" class="pilcrow">¶</a></p>
+<p id="section-2.2.2-2">When issuing a member certificate, the organisation must distribute it along with the organisation certificate. This can be done with a member id bundle as defined in <a href="#member-id-bundle" class="auto internal xref">Section 5</a>, which is desirable in services meant to be used offline as it also contains the DNSSEC chain.<a href="#section-2.2.2-2" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="signature-bundle-production">
-<section id="section-2.4.3">
+<section id="section-2.2.3">
           <h4 id="name-signature-bundle-production">
-<a href="#section-2.4.3" class="section-number selfRef">2.4.3. </a><a href="#name-signature-bundle-production" class="section-name selfRef">Signature Bundle Production</a>
+<a href="#section-2.2.3" class="section-number selfRef">2.2.3. </a><a href="#name-signature-bundle-production" class="section-name selfRef">Signature Bundle Production</a>
           </h4>
-<p id="section-2.4.3-1">A member would produce a signature bundle as follows:<a href="#section-2.4.3-1" class="pilcrow">¶</a></p>
-<ol start="1" type="1" class="normal type-1" id="section-2.4.3-2">
-<li id="section-2.4.3-2.1">
-              <p id="section-2.4.3-2.1.1">Use their private key to produce a CMS SignedData structure, encapsulating the member's certificate.<a href="#section-2.4.3-2.1.1" class="pilcrow">¶</a></p>
+<p id="section-2.2.3-1">A member would produce a signature bundle as follows:<a href="#section-2.2.3-1" class="pilcrow">¶</a></p>
+<ol start="1" type="1" class="normal type-1" id="section-2.2.3-2">
+<li id="section-2.2.3-2.1">
+              <p id="section-2.2.3-2.1.1">Use their private key to produce a CMS SignedData structure, encapsulating the member's certificate.<a href="#section-2.2.3-2.1.1" class="pilcrow">¶</a></p>
 </li>
-            <li id="section-2.4.3-2.2">
-              <p id="section-2.4.3-2.2.1">Obtain the DNSSEC chain from the DomainAuth TXT record. If not provided by the organisation (e.g. in the form of a member id bundle), the member will have to resolve it or retrieve it from a cache.<a href="#section-2.4.3-2.2.1" class="pilcrow">¶</a></p>
+            <li id="section-2.2.3-2.2">
+              <p id="section-2.2.3-2.2.1">Obtain the DNSSEC chain from the DomainAuth TXT record. If not provided by the organisation (e.g. in the form of a member id bundle), the member will have to resolve it or retrieve it from a cache.<a href="#section-2.2.3-2.2.1" class="pilcrow">¶</a></p>
 </li>
-            <li id="section-2.4.3-2.3">
-              <p id="section-2.4.3-2.3.1">Construct a signature bundle with the CMS SignedData structure, the organisation certificate, and the DNSSEC chain.<a href="#section-2.4.3-2.3.1" class="pilcrow">¶</a></p>
+            <li id="section-2.2.3-2.3">
+              <p id="section-2.2.3-2.3.1">Construct a signature bundle with the CMS SignedData structure, the organisation certificate, and the DNSSEC chain.<a href="#section-2.2.3-2.3.1" class="pilcrow">¶</a></p>
 </li>
           </ol>
-<p id="section-2.4.3-3">Similarly, an organisation would produce a signature bundle as follows:<a href="#section-2.4.3-3" class="pilcrow">¶</a></p>
-<ol start="1" type="1" class="normal type-1" id="section-2.4.3-4">
-<li id="section-2.4.3-4.1">
-              <p id="section-2.4.3-4.1.1">Use its private key to produce a CMS SignedData structure, without encapsulating the organisation's certificate.<a href="#section-2.4.3-4.1.1" class="pilcrow">¶</a></p>
+<p id="section-2.2.3-3">Similarly, an organisation would produce a signature bundle as follows:<a href="#section-2.2.3-3" class="pilcrow">¶</a></p>
+<ol start="1" type="1" class="normal type-1" id="section-2.2.3-4">
+<li id="section-2.2.3-4.1">
+              <p id="section-2.2.3-4.1.1">Use its private key to produce a CMS SignedData structure, without encapsulating the organisation's certificate.<a href="#section-2.2.3-4.1.1" class="pilcrow">¶</a></p>
 </li>
-            <li id="section-2.4.3-4.2">
-              <p id="section-2.4.3-4.2.1">Resolve the DNSSEC chain from the DomainAuth TXT record, or use a cached chain valid during the intended validity period.<a href="#section-2.4.3-4.2.1" class="pilcrow">¶</a></p>
+            <li id="section-2.2.3-4.2">
+              <p id="section-2.2.3-4.2.1">Resolve the DNSSEC chain from the DomainAuth TXT record, or use a cached chain valid during the intended validity period.<a href="#section-2.2.3-4.2.1" class="pilcrow">¶</a></p>
 </li>
-            <li id="section-2.4.3-4.3">
-              <p id="section-2.4.3-4.3.1">Construct a signature bundle with the CMS SignedData structure, the organisation certificate, and the DNSSEC chain.<a href="#section-2.4.3-4.3.1" class="pilcrow">¶</a></p>
+            <li id="section-2.2.3-4.3">
+              <p id="section-2.2.3-4.3.1">Construct a signature bundle with the CMS SignedData structure, the organisation certificate, and the DNSSEC chain.<a href="#section-2.2.3-4.3.1" class="pilcrow">¶</a></p>
 </li>
           </ol>
 </section>
 </div>
 <div id="signature-bundle-verification">
-<section id="section-2.4.4">
+<section id="section-2.2.4">
           <h4 id="name-signature-bundle-verificati">
-<a href="#section-2.4.4" class="section-number selfRef">2.4.4. </a><a href="#name-signature-bundle-verificati" class="section-name selfRef">Signature Bundle Verification</a>
+<a href="#section-2.2.4" class="section-number selfRef">2.2.4. </a><a href="#name-signature-bundle-verificati" class="section-name selfRef">Signature Bundle Verification</a>
           </h4>
-<p id="section-2.4.4-1">The verification process involves validating the entire chain of trust as follows:<a href="#section-2.4.4-1" class="pilcrow">¶</a></p>
-<ol start="1" type="1" class="normal type-1" id="section-2.4.4-2">
-<li id="section-2.4.4-2.1">
-              <p id="section-2.4.4-2.1.1">Verify the DNSSEC chain.<a href="#section-2.4.4-2.1.1" class="pilcrow">¶</a></p>
+<p id="section-2.2.4-1">The verification process involves validating the entire chain of trust as follows:<a href="#section-2.2.4-1" class="pilcrow">¶</a></p>
+<ol start="1" type="1" class="normal type-1" id="section-2.2.4-2">
+<li id="section-2.2.4-2.1">
+              <p id="section-2.2.4-2.1.1">Verify the DNSSEC chain.<a href="#section-2.2.4-2.1.1" class="pilcrow">¶</a></p>
 </li>
-            <li id="section-2.4.4-2.2">
-              <p id="section-2.4.4-2.2.1">Verify the organisation certificate using the public key from the TXT record.<a href="#section-2.4.4-2.2.1" class="pilcrow">¶</a></p>
+            <li id="section-2.2.4-2.2">
+              <p id="section-2.2.4-2.2.1">Verify the organisation certificate using the public key from the TXT record.<a href="#section-2.2.4-2.2.1" class="pilcrow">¶</a></p>
 </li>
-            <li id="section-2.4.4-2.3">
-              <p id="section-2.4.4-2.3.1">Determine the certificate of the signer of the CMS SignedData structure. If it is an organisation signature, use the organisation certificate. Otherwise, use the certificate of the member, which is encapsulated in the CMS SignedData structure.<a href="#section-2.4.4-2.3.1" class="pilcrow">¶</a></p>
+            <li id="section-2.2.4-2.3">
+              <p id="section-2.2.4-2.3.1">Determine the certificate of the signer of the CMS SignedData structure. If it is an organisation signature, use the organisation certificate. Otherwise, use the certificate of the member, which is encapsulated in the CMS SignedData structure.<a href="#section-2.2.4-2.3.1" class="pilcrow">¶</a></p>
 </li>
-            <li id="section-2.4.4-2.4">
-              <p id="section-2.4.4-2.4.1">Verify the CMS SignedData structure against the certificate of the signer.<a href="#section-2.4.4-2.4.1" class="pilcrow">¶</a></p>
+            <li id="section-2.2.4-2.4">
+              <p id="section-2.2.4-2.4.1">Verify the CMS SignedData structure against the certificate of the signer.<a href="#section-2.2.4-2.4.1" class="pilcrow">¶</a></p>
 </li>
-            <li id="section-2.4.4-2.5">
-              <p id="section-2.4.4-2.5.1">Verify that the signature is valid for the intended service and time period.<a href="#section-2.4.4-2.5.1" class="pilcrow">¶</a></p>
+            <li id="section-2.2.4-2.5">
+              <p id="section-2.2.4-2.5.1">Verify that the signature is valid for the intended service and time period.<a href="#section-2.2.4-2.5.1" class="pilcrow">¶</a></p>
 </li>
           </ol>
-<p id="section-2.4.4-3">Alternatively, the verifier can start with the digital signature, then verify the organisation certificate and finally the DNSSEC chain.<a href="#section-2.4.4-3" class="pilcrow">¶</a></p>
-<p id="section-2.4.4-4">For more detailed information on the verification process, particularly regarding validity periods, see <a href="#verification-process" class="auto internal xref">Section 6.5.1</a>.<a href="#section-2.4.4-4" class="pilcrow">¶</a></p>
+<p id="section-2.2.4-3">Alternatively, the verifier can start with the digital signature, then verify the organisation certificate and finally the DNSSEC chain.<a href="#section-2.2.4-3" class="pilcrow">¶</a></p>
+<p id="section-2.2.4-4">For more detailed information on the verification process, particularly regarding validity periods, see <a href="#verification-process" class="auto internal xref">Section 6.5.1</a>.<a href="#section-2.2.4-4" class="pilcrow">¶</a></p>
 </section>
 </div>
+</section>
+</div>
+<div id="trust-model">
+<section id="section-2.3">
+        <h3 id="name-trust-model">
+<a href="#section-2.3" class="section-number selfRef">2.3. </a><a href="#name-trust-model" class="section-name selfRef">Trust Model</a>
+        </h3>
+<p id="section-2.3-1">DomainAuth's trust model differs significantly from traditional PKIs such as the one used for TLS:<a href="#section-2.3-1" class="pilcrow">¶</a></p>
+<ol start="1" type="1" class="normal type-1" id="section-2.3-2">
+<li id="section-2.3-2.1">
+            <p id="section-2.3-2.1.1"><strong>Domain-specific trust roots:</strong> Each organisation is only able to issue certificates for itself and its members. Unlike traditional PKIs where any Certificate Authority can issue certificates for any domain, DomainAuth enforces a strict hierarchy where domain control is the only path to certificate issuance.<a href="#section-2.3-2.1.1" class="pilcrow">¶</a></p>
+</li>
+          <li id="section-2.3-2.2">
+            <p id="section-2.3-2.2.1"><strong>DNSSEC as the foundation:</strong> Trust is anchored in DNSSEC, relying on the hierarchical nature of DNS to establish domain control. The chain of trust begins with the DNS root zone and extends through each DNS subdelegation to the organisation's domain.<a href="#section-2.3-2.2.1" class="pilcrow">¶</a></p>
+</li>
+          <li id="section-2.3-2.3">
+            <p id="section-2.3-2.3.1"><strong>Self-contained verification:</strong> Signature bundles include all necessary information (DNSSEC chains, certificates) to allow completely offline verification.<a href="#section-2.3-2.3.1" class="pilcrow">¶</a></p>
+</li>
+          <li id="section-2.3-2.4">
+            <p id="section-2.3-2.4.1"><strong>Short-lived credentials:</strong> DomainAuth favours short-lived credentials over revocation mechanisms, reducing complexity and vulnerability to disconnected operation. However, what constitutes "short-lived" will be entirely dependent on the nature of the service.<a href="#section-2.3-2.4.1" class="pilcrow">¶</a></p>
+</li>
+          <li id="section-2.3-2.5">
+            <p id="section-2.3-2.5.1"><strong>Two signature types with different trust models:</strong><a href="#section-2.3-2.5.1" class="pilcrow">¶</a></p>
+<ul class="normal">
+<li class="normal" id="section-2.3-2.5.2.1">
+                <p id="section-2.3-2.5.2.1.1"><strong>Member signatures:</strong> Produced by members using their private keys, these signatures cryptographically prove that a specific member created the content. The verification chain goes from DNSSEC to the organisation certificate to the member certificate to the signature.<a href="#section-2.3-2.5.2.1.1" class="pilcrow">¶</a></p>
+</li>
+              <li class="normal" id="section-2.3-2.5.2.2">
+                <p id="section-2.3-2.5.2.2.1"><strong>Organisation signatures:</strong> Produced directly by organisations using their private keys, these signatures prove that the organisation vouches for the content. When including user attribution, the organisation claims (but does not cryptographically prove) that a specific user created the content.<a href="#section-2.3-2.5.2.2.1" class="pilcrow">¶</a></p>
+</li>
+            </ul>
+</li>
+        </ol>
+<p id="section-2.3-3">By relying on DNSSEC, DomainAuth inherits its security properties and limitations. The protocol's trust is ultimately rooted in the DNS hierarchy, including the root zone and TLD operators.<a href="#section-2.3-3" class="pilcrow">¶</a></p>
 </section>
 </div>
 </section>

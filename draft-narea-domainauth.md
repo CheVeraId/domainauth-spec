@@ -330,7 +330,7 @@ Note that if an intermediate certificate is assigned a Common Name, it could als
 
 # Member Id Bundle
 
-The Member Id Bundle is a self-contained message that provides all the information needed for a member to produce verifiable signatures. It is serialised using ASN.1 DER encoding with the following structure:
+The Member Id Bundle is a self-contained message that provides all the information needed for a member to produce verifiable signatures. It is serialised using ASN.1 with the following structure:
 
 ~~~~~~~
 MemberIdBundle ::= SEQUENCE {
@@ -356,7 +356,7 @@ Member Id Bundles are not inherently confidential, as they contain only public i
 
 # CMS SignedData Structure
 
-DomainAuth signatures use CMS SignedData structures as defined in {{Section 5 of CMS}}, with specific requirements and recommendations for the DomainAuth protocol:
+DomainAuth signatures use CMS SignedData structures as defined in {{Section 5 of CMS}}, with additional requirements and recommendations:
 
 - `signerInfos` field:
   - There MUST be exactly one `SignerInfo`.
@@ -382,7 +382,7 @@ The member's certificate MUST be included in the `SignedData.certificates` field
 
 ### Organisation Signatures
 
-Organisation signatures are produced by the organisation using its private key or by a delegated signing key. Such signatures are suitable for scenarios where individual member certificate management is impractical, or when the organisation takes direct responsibility for the content.
+Organisation signatures are produced using either the organisation's private key or a delegated signing key. All organisation signatures include mandatory member attribution to indicate content authorship. These signatures are suitable for scenarios where individual member certificate management is impractical or when the organisation takes direct responsibility for content.
 
 The SignerInfo structure MUST include the DomainAuth member attribution in its signed attributes, using the OID `1.3.6.1.4.1.58708.1.2` and the value defined in the ASN.1 structure below:
 
@@ -390,22 +390,15 @@ The SignerInfo structure MUST include the DomainAuth member attribution in its s
 MemberAttribution ::= UTF8String
 ~~~~~~~
 
-The member attribution attribute serves the following purposes:
-
-- **Content authorship:** Indicates which member authored the content, even when the organisation signs directly.
-- **Operational flexibility:** Allows organisations to produce signatures on behalf of members without requiring certificate management.
-- **Accountability:** Maintains a record of which member is responsible for the content, even when using organisation signatures.
-- **Signature type identification:** Enables reliable determination of the signature type during verification.
-
-The member attribution value MUST conform to the same naming conventions defined in {{naming-conventions-and-restrictions}}. For users, this is the username; for bots, this is the at sign (`@`).
+The member attribution value MUST conform to the naming conventions defined in {{naming-conventions-and-restrictions}}. For users, this is the username; for bots, this is the at sign (`@`).
 
 Member attribution is a claim made by the organisation, not cryptographically proven by the member. Verifiers SHOULD present this distinction clearly to end users.
 
 ## Signature Metadata
 
-Each DomainAuth signature includes metadata that binds it to a specific service and validity period. This metadata is included as a signed attribute in the CMS `SignedData` structure, ensuring it cannot be modified without invalidating the signature.
+Each SignedData structure includes metadata that binds the signature to a specific service and validity period. This metadata is included as a signed attribute in the SignerInfo structure.
 
-The signature metadata is encoded as an ASN.1 structure:
+The signature metadata attribute MUST use the OID `1.3.6.1.4.1.58708.1.0` and be encoded as the `SignatureMetadata` ASN.1 structure below:
 
 ~~~~~~~
 SignatureMetadata ::= SEQUENCE {
@@ -422,21 +415,11 @@ DatePeriod ::= SEQUENCE {
 Where:
 
 - `serviceOid` is the Object Identifier of the service for which the signature is valid.
-- `validityPeriod` specifies the time period during which the signature is considered valid. The `start` and `end` fields MUST be expressed in Greenwich Mean Time (GMT) and MUST include seconds. Therefore, both times will follow the format `YYYYMMDDHHMMSSZ`.
-
-The signature metadata serves several key purposes:
-
-1. **Service binding:** Prevents signatures created for one service from being reused in another context.
-2. **Temporal scoping:** Allows signers to limit the validity period of signatures independent of certificate lifetimes.
-3. **Freshness indication:** Provides verifiers with information about when the signature was created.
-
-Verifiers MUST check that the signature metadata's service OID matches the expected service and that the verification time falls within the specified validity period.
-
-The validity period in the signature metadata is intersected with the validity periods of certificates and DNSSEC records to determine the overall validity period of the signature.
+- `validityPeriod` specifies the time period during which the signature is considered valid. The `start` and `end` fields MUST be expressed in Greenwich Mean Time (GMT) and MUST include seconds. Therefore, both times will follow the format `YYYYMMDDHHMMSSZ`. Both the start and end times are inclusive, meaning the signature is valid at exactly the start time and remains valid until exactly the end time.
 
 # Signature Bundle
 
-The Signature Bundle is the primary artefact of the DomainAuth protocol, containing a digital signature and all the information needed to verify it offline. It is serialised using ASN.1 DER encoding with the following structure:
+The Signature Bundle is the primary artefact of the DomainAuth protocol, containing a digital signature and all the information needed to verify it offline. It is serialised using ASN.1 with the following structure:
 
 ~~~~~~~
 SignatureBundle ::= SEQUENCE {
@@ -452,11 +435,11 @@ Where:
 - `version` is the format version, set to `0` (zero) in this version of the specification.
 - `dnssecChain` contains the serialised DNSSEC chain proving the authenticity of the organisation's DomainAuth TXT record.
 - `organisationCertificate` is the organisation's self-issued X.509 certificate.
-- `signature` is a CMS `ContentInfo` containing a `SignedData` structure.
+- `signature` is a CMS `ContentInfo` containing a SignedData structure.
 
 The specific contents of the `signature` field depend on whether it is a member signature or an organisation signature, as detailed in {{signature-types}} and {{cms-signeddata-structure}}.
 
-The signature type is determined by the presence of the member attribution attribute within the `SignedData` structure: if present, it's an organisation signature; if absent, it's a member signature.
+The signature type is determined by the presence of the member attribution attribute within the SignedData structure: if present, it's an organisation signature; if absent, it's a member signature.
 
 For detached signatures, the plaintext content must be provided separately during verification.
 
@@ -487,19 +470,19 @@ The verification of a DomainAuth signature involves multiple steps that validate
    - Confirm that the certificate is self-signed and valid.
    - Check that the certificate has the CA flag set in the Basic Constraints extension.
 5. **Determine the signature type:**
-   - Extract the signed attributes from the CMS `SignedData` structure.
+   - Extract the signed attributes from the CMS SignedData structure.
    - Check for the presence of the member attribution attribute (`1.3.6.1.4.1.58708.1.2`).
    - If the member attribution attribute is present, it is an organisation signature.
    - If the member attribution attribute is absent, it is a member signature.
 6. **Extract and validate certificates:**
    - Extract the organisation certificate from the signature bundle.
-   - Extract the signer's certificate from the CMS `SignedData` structure if present.
+   - Extract the signer's certificate from the CMS SignedData structure if present.
      - For member signatures, the signer's certificate MUST be present.
      - For organisation signatures, the signer's certificate MAY be present if it differs from the organisation certificate.
    - Construct and validate the certification path:
      - The path starts with the organisation certificate from the signature bundle.
      - The path ends with the signer's certificate (which may be the organisation certificate itself for organisation signatures).
-     - Any intermediate certificates in the `SignedData` structure MUST be included in the path.
+     - Any intermediate certificates in the SignedData structure MUST be included in the path.
    - Verify that all certificates in the path are valid at the verification time.
 7. **Validate the signature metadata:**
    - Extract the service OID and validity period from the signature metadata attribute.
@@ -693,6 +676,12 @@ Service developers integrating DomainAuth should adhere to the following guideli
 
 These guidelines help ensure that DomainAuth integrations provide consistent security properties and user experience across different implementations and platforms.
 
+# Serialisation
+
+All data structures in the DomainAuth protocol are defined using Abstract Syntax Notation One (ASN.1), as referenced in {{ASN.1}}.
+
+Implementations MAY use any standard ASN.1 encoding rules for storage and transmission, including Distinguished Encoding Rules (DER) as defined in {{ASN.1}}.
+
 # Implementation Status
 
 This section records the status of known implementations of the protocol defined by this specification at the time of posting of this Internet-Draft, and is based on a proposal described in {{RFC7942}}. The description of implementations in this section is intended to assist the IETF in its decision processes in progressing drafts to RFCs. Please note that the listing of any individual implementation here does not imply endorsement by the IETF. Furthermore, no effort has been spent to verify the information presented here that was supplied by IETF contributors. This is not intended as, and must not be construed to be, a catalog of available implementations or their features. Readers are advised to note that other implementations may exist.
@@ -707,6 +696,7 @@ DomainAuth is the successor to the VeraId protocol as defined in {{VERAID}}, whi
   - Name: DomainAuth uses `_domainauth.example.com.`, whilst VeraId uses `_veraid.example.com.`.
   - Value: DomainAuth requires the value to begin with the number `0`, denoting the version of the DomainAuth TXT record format, followed by a space. This value does not have a version number in VeraId.
 - VeraId does not explicitly support intermediate certificates, and its implementations do not support them. Consequently, the `intermediateCertificates` field in the Member Id Bundle is not present in VeraId.
+- VeraId only allows ASN.1 DER serialisation.
 
 VeraId is led by the author of this document, who intends to deprecate the VeraId specification in favour of DomainAuth and update the reference implementations to fully comply with this specification.
 
@@ -954,7 +944,7 @@ DatePeriod ::= SEQUENCE {
 MemberAttribution ::= UTF8String
 ~~~~~~~
 
-All DomainAuth data structures MUST be encoded using ASN.1 Distinguished Encoding Rules (DER). Implementations MUST reject structures that are not valid DER.
+All DomainAuth data structures MUST be encoded using ASN.1 as specified in {{serialisation}}.
 
 The ASN.1 structures reference standard types from other specifications:
 

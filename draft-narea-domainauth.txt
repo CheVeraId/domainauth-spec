@@ -695,8 +695,7 @@ _domainauth.example.com. IN TXT "0 1 3 dGhpcyBpcyBub3QgYSByZWFsIGtleSBkaWdlc3Q 8
    *  dnssecChain contains the serialised DNSSEC chain proving the
       authenticity of the organisation's DomainAuth TXT record.
 
-   *  organisationCertificate is the organisation's self-issued X.509
-      certificate.
+   *  organisationCertificate is the organisation's X.509 certificate.
 
    *  memberCertificate is the X.509 certificate issued to the member by
       the organisation.
@@ -843,8 +842,7 @@ _domainauth.example.com. IN TXT "0 1 3 dGhpcyBpcyBub3QgYSByZWFsIGtleSBkaWdlc3Q 8
    *  dnssecChain contains the serialised DNSSEC chain proving the
       authenticity of the organisation's DomainAuth TXT record.
 
-   *  organisationCertificate is the organisation's self-issued X.509
-      certificate.
+   *  organisationCertificate is the organisation's X.509 certificate.
 
    *  signature is a CMS ContentInfo containing a SignedData structure.
 

@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2025-03-27T01:12:01.239095+00:00",
+  "timestamp": "2025-03-30T01:17:48.176765+00:00",
   "repo": "CheVeraId/domainauth-spec",
   "labels": [
     {
@@ -231,6 +231,22 @@
       "body": "Recommend IANA's as the only trust anchors for interoperability and security, but allow alternative roots since it doesn't make a difference to us.\n\nPrimary use cases:\n\n- Local testing. For example, we generate alternative DNS roots in the unit tests of VeraId Authority, so we can exercise the entire protocol without mocking the VeraId JavaScript Library.\n- Rotate IANA's public key digests before the underlying DNSSEC implementation updates its own copy of the digests.\n\nAs the author, I should caution that I advise against alternative DNS roots, but I see no technical reason to ban them. See: https://datatracker.ietf.org/doc/html/rfc2826",
       "createdAt": "2025-03-26T11:06:13Z",
       "updatedAt": "2025-03-26T11:15:29Z",
+      "closedAt": null,
+      "comments": []
+    },
+    {
+      "number": 12,
+      "id": "I_kwDOON8AXs6wRsw7",
+      "title": "Create appendix for service design considerations",
+      "url": "https://github.com/CheVeraId/domainauth-spec/issues/12",
+      "state": "OPEN",
+      "author": "gnarea",
+      "authorAssociation": "CONTRIBUTOR",
+      "assignees": [],
+      "labels": [],
+      "body": "What service designers must do, should do and should bear in mind.",
+      "createdAt": "2025-03-28T22:50:19Z",
+      "updatedAt": "2025-03-28T22:50:19Z",
       "closedAt": null,
       "comments": []
     }

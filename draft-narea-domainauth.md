@@ -615,20 +615,12 @@ DomainAuth's security model relies fundamentally on DNSSEC, which introduces spe
    - Implementations MUST securely manage and update DNSSEC trust anchors.
 2. **TLD Control:**
    - Many TLDs are controlled by governments or private entities.
-   - A malicious TLD operator could theoretically issue fraudulent DNSSEC responses.
-   - Organisations SHOULD consider the governance of their TLD when assessing security.
+   - A malicious TLD operator could theoretically issue fraudulent DNSSEC responses for domains under their zone.
+   - Organisations SHOULD consider the governance of their TLD when assessing security, including reviewing the relevant DNSSEC Practice Statement.
 3. **DNSSEC Implementation Vulnerabilities:**
    - Flaws in DNSSEC implementations could affect DomainAuth security.
    - Implementations SHOULD use well-tested, actively maintained DNSSEC libraries.
    - Security updates for DNSSEC components SHOULD be promptly applied.
-4. **DNSSEC Adoption:**
-   - Not all domains support DNSSEC, limiting DomainAuth adoption.
-   - DNSSEC misconfiguration can lead to verification failures.
-   - Organisations MUST properly maintain their DNSSEC configuration.
-5. **Key Rollovers:**
-   - DNSSEC key rollovers at any level can temporarily affect verification.
-   - Organisations SHOULD follow best practices for DNSSEC key management.
-   - Implementations SHOULD handle temporary DNSSEC validation failures gracefully.
 
 Whilst these dependencies introduce potential vulnerabilities, the distributed nature of DNS provides significant security advantages compared to centralised PKI models, particularly for offline verification scenarios.
 

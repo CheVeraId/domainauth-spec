@@ -584,40 +584,7 @@ Services using DomainAuth MAY define additional validation rules beyond the core
   - Such extensions SHOULD be clearly documented.
   - Verifiers MUST check for and validate any required extensions.
 
-Service designers SHOULD document their validation rules comprehensively to ensure consistent implementation across different verifiers. These rules SHOULD be designed to maintain the security properties of the DomainAuth protocol while addressing service-specific requirements.
-
-## Implementation Guidelines
-
-Service developers integrating DomainAuth should adhere to the following guidelines to ensure secure and consistent implementation:
-
-1. **User Interface Considerations:**
-  - Clearly display the full member identifier (user name and domain).
-  - Visually distinguish between user and bot signatures.
-  - Indicate when signatures are expired or otherwise invalid.
-  - Avoid truncating or eliding parts of member identifiers.
-2. **Error Handling:**
-  - Provide clear, actionable error messages for verification failures.
-  - Distinguish between different types of validation errors.
-  - Log detailed information about verification failures for debugging.
-  - Never fall back to less secure verification methods on failure.
-3. **Integration Patterns:**
-  - Separate signature verification from application logic.
-  - Implement verification as a self-contained module or library.
-  - Use dependency injection to allow for testing and component replacement.
-  - Consider signature verification as a security boundary in the application.
-4. **Performance Optimisations:**
-  - Cache verification results when appropriate (respecting validity periods).
-  - Implement efficient ASN.1 parsing routines.
-  - Consider performance implications of cryptographic operations.
-  - Balance security requirements with resource constraints.
-5. **Testing:**
-  - Test with a variety of valid and invalid signatures.
-  - Include edge cases in test scenarios.
-  - Verify correct handling of expired certificates.
-  - Test with different key sizes and algorithms.
-  - Ensure verification fails as expected with tampered data.
-
-These guidelines help ensure that DomainAuth integrations provide consistent security properties and user experience across different implementations and platforms.
+Service designers SHOULD document their validation rules comprehensively to ensure consistent implementation across different verifiers. These rules SHOULD be designed to maintain the security properties of the DomainAuth protocol whilst addressing service-specific requirements.
 
 # Data Serialisation
 

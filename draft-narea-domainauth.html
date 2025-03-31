@@ -1334,15 +1334,20 @@ svg :is([fill="white"], [fill^="#fff"]) {
 </li>
           <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.18">
             <p id="section-toc.1-1.18.1"><a href="#appendix-C" class="auto internal xref">Appendix C</a>.  <a href="#name-service-design-guidance" class="internal xref">Service Design Guidance</a></p>
+<ul class="compact toc ulBare ulEmpty">
+<li class="compact toc ulBare ulEmpty" id="section-toc.1-1.18.2.1">
+                <p id="section-toc.1-1.18.2.1.1"><a href="#appendix-C.1" class="auto internal xref">C.1</a>.  <a href="#name-service-security-considerat" class="internal xref">Service Security Considerations</a></p>
+</li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.18.2.2">
+                <p id="section-toc.1-1.18.2.2.1"><a href="#appendix-C.2" class="auto internal xref">C.2</a>.  <a href="#name-service-user-experience-con" class="internal xref">Service User Experience Considerations</a></p>
+</li>
+            </ul>
 </li>
           <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.19">
-            <p id="section-toc.1-1.19.1"><a href="#appendix-D" class="auto internal xref">Appendix D</a>.  <a href="#name-user-interface-guidelines" class="internal xref">User Interface Guidelines</a></p>
+            <p id="section-toc.1-1.19.1"><a href="#appendix-D" class="auto internal xref">Appendix D</a>.  <a href="#name-acknowledgements" class="internal xref">Acknowledgements</a></p>
 </li>
           <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.20">
-            <p id="section-toc.1-1.20.1"><a href="#appendix-E" class="auto internal xref"></a><a href="#name-acknowledgements" class="internal xref">Acknowledgements</a></p>
-</li>
-          <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.21">
-            <p id="section-toc.1-1.21.1"><a href="#appendix-F" class="auto internal xref"></a><a href="#name-authors-address" class="internal xref">Author's Address</a></p>
+            <p id="section-toc.1-1.20.1"><a href="#appendix-E" class="auto internal xref"></a><a href="#name-authors-address" class="internal xref">Author's Address</a></p>
 </li>
         </ul>
 </nav>
@@ -2838,73 +2843,78 @@ MemberAttribution ::= UTF8String
       <h2 id="name-service-design-guidance">
 <a href="#appendix-C" class="section-number selfRef">Appendix C. </a><a href="#name-service-design-guidance" class="section-name selfRef">Service Design Guidance</a>
       </h2>
-<p id="appendix-C-1">Service designers <span class="bcp14">MUST</span> obtain a unique OID for their service outside the DomainAuth OID arc. E.g. randomly generated ones.
-- Include version information in their OID structure, or include version information in the service plaintexts.<a href="#appendix-C-1" class="pilcrow">¶</a></p>
-<p id="appendix-C-2">Services using DomainAuth <span class="bcp14">MAY</span> define additional validation rules beyond the core protocol requirements. These rules allow services to implement domain-specific security policies.<a href="#appendix-C-2" class="pilcrow">¶</a></p>
-<ol start="1" type="1" class="normal type-1" id="appendix-C-3">
-<li id="appendix-C-3.1">
-          <p id="appendix-C-3.1.1"><strong>TTL Constraints:</strong>
-  - Services <span class="bcp14">MUST</span> specify a maximum TTL for signatures.
-  - The TTL <span class="bcp14">MUST</span> be within the range of 1 second to the limit specified in <a href="#maximum-validity-period" class="auto internal xref">Section 9</a>.
-  - For the minimum TTL, several minutes is recommended to account for clock drift.
-  - Services <span class="bcp14">SHOULD</span> choose the shortest TTL that meets their requirements.<a href="#appendix-C-3.1.1" class="pilcrow">¶</a></p>
+<p id="appendix-C-1">This non-normative section summarises key considerations for system designers creating services that utilise DomainAuth, drawing upon requirements and recommendations specified elsewhere in this document.<a href="#appendix-C-1" class="pilcrow">¶</a></p>
+<p id="appendix-C-2">Service designers are required to obtain a unique OID for their service, distinct from the DomainAuth OID arc (see <a href="#oid-registry" class="auto internal xref">Appendix B</a>), as this OID is embedded within the signature metadata (<a href="#signature-metadata" class="auto internal xref">Section 6.2</a>) and used during verification (<a href="#verification-procedure" class="auto internal xref">Section 7.1</a>). Note that organisations have the option to bind specific keys to a service OID via the DomainAuth TXT record (<a href="#txt-record" class="auto internal xref">Section 3.2</a>), which verifiers are required to account for when matching signatures to keys.<a href="#appendix-C-2" class="pilcrow">¶</a></p>
+<p id="appendix-C-3">Consideration should be given to incorporating version information either within the OID structure or the service-specific plaintext data being signed, to facilitate future upgrades to the plaintext format.<a href="#appendix-C-3" class="pilcrow">¶</a></p>
+<p id="appendix-C-4">Given the reliance on local clocks for offline verification (<a href="#offline-verification-limitations" class="auto internal xref">Section 13.4</a>), services may find it beneficial to establish a minimum signature validity duration (e.g., several minutes) to accommodate potential clock skew. Remember that the overall verification requires temporal overlap between the DNSSEC chain's validity window (influenced by the TTL override <a href="#ttl-override" class="auto internal xref">Section 3.3</a>), the certificate chain's validity (<a href="#x509-certificate-profile" class="auto internal xref">Section 4</a>), and the signature metadata's validity period (<a href="#verification-procedure" class="auto internal xref">Section 7.1</a>).<a href="#appendix-C-4" class="pilcrow">¶</a></p>
+<p id="appendix-C-5">Whilst the protocol mandates ASN.1 DER encoding (<a href="#data-serialisation" class="auto internal xref">Section 10</a>), services have the option to specify alternative ASN.1 encoding rules, but service-level implementations bear the responsibility for any necessary conversions if the underlying DomainAuth library does not support the alternative rules (<a href="#data-serialisation" class="auto internal xref">Section 10</a>).<a href="#appendix-C-5" class="pilcrow">¶</a></p>
+<p id="appendix-C-6">Services need to determine which signature types (Member, Organisation, or both) are appropriate for their use case (<a href="#signature-types" class="auto internal xref">Section 6.1</a>), and whether plaintext will be encapsulated or detached (<a href="#signature-bundle-production" class="auto internal xref">Section 2.2.3</a>).<a href="#appendix-C-6" class="pilcrow">¶</a></p>
+<div id="service-security-considerations">
+<section id="appendix-C.1">
+        <h3 id="name-service-security-considerat">
+<a href="#appendix-C.1" class="section-number selfRef">C.1. </a><a href="#name-service-security-considerat" class="section-name selfRef">Service Security Considerations</a>
+        </h3>
+<p id="appendix-C.1-1">The validity period for signatures, specified in the signature metadata (<a href="#signature-metadata" class="auto internal xref">Section 6.2</a>), is required to adhere to the maximum limit defined in <a href="#maximum-validity-period" class="auto internal xref">Section 9</a>. It is recommended that services define their own maximum validity period, as short as possible for their use case, to enhance security (<a href="#maximum-validity-period" class="auto internal xref">Section 9</a>).<a href="#appendix-C.1-1" class="pilcrow">¶</a></p>
+<p id="appendix-C.1-2">DomainAuth specifies mandatory-to-implement cryptographic algorithms (<a href="#cryptographic-algorithms" class="auto internal xref">Section 8</a>). Services have the option to recommend specific algorithms from the allowed set but cannot mandate unsupported ones.<a href="#appendix-C.1-2" class="pilcrow">¶</a></p>
+<p id="appendix-C.1-3">Services designers should also consider the following potential attack vectors:<a href="#appendix-C.1-3" class="pilcrow">¶</a></p>
+<ul class="normal">
+<li class="normal" id="appendix-C.1-4.1">
+            <p id="appendix-C.1-4.1.1"><strong>Replay attacks:</strong> DomainAuth provides authenticity and integrity but does not inherently mitigate replay attacks. Services may need to implement additional measures, such as nonces, depending on the application's sensitivity to replays (<a href="#offline-verification-limitations" class="auto internal xref">Section 13.4</a>).<a href="#appendix-C.1-4.1.1" class="pilcrow">¶</a></p>
 </li>
-        <li id="appendix-C-3.2">
-          <p id="appendix-C-3.2.1"><strong>Content Type Restrictions:</strong>
-  - Services <span class="bcp14">MAY</span> restrict the types of content that can be signed.
-  - Content type restrictions <span class="bcp14">SHOULD</span> be documented in the service specification.
-  - Verifiers <span class="bcp14">SHOULD</span> check content type compliance during verification.<a href="#appendix-C-3.2.1" class="pilcrow">¶</a></p>
+          <li class="normal" id="appendix-C.1-4.2">
+            <p id="appendix-C.1-4.2.1"><strong>Phishing attacks:</strong> Service logic built upon the verified identity ought to correctly handle the required Unicode representation of domain names, and the specific normalisation and character restrictions applicable to user names (<a href="#phishing-attacks" class="auto internal xref">Section 13.2</a>, <a href="#verification-procedure" class="auto internal xref">Section 7.1</a>). Adhering to guidelines like those in <span>[<a href="#UTR36" class="cite xref">UTR36</a>]</span> for displaying Internationalised Domain Names can help mitigate homograph attacks.<a href="#appendix-C.1-4.2.1" class="pilcrow">¶</a></p>
 </li>
-        <li id="appendix-C-3.3">
-          <p id="appendix-C-3.3.1"><strong>Member Type Restrictions:</strong>
-  - Services <span class="bcp14">MAY</span> restrict which member types can produce valid signatures.
-  - For example, a service might only accept signatures from users (not bots).
-  - Such restrictions <span class="bcp14">SHOULD</span> be enforced during verification.<a href="#appendix-C-3.3.1" class="pilcrow">¶</a></p>
-</li>
-        <li id="appendix-C-3.4">
-          <p id="appendix-C-3.4.1"><strong>Certificate Extensions:</strong>
-  - Services <span class="bcp14">MAY</span> define custom certificate extensions for additional authorisation.
-  - Such extensions <span class="bcp14">SHOULD</span> be clearly documented.
-  - Verifiers <span class="bcp14">MUST</span> check for and validate any required extensions.<a href="#appendix-C-3.4.1" class="pilcrow">¶</a></p>
-</li>
-      </ol>
-<p id="appendix-C-4">Service designers <span class="bcp14">SHOULD</span> document their validation rules comprehensively to ensure consistent implementation across different verifiers. These rules <span class="bcp14">SHOULD</span> be designed to maintain the security properties of the DomainAuth protocol whilst addressing service-specific requirements.<a href="#appendix-C-4" class="pilcrow">¶</a></p>
+        </ul>
+<p id="appendix-C.1-5">Services may define their own requirements for logging signature events, which would complement the organisation-level audit trails recommended in <a href="#audit-trails" class="auto internal xref">Section 13.6</a>.<a href="#appendix-C.1-5" class="pilcrow">¶</a></p>
 </section>
 </div>
-<div id="user-interface-guidelines">
-<section id="appendix-D">
-      <h2 id="name-user-interface-guidelines">
-<a href="#appendix-D" class="section-number selfRef">Appendix D. </a><a href="#name-user-interface-guidelines" class="section-name selfRef">User Interface Guidelines</a>
-      </h2>
-<ol start="1" type="1" class="normal type-1" id="appendix-D-1">
-<li id="appendix-D-1.1">
-          <p id="appendix-D-1.1.1"><strong>Signature Type Indication:</strong> User interfaces <span class="bcp14">SHOULD</span> clearly indicate whether a signature is a member signature or an organisation signature with member attribution. Different visual indicators (icons, colors, labels) <span class="bcp14">SHOULD</span> be used to distinguish between the two signature types.<a href="#appendix-D-1.1.1" class="pilcrow">¶</a></p>
+<div id="service-user-experience-considerations">
+<section id="appendix-C.2">
+        <h3 id="name-service-user-experience-con">
+<a href="#appendix-C.2" class="section-number selfRef">C.2. </a><a href="#name-service-user-experience-con" class="section-name selfRef">Service User Experience Considerations</a>
+        </h3>
+<p id="appendix-C.2-1">Presenting DomainAuth verification results clearly is important for users to understand the basis of trust. Since DomainAuth supports different signature types with distinct trust implications, user interfaces can play a crucial role in conveying this information accurately.<a href="#appendix-C.2-1" class="pilcrow">¶</a></p>
+<p id="appendix-C.2-2">Designers should consider the following points when crafting the user experience for DomainAuth services:<a href="#appendix-C.2-2" class="pilcrow">¶</a></p>
+<ul class="normal">
+<li class="normal" id="appendix-C.2-3.1">
+            <p id="appendix-C.2-3.1.1"><strong>Communicating signature origin.</strong> Consider distinguishing between member signatures (cryptographically proven) and organisation signatures (where the organisation vouches for content with member attribution). For organisation signatures, the attribution may be presented as a claim by the organisation (e.g., "Vouched for by example.com, attributed to alice") rather than implying direct proof from the member. However, the distinction may or may not be relevant depending on the service.<a href="#appendix-C.2-3.1.1" class="pilcrow">¶</a></p>
 </li>
-        <li id="appendix-D-1.2">
-          <p id="appendix-D-1.2.1"><strong>Attribution Presentation:</strong> For organisation signatures, interfaces <span class="bcp14">SHOULD</span> clearly indicate that the member attribution is a claim made by the organisation, not cryptographic proof. Example phrasing: <code>Signed by example.com on behalf of alice</code> rather than <code>Signed by alice of example.com</code>.<a href="#appendix-D-1.2.1" class="pilcrow">¶</a></p>
+          <li class="normal" id="appendix-C.2-3.2">
+            <p id="appendix-C.2-3.2.1"><strong>Representing bot signatures.</strong> When displaying signatures associated with bots, the interface has to attribute the signature to the organisation itself, omitting any specific user name (e.g. "Signed by example.com").<a href="#appendix-C.2-3.2.1" class="pilcrow">¶</a></p>
 </li>
-        <li id="appendix-D-1.3">
-          <p id="appendix-D-1.3.1"><strong>Verification Details:</strong> Interfaces <span class="bcp14">SHOULD</span> provide access to detailed verification information, including the full certification path and validity periods. Advanced users <span class="bcp14">SHOULD</span> be able to view the complete verification process and results.<a href="#appendix-D-1.3.1" class="pilcrow">¶</a></p>
+          <li class="normal" id="appendix-C.2-3.3">
+            <p id="appendix-C.2-3.3.1"><strong>Displaying identifiers safely.</strong><a href="#appendix-C.2-3.3.1" class="pilcrow">¶</a></p>
+<ul class="normal">
+<li class="normal" id="appendix-C.2-3.3.2.1">
+                <p id="appendix-C.2-3.3.2.1.1">Consider implementing IDN homograph attack mitigations, such as those suggested in <span>[<a href="#UTR36" class="cite xref">UTR36</a>]</span>.<a href="#appendix-C.2-3.3.2.1.1" class="pilcrow">¶</a></p>
 </li>
-        <li id="appendix-D-1.4">
-          <p id="appendix-D-1.4.1"><strong>Error Handling:</strong> Clear error messages <span class="bcp14">SHOULD</span> be displayed when verification fails, with appropriate guidance for users. Different error handling may be appropriate for different signature types, reflecting their distinct trust models.<a href="#appendix-D-1.4.1" class="pilcrow">¶</a></p>
+              <li class="normal" id="appendix-C.2-3.3.2.2">
+                <p id="appendix-C.2-3.3.2.2.1">Display the user name exactly as provided by the verification process (which is based on normalised data per <a href="#phishing-attacks" class="auto internal xref">Section 13.2</a>).<a href="#appendix-C.2-3.3.2.2.1" class="pilcrow">¶</a></p>
 </li>
-      </ol>
-<p id="appendix-D-2">Signatures from bots <span class="bcp14">MUST</span> be attributed to the organisation and the member name <span class="bcp14">MUST</span> be absent (not an empty string or at sign).<a href="#appendix-D-2" class="pilcrow">¶</a></p>
-<p id="appendix-D-3">User interfaces <span class="bcp14">MUST NOT</span> truncate user names or domain names, and they <span class="bcp14">MUST</span> visually distinguish the domain portion of identifiers.<a href="#appendix-D-3" class="pilcrow">¶</a></p>
+              <li class="normal" id="appendix-C.2-3.3.2.3">
+                <p id="appendix-C.2-3.3.2.3.1">Avoid truncating user names or domain names to prevent ambiguity or misrepresentation.<a href="#appendix-C.2-3.3.2.3.1" class="pilcrow">¶</a></p>
+</li>
+              <li class="normal" id="appendix-C.2-3.3.2.4">
+                <p id="appendix-C.2-3.3.2.4.1">Visually distinguish the user name part from the domain name part of an identifier (e.g., "alice of example.com", "alice@example.com").<a href="#appendix-C.2-3.3.2.4.1" class="pilcrow">¶</a></p>
+</li>
+            </ul>
+</li>
+        </ul>
+</section>
+</div>
 </section>
 </div>
 <div id="acknowledgements">
-<section id="appendix-E">
+<section id="appendix-D">
       <h2 id="name-acknowledgements">
-<a href="#name-acknowledgements" class="section-name selfRef">Acknowledgements</a>
+<a href="#appendix-D" class="section-number selfRef">Appendix D. </a><a href="#name-acknowledgements" class="section-name selfRef">Acknowledgements</a>
       </h2>
-<p id="appendix-E-1">The author is grateful to the Open Technology Fund for funding the implementation of VeraId, which heavily influenced the final specification of the VeraId protocol, and therefore DomainAuth as its successor.<a href="#appendix-E-1" class="pilcrow">¶</a></p>
-<p id="appendix-E-2">The author would also like to thank the authors of <span>[<a href="#DNS" class="cite xref">DNS</a>]</span>, <span>[<a href="#DNSSEC" class="cite xref">DNSSEC</a>]</span>, <span>[<a href="#X.509" class="cite xref">X.509</a>]</span>, <span>[<a href="#CMS" class="cite xref">CMS</a>]</span>, and <span>[<a href="#ASN.1" class="cite xref">ASN.1</a>]</span>, which underpin the present protocol.<a href="#appendix-E-2" class="pilcrow">¶</a></p>
+<p id="appendix-D-1">The author is grateful to the Open Technology Fund for funding the implementation of VeraId, which heavily influenced the final specification of the VeraId protocol, and therefore DomainAuth as its successor.<a href="#appendix-D-1" class="pilcrow">¶</a></p>
+<p id="appendix-D-2">The author would also like to thank the authors of <span>[<a href="#DNS" class="cite xref">DNS</a>]</span>, <span>[<a href="#DNSSEC" class="cite xref">DNSSEC</a>]</span>, <span>[<a href="#X.509" class="cite xref">X.509</a>]</span>, <span>[<a href="#CMS" class="cite xref">CMS</a>]</span>, and <span>[<a href="#ASN.1" class="cite xref">ASN.1</a>]</span>, which underpin the present protocol.<a href="#appendix-D-2" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="authors-addresses">
-<section id="appendix-F">
+<section id="appendix-E">
       <h2 id="name-authors-address">
 <a href="#name-authors-address" class="section-name selfRef">Author's Address</a>
       </h2>

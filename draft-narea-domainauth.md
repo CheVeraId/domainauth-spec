@@ -49,6 +49,14 @@ normative:
   RFC4056:
   RFC6234:
   RFC8017:
+  RFC8265:
+  UTR36:
+    title: "UTR #36: Unicode Security Considerations"
+    target: https://www.unicode.org/reports/tr36/tr36-15.html
+    author:
+      - name: Mark Davis
+      - name: Michel Suignard
+    date: 2014-09-19
 
 informative:
   VERAID:
@@ -115,7 +123,7 @@ DomainAuth is designed with the following primary goals:
 
 1. **Decentralisation:** The protocol avoids the need for centralised authorities beyond the DNS hierarchy itself. Each domain owner has exclusive control over their domain and its associated members.
 2. **Offline verification:** All signature bundles contain sufficient information to be independently verified without requiring external network queries.
-3. **User-friendly identifiers:** Identities are based on familiar, human-readable domain names and usernames rather than cryptographically-derived values.
+3. **User-friendly identifiers:** Identities are based on familiar, human-readable domain names and user names rather than cryptographically-derived values.
 4. **Build upon well-established standards:** DNSSEC for securing DNS responses, X.509 for certificate management, and CMS for digital signatures.
 5. **Minimal trust assumptions:** The protocol reduces trust dependencies by leveraging DNSSEC, limiting potential credential issuance attacks to DNS hierarchy operators (primarily IANA and TLD operators).
 6. **Contextual binding:** Signatures are bound to specific "services", preventing their unauthorised use across different contexts.
@@ -128,8 +136,8 @@ The following terms are used:
 
 - **Organisation:** A domain name that participates in the DomainAuth protocol by configuring DNSSEC and publishing the necessary DomainAuth TXT record(s).
 - **Member:** An entity that produces signatures on behalf of an organisation. There are two types of members:
-  - **User:** A member identified by a unique username within an organisation.
-  - **Bot:** A special type of member that acts on behalf of the organisation as a whole. Bots do not have usernames.
+  - **User:** A member identified by a unique user name within an organisation.
+  - **Bot:** A special type of member that acts on behalf of the organisation as a whole. Bots do not have user names.
 - **DomainAuth TXT Record:** A DNS TXT record at `_domainauth.<domain>` that contains the organisation's public key information.
 - **Organisation Certificate:** A self-signed X.509 certificate owned by an organisation that serves as the root of trust for all signatures produced on behalf of that organisation.
 - **Member Certificate:** An X.509 certificate issued by the organisation certificate to a member.
@@ -389,7 +397,7 @@ The SignerInfo structure MUST include the DomainAuth member attribution in its s
 MemberAttribution ::= UTF8String
 ~~~~~~~
 
-The member attribution value MUST conform to the naming conventions defined in {{naming-conventions-and-restrictions}}. For users, this is the username; for bots, this is the at sign (`@`).
+The member attribution value MUST conform to the naming conventions defined in {{naming-considerations}}. For users, this is the user name; for bots, this is the at sign (`@`).
 
 Member attribution is a claim made by the organisation, not cryptographically proven by the member. Verifiers SHOULD present this distinction clearly to end users.
 
@@ -474,7 +482,7 @@ Implementations MUST verify every syntactically-valid signature bundle as follow
    - The service OID MUST match that specified by the verifier.
    - The validity period MUST overlap with the verification time window, the X.509 certificate chain and the DNSSEC chain for at least one second.
 
-   If present, the member attribution attribute MUST be in the signed attributes of the SignerInfo structure, and its value MUST be a valid member name as specified in {{naming-conventions-and-restrictions}}. If absent, the signer MUST be a member whose certificate meets the requirements specified in {{member-certificate}}.
+   If present, the member attribution attribute MUST be in the signed attributes of the SignerInfo structure, and its value MUST be a valid member name as specified in {{naming-considerations}}. If absent, the signer MUST be a member whose certificate meets the requirements specified in {{member-certificate}}.
 6. **Produce verification output:**
     - The organisation name without a trailing dot (e.g. `example.com`).
     - The member name (for users only, not for bots):
@@ -523,28 +531,15 @@ Digital signatures MUST NOT have a validity period greater than 7,776,000 second
 
 Similarly, verifiers MUST NOT allow a validity period greater than this limit when verifying signatures over a time period.
 
-# Naming Conventions and Restrictions
+# Naming Considerations
 
-DomainAuth imposes specific restrictions on member names to prevent phishing attacks and ensure consistent processing across implementations:
+DomainAuth imposes specific restrictions to prevent phishing attacks and ensure consistent processing across implementations:
 
-1. **User Names:**
-  - MUST NOT contain at signs (`@`).
-  - MUST NOT contain whitespace characters other than simple spaces (e.g., no tabs, newlines, carriage returns).
-  - SHOULD be chosen to avoid visual confusion with other usernames.
-  - SHOULD use consistent case and normalisation forms.
-2. **Display Considerations:**
-  - User interfaces SHOULD NOT truncate usernames or domain names.
-  - Implementations SHOULD display member identifiers in full to avoid confusion.
-  - Implementations SHOULD highlight or visually distinguish the domain portion of identifiers.
-3. **Homographic Attack Prevention:**
-  - Implementations SHOULD implement mitigations against homographic attacks.
-  - Domain names SHOULD be displayed using Punycode when they contain non-ASCII characters.
-  - Implementations MAY refuse to process signatures from domains with mixed scripts.
-4. **Bot Names:**
-  - MUST use the at sign (`@`) as the CommonName in certificates.
-  - When displaying bot identities, implementations SHOULD clearly indicate they represent the organisation rather than an individual.
+1. User names MUST be normalised to the PRECIS UsernameCaseMapped profile as specified in {{Section 3.3 of RFC8265}}, but spaces (U+0020) and at signs (U+0040) MUST NOT be allowed.
+2. Signatures from bots MUST be attributed to the organisation and the member name MUST be absent (not an empty string or at sign).
+3. User interfaces MUST NOT truncate user names or domain names, and they MUST visually distinguish the domain portion of identifiers.
 
-Organisations SHOULD establish and enforce consistent naming policies for their users to maintain clarity and prevent confusion.
+See also {{idn-homograph-attacks}} for guidelines on mitigating IDN homograph attacks.
 
 # Services
 
@@ -600,7 +595,7 @@ Service designers SHOULD document their validation rules comprehensively to ensu
 Service developers integrating DomainAuth should adhere to the following guidelines to ensure secure and consistent implementation:
 
 1. **User Interface Considerations:**
-  - Clearly display the full member identifier (username and domain).
+  - Clearly display the full member identifier (user name and domain).
   - Visually distinguish between user and bot signatures.
   - Indicate when signatures are expired or otherwise invalid.
   - Avoid truncating or eliding parts of member identifiers.
@@ -654,6 +649,7 @@ DomainAuth is the successor to the VeraId protocol as defined in {{VERAID}}, whi
 - Cryptographic algorithms:
   - Signature algorithms: VeraId only supports RSA-PSS with modulus sizes of 2048, 3072, and 4096 bits. Support for EdDSA signatures was considered, but not implemented due to lack of support in the target Hardware Security Modules (HSMs), as documented in https://issuetracker.google.com/issues/232422224.
   - Hash functions: VeraId only supports SHA-256, SHA-384, and SHA-512.
+- VeraId only disallows at-signs (`@`), tabs, and new lines in user names. Otherwise, user names are case-sensitive and may contain spaces in VeraId.
 
 VeraId is led by the author of this document, who intends to deprecate the VeraId specification in favour of DomainAuth and update the reference implementations to fully comply with this specification.
 
@@ -733,30 +729,9 @@ DomainAuth's security model relies fundamentally on DNSSEC, which introduces spe
 
 Whilst these dependencies introduce potential vulnerabilities, the distributed nature of DNS provides significant security advantages compared to centralised PKI models, particularly for offline verification scenarios.
 
-## Homographic and Character Encoding Attacks
+## IDN Homograph Attacks
 
-User-friendly identifiers like domain names and usernames are susceptible to visual spoofing attacks:
-
-1. **Homographic Attacks:**
-   - Different Unicode characters that appear visually similar can be used for spoofing.
-   - For example, Cyrillic "о" (U+043E) looks similar to Latin "o" (U+006F).
-   - Implementations SHOULD detect and warn about mixed-script identifiers.
-   - User interfaces SHOULD display domain names in Punycode when they contain non-ASCII characters.
-2. **Normalisation Issues:**
-   - Different Unicode normalisation forms can represent the same visual character.
-   - Implementations SHOULD normalise identifiers before display or comparison.
-   - The preferred normalisation form is NFC (Normalization Form C).
-3. **Bidirectional Text:**
-   - Bidirectional text can be manipulated to hide or reorder parts of identifiers.
-   - Implementations SHOULD apply the Unicode Bidirectional Algorithm correctly.
-   - User interfaces SHOULD clearly indicate reading direction for identifiers.
-4. **Display Guidelines:**
-   - User interfaces MUST NOT truncate usernames, domain names, or identifiers.
-   - Identifiers SHOULD be displayed with a distinct font or style.
-   - Domain and username portions SHOULD be visually differentiated.
-   - Implementations SHOULD consider using visual security indicators.
-
-These attacks primarily affect human perception rather than cryptographic verification. Proper implementation of user interfaces is critical to help users correctly identify the source of signed content.
+To mitigate Internationalised Domain Name (IDN) homograph attacks, user interfaces SHOULD adopt the guidelines from Section 2.11.2 (Recommendations for User Agents) of {{UTR36}}.
 
 ## Domain Ownership Changes
 

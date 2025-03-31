@@ -10,6 +10,7 @@ Refer to [`rationale.md`](./rationale.md) for additional context on key design d
 
 - British spelling is to be used (e.g. "artefacts", "serialisation", "licence") for consistency with the original draft.
 - The abbreviation for "identifier" is spelt "id", not "ID"; it's an abbreviation, not an acronym. However, terms that already contain "ID" are exempt (e.g. "OID", "OpenID").
+- "User name" is spelt as two words for consistency with "member name", which encompases the `@` as the name of any bot.
 
 ## Usage
 

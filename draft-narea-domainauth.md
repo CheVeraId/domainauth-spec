@@ -581,6 +581,8 @@ The following reference implementations of VeraId are available, all implemented
    - Coverage: Uses the VeraId JavaScript Library to issue Member Id Bundles and Organisation Signature Bundles.
    - Licensing: Business Source License version 1.1.
 
+To facilitate functional testing, VeraId implementations use a dedicated VeraId TXT record at `lib-testing.veraid.net`, bound to the test service ({{test-service}}), whose organisation's private key is publicly available in the source code for the projects above.
+
 ## Letro
 
 {{LETRO}} is the only VeraId service as of this writing.

@@ -2,7 +2,7 @@
 <html lang="en" class="Internet-Draft">
 <head>
 <meta charset="utf-8">
-<meta content="Common,Cyrillic,Latin" name="scripts">
+<meta content="Common,Latin" name="scripts">
 <meta content="initial-scale=1.0" name="viewport">
 <title>DomainAuth Version 1</title>
 <meta content="Gus Narea" name="author">
@@ -1265,7 +1265,7 @@ svg :is([fill="white"], [fill^="#fff"]) {
             <p id="section-toc.1-1.9.1"><a href="#section-9" class="auto internal xref">9</a>.  <a href="#name-maximum-validity-period" class="internal xref">Maximum Validity Period</a></p>
 </li>
           <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.10">
-            <p id="section-toc.1-1.10.1"><a href="#section-10" class="auto internal xref">10</a>. <a href="#name-naming-conventions-and-rest" class="internal xref">Naming Conventions and Restrictions</a></p>
+            <p id="section-toc.1-1.10.1"><a href="#section-10" class="auto internal xref">10</a>. <a href="#name-naming-considerations" class="internal xref">Naming Considerations</a></p>
 </li>
           <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.11">
             <p id="section-toc.1-1.11.1"><a href="#section-11" class="auto internal xref">11</a>. <a href="#name-services" class="internal xref">Services</a></p>
@@ -1308,7 +1308,7 @@ svg :is([fill="white"], [fill^="#fff"]) {
                 <p id="section-toc.1-1.14.2.1.1"><a href="#section-14.1" class="auto internal xref">14.1</a>.  <a href="#name-dnssec-dependency" class="internal xref">DNSSEC Dependency</a></p>
 </li>
               <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.14.2.2">
-                <p id="section-toc.1-1.14.2.2.1"><a href="#section-14.2" class="auto internal xref">14.2</a>.  <a href="#name-homographic-and-character-e" class="internal xref">Homographic and Character Encoding Attacks</a></p>
+                <p id="section-toc.1-1.14.2.2.1"><a href="#section-14.2" class="auto internal xref">14.2</a>.  <a href="#name-idn-homograph-attacks" class="internal xref">IDN Homograph Attacks</a></p>
 </li>
               <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.14.2.3">
                 <p id="section-toc.1-1.14.2.3.1"><a href="#section-14.3" class="auto internal xref">14.3</a>.  <a href="#name-domain-ownership-changes" class="internal xref">Domain Ownership Changes</a></p>
@@ -1421,7 +1421,7 @@ svg :is([fill="white"], [fill^="#fff"]) {
             <p id="section-1.2-2.2.1"><strong>Offline verification:</strong> All signature bundles contain sufficient information to be independently verified without requiring external network queries.<a href="#section-1.2-2.2.1" class="pilcrow">¶</a></p>
 </li>
           <li id="section-1.2-2.3">
-            <p id="section-1.2-2.3.1"><strong>User-friendly identifiers:</strong> Identities are based on familiar, human-readable domain names and usernames rather than cryptographically-derived values.<a href="#section-1.2-2.3.1" class="pilcrow">¶</a></p>
+            <p id="section-1.2-2.3.1"><strong>User-friendly identifiers:</strong> Identities are based on familiar, human-readable domain names and user names rather than cryptographically-derived values.<a href="#section-1.2-2.3.1" class="pilcrow">¶</a></p>
 </li>
           <li id="section-1.2-2.4">
             <p id="section-1.2-2.4.1"><strong>Build upon well-established standards:</strong> DNSSEC for securing DNS responses, X.509 for certificate management, and CMS for digital signatures.<a href="#section-1.2-2.4.1" class="pilcrow">¶</a></p>
@@ -1453,10 +1453,10 @@ appear in all capitals, as shown here.<a href="#section-1.3-1" class="pilcrow">�
             <p id="section-1.3-3.2.1"><strong>Member:</strong> An entity that produces signatures on behalf of an organisation. There are two types of members:<a href="#section-1.3-3.2.1" class="pilcrow">¶</a></p>
 <ul class="normal">
 <li class="normal" id="section-1.3-3.2.2.1">
-                <p id="section-1.3-3.2.2.1.1"><strong>User:</strong> A member identified by a unique username within an organisation.<a href="#section-1.3-3.2.2.1.1" class="pilcrow">¶</a></p>
+                <p id="section-1.3-3.2.2.1.1"><strong>User:</strong> A member identified by a unique user name within an organisation.<a href="#section-1.3-3.2.2.1.1" class="pilcrow">¶</a></p>
 </li>
               <li class="normal" id="section-1.3-3.2.2.2">
-                <p id="section-1.3-3.2.2.2.1"><strong>Bot:</strong> A special type of member that acts on behalf of the organisation as a whole. Bots do not have usernames.<a href="#section-1.3-3.2.2.2.1" class="pilcrow">¶</a></p>
+                <p id="section-1.3-3.2.2.2.1"><strong>Bot:</strong> A special type of member that acts on behalf of the organisation as a whole. Bots do not have user names.<a href="#section-1.3-3.2.2.2.1" class="pilcrow">¶</a></p>
 </li>
             </ul>
 </li>
@@ -1972,7 +1972,7 @@ MemberIdBundle ::= SEQUENCE {
 MemberAttribution ::= UTF8String
 </pre><a href="#section-6.1.2-3" class="pilcrow">¶</a>
 </div>
-<p id="section-6.1.2-4">The member attribution value <span class="bcp14">MUST</span> conform to the naming conventions defined in <a href="#naming-conventions-and-restrictions" class="auto internal xref">Section 10</a>. For users, this is the username; for bots, this is the at sign (<code>@</code>).<a href="#section-6.1.2-4" class="pilcrow">¶</a></p>
+<p id="section-6.1.2-4">The member attribution value <span class="bcp14">MUST</span> conform to the naming conventions defined in <a href="#naming-considerations" class="auto internal xref">Section 10</a>. For users, this is the user name; for bots, this is the at sign (<code>@</code>).<a href="#section-6.1.2-4" class="pilcrow">¶</a></p>
 <p id="section-6.1.2-5">Member attribution is a claim made by the organisation, not cryptographically proven by the member. Verifiers <span class="bcp14">SHOULD</span> present this distinction clearly to end users.<a href="#section-6.1.2-5" class="pilcrow">¶</a></p>
 </section>
 </div>
@@ -2128,7 +2128,7 @@ The signature metadata attribute <span class="bcp14">MUST</span> be present in t
 </li>
             </ul>
 <p id="section-7.1-4.5.4">
-If present, the member attribution attribute <span class="bcp14">MUST</span> be in the signed attributes of the SignerInfo structure, and its value <span class="bcp14">MUST</span> be a valid member name as specified in <a href="#naming-conventions-and-restrictions" class="auto internal xref">Section 10</a>. If absent, the signer <span class="bcp14">MUST</span> be a member whose certificate meets the requirements specified in <a href="#member-certificate" class="auto internal xref">Section 4.2</a>.<a href="#section-7.1-4.5.4" class="pilcrow">¶</a></p>
+If present, the member attribution attribute <span class="bcp14">MUST</span> be in the signed attributes of the SignerInfo structure, and its value <span class="bcp14">MUST</span> be a valid member name as specified in <a href="#naming-considerations" class="auto internal xref">Section 10</a>. If absent, the signer <span class="bcp14">MUST</span> be a member whose certificate meets the requirements specified in <a href="#member-certificate" class="auto internal xref">Section 4.2</a>.<a href="#section-7.1-4.5.4" class="pilcrow">¶</a></p>
 </li>
           <li id="section-7.1-4.6">
             <p id="section-7.1-4.6.1"><strong>Produce verification output:</strong><a href="#section-7.1-4.6.1" class="pilcrow">¶</a></p>
@@ -2218,39 +2218,24 @@ If present, the member attribution attribute <span class="bcp14">MUST</span> be 
 <p id="section-9-2">Similarly, verifiers <span class="bcp14">MUST NOT</span> allow a validity period greater than this limit when verifying signatures over a time period.<a href="#section-9-2" class="pilcrow">¶</a></p>
 </section>
 </div>
-<div id="naming-conventions-and-restrictions">
+<div id="naming-considerations">
 <section id="section-10">
-      <h2 id="name-naming-conventions-and-rest">
-<a href="#section-10" class="section-number selfRef">10. </a><a href="#name-naming-conventions-and-rest" class="section-name selfRef">Naming Conventions and Restrictions</a>
+      <h2 id="name-naming-considerations">
+<a href="#section-10" class="section-number selfRef">10. </a><a href="#name-naming-considerations" class="section-name selfRef">Naming Considerations</a>
       </h2>
-<p id="section-10-1">DomainAuth imposes specific restrictions on member names to prevent phishing attacks and ensure consistent processing across implementations:<a href="#section-10-1" class="pilcrow">¶</a></p>
+<p id="section-10-1">DomainAuth imposes specific restrictions to prevent phishing attacks and ensure consistent processing across implementations:<a href="#section-10-1" class="pilcrow">¶</a></p>
 <ol start="1" type="1" class="normal type-1" id="section-10-2">
 <li id="section-10-2.1">
-          <p id="section-10-2.1.1"><strong>User Names:</strong>
-  - <span class="bcp14">MUST NOT</span> contain at signs (<code>@</code>).
-  - <span class="bcp14">MUST NOT</span> contain whitespace characters other than simple spaces (e.g., no tabs, newlines, carriage returns).
-  - <span class="bcp14">SHOULD</span> be chosen to avoid visual confusion with other usernames.
-  - <span class="bcp14">SHOULD</span> use consistent case and normalisation forms.<a href="#section-10-2.1.1" class="pilcrow">¶</a></p>
+          <p id="section-10-2.1.1">User names <span class="bcp14">MUST</span> be normalised to the PRECIS UsernameCaseMapped profile as specified in <span><a href="https://rfc-editor.org/rfc/rfc8265#section-3.3" class="relref">Section 3.3</a> of [<a href="#RFC8265" class="cite xref">RFC8265</a>]</span>, but spaces (U+0020) and at signs (U+0040) <span class="bcp14">MUST NOT</span> be allowed.<a href="#section-10-2.1.1" class="pilcrow">¶</a></p>
 </li>
         <li id="section-10-2.2">
-          <p id="section-10-2.2.1"><strong>Display Considerations:</strong>
-  - User interfaces <span class="bcp14">SHOULD NOT</span> truncate usernames or domain names.
-  - Implementations <span class="bcp14">SHOULD</span> display member identifiers in full to avoid confusion.
-  - Implementations <span class="bcp14">SHOULD</span> highlight or visually distinguish the domain portion of identifiers.<a href="#section-10-2.2.1" class="pilcrow">¶</a></p>
+          <p id="section-10-2.2.1">Signatures from bots <span class="bcp14">MUST</span> be attributed to the organisation and the member name <span class="bcp14">MUST</span> be absent (not an empty string or at sign).<a href="#section-10-2.2.1" class="pilcrow">¶</a></p>
 </li>
         <li id="section-10-2.3">
-          <p id="section-10-2.3.1"><strong>Homographic Attack Prevention:</strong>
-  - Implementations <span class="bcp14">SHOULD</span> implement mitigations against homographic attacks.
-  - Domain names <span class="bcp14">SHOULD</span> be displayed using Punycode when they contain non-ASCII characters.
-  - Implementations <span class="bcp14">MAY</span> refuse to process signatures from domains with mixed scripts.<a href="#section-10-2.3.1" class="pilcrow">¶</a></p>
-</li>
-        <li id="section-10-2.4">
-          <p id="section-10-2.4.1"><strong>Bot Names:</strong>
-  - <span class="bcp14">MUST</span> use the at sign (<code>@</code>) as the CommonName in certificates.
-  - When displaying bot identities, implementations <span class="bcp14">SHOULD</span> clearly indicate they represent the organisation rather than an individual.<a href="#section-10-2.4.1" class="pilcrow">¶</a></p>
+          <p id="section-10-2.3.1">User interfaces <span class="bcp14">MUST NOT</span> truncate user names or domain names, and they <span class="bcp14">MUST</span> visually distinguish the domain portion of identifiers.<a href="#section-10-2.3.1" class="pilcrow">¶</a></p>
 </li>
       </ol>
-<p id="section-10-3">Organisations <span class="bcp14">SHOULD</span> establish and enforce consistent naming policies for their users to maintain clarity and prevent confusion.<a href="#section-10-3" class="pilcrow">¶</a></p>
+<p id="section-10-3">See also <a href="#idn-homograph-attacks" class="auto internal xref">Section 14.2</a> for guidelines on mitigating IDN homograph attacks.<a href="#section-10-3" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="services">
@@ -2338,7 +2323,7 @@ If present, the member attribution attribute <span class="bcp14">MUST</span> be 
 <ol start="1" type="1" class="normal type-1" id="section-11.3-2">
 <li id="section-11.3-2.1">
             <p id="section-11.3-2.1.1"><strong>User Interface Considerations:</strong>
-  - Clearly display the full member identifier (username and domain).
+  - Clearly display the full member identifier (user name and domain).
   - Visually distinguish between user and bot signatures.
   - Indicate when signatures are expired or otherwise invalid.
   - Avoid truncating or eliding parts of member identifiers.<a href="#section-11.3-2.1.1" class="pilcrow">¶</a></p>
@@ -2425,6 +2410,9 @@ If present, the member attribution attribute <span class="bcp14">MUST</span> be 
               <p id="section-13-5.4.2.2.1">Hash functions: VeraId only supports SHA-256, SHA-384, and SHA-512.<a href="#section-13-5.4.2.2.1" class="pilcrow">¶</a></p>
 </li>
           </ul>
+</li>
+        <li class="normal" id="section-13-5.5">
+          <p id="section-13-5.5.1">VeraId only disallows at-signs (<code>@</code>), tabs, and new lines in user names. Otherwise, user names are case-sensitive and may contain spaces in VeraId.<a href="#section-13-5.5.1" class="pilcrow">¶</a></p>
 </li>
       </ul>
 <p id="section-13-6">VeraId is led by the author of this document, who intends to deprecate the VeraId specification in favour of DomainAuth and update the reference implementations to fully comply with this specification.<a href="#section-13-6" class="pilcrow">¶</a></p>
@@ -2649,77 +2637,12 @@ If present, the member attribution attribute <span class="bcp14">MUST</span> be 
 <p id="section-14.1-3">Whilst these dependencies introduce potential vulnerabilities, the distributed nature of DNS provides significant security advantages compared to centralised PKI models, particularly for offline verification scenarios.<a href="#section-14.1-3" class="pilcrow">¶</a></p>
 </section>
 </div>
-<div id="homographic-and-character-encoding-attacks">
+<div id="idn-homograph-attacks">
 <section id="section-14.2">
-        <h3 id="name-homographic-and-character-e">
-<a href="#section-14.2" class="section-number selfRef">14.2. </a><a href="#name-homographic-and-character-e" class="section-name selfRef">Homographic and Character Encoding Attacks</a>
+        <h3 id="name-idn-homograph-attacks">
+<a href="#section-14.2" class="section-number selfRef">14.2. </a><a href="#name-idn-homograph-attacks" class="section-name selfRef">IDN Homograph Attacks</a>
         </h3>
-<p id="section-14.2-1">User-friendly identifiers like domain names and usernames are susceptible to visual spoofing attacks:<a href="#section-14.2-1" class="pilcrow">¶</a></p>
-<ol start="1" type="1" class="normal type-1" id="section-14.2-2">
-<li id="section-14.2-2.1">
-            <p id="section-14.2-2.1.1"><strong>Homographic Attacks:</strong><a href="#section-14.2-2.1.1" class="pilcrow">¶</a></p>
-<ul class="normal">
-<li class="normal" id="section-14.2-2.1.2.1">
-                <p id="section-14.2-2.1.2.1.1">Different Unicode characters that appear visually similar can be used for spoofing.<a href="#section-14.2-2.1.2.1.1" class="pilcrow">¶</a></p>
-</li>
-              <li class="normal" id="section-14.2-2.1.2.2">
-                <p id="section-14.2-2.1.2.2.1">For example, Cyrillic "о" (U+043E) looks similar to Latin "o" (U+006F).<a href="#section-14.2-2.1.2.2.1" class="pilcrow">¶</a></p>
-</li>
-              <li class="normal" id="section-14.2-2.1.2.3">
-                <p id="section-14.2-2.1.2.3.1">Implementations <span class="bcp14">SHOULD</span> detect and warn about mixed-script identifiers.<a href="#section-14.2-2.1.2.3.1" class="pilcrow">¶</a></p>
-</li>
-              <li class="normal" id="section-14.2-2.1.2.4">
-                <p id="section-14.2-2.1.2.4.1">User interfaces <span class="bcp14">SHOULD</span> display domain names in Punycode when they contain non-ASCII characters.<a href="#section-14.2-2.1.2.4.1" class="pilcrow">¶</a></p>
-</li>
-            </ul>
-</li>
-          <li id="section-14.2-2.2">
-            <p id="section-14.2-2.2.1"><strong>Normalisation Issues:</strong><a href="#section-14.2-2.2.1" class="pilcrow">¶</a></p>
-<ul class="normal">
-<li class="normal" id="section-14.2-2.2.2.1">
-                <p id="section-14.2-2.2.2.1.1">Different Unicode normalisation forms can represent the same visual character.<a href="#section-14.2-2.2.2.1.1" class="pilcrow">¶</a></p>
-</li>
-              <li class="normal" id="section-14.2-2.2.2.2">
-                <p id="section-14.2-2.2.2.2.1">Implementations <span class="bcp14">SHOULD</span> normalise identifiers before display or comparison.<a href="#section-14.2-2.2.2.2.1" class="pilcrow">¶</a></p>
-</li>
-              <li class="normal" id="section-14.2-2.2.2.3">
-                <p id="section-14.2-2.2.2.3.1">The preferred normalisation form is NFC (Normalization Form C).<a href="#section-14.2-2.2.2.3.1" class="pilcrow">¶</a></p>
-</li>
-            </ul>
-</li>
-          <li id="section-14.2-2.3">
-            <p id="section-14.2-2.3.1"><strong>Bidirectional Text:</strong><a href="#section-14.2-2.3.1" class="pilcrow">¶</a></p>
-<ul class="normal">
-<li class="normal" id="section-14.2-2.3.2.1">
-                <p id="section-14.2-2.3.2.1.1">Bidirectional text can be manipulated to hide or reorder parts of identifiers.<a href="#section-14.2-2.3.2.1.1" class="pilcrow">¶</a></p>
-</li>
-              <li class="normal" id="section-14.2-2.3.2.2">
-                <p id="section-14.2-2.3.2.2.1">Implementations <span class="bcp14">SHOULD</span> apply the Unicode Bidirectional Algorithm correctly.<a href="#section-14.2-2.3.2.2.1" class="pilcrow">¶</a></p>
-</li>
-              <li class="normal" id="section-14.2-2.3.2.3">
-                <p id="section-14.2-2.3.2.3.1">User interfaces <span class="bcp14">SHOULD</span> clearly indicate reading direction for identifiers.<a href="#section-14.2-2.3.2.3.1" class="pilcrow">¶</a></p>
-</li>
-            </ul>
-</li>
-          <li id="section-14.2-2.4">
-            <p id="section-14.2-2.4.1"><strong>Display Guidelines:</strong><a href="#section-14.2-2.4.1" class="pilcrow">¶</a></p>
-<ul class="normal">
-<li class="normal" id="section-14.2-2.4.2.1">
-                <p id="section-14.2-2.4.2.1.1">User interfaces <span class="bcp14">MUST NOT</span> truncate usernames, domain names, or identifiers.<a href="#section-14.2-2.4.2.1.1" class="pilcrow">¶</a></p>
-</li>
-              <li class="normal" id="section-14.2-2.4.2.2">
-                <p id="section-14.2-2.4.2.2.1">Identifiers <span class="bcp14">SHOULD</span> be displayed with a distinct font or style.<a href="#section-14.2-2.4.2.2.1" class="pilcrow">¶</a></p>
-</li>
-              <li class="normal" id="section-14.2-2.4.2.3">
-                <p id="section-14.2-2.4.2.3.1">Domain and username portions <span class="bcp14">SHOULD</span> be visually differentiated.<a href="#section-14.2-2.4.2.3.1" class="pilcrow">¶</a></p>
-</li>
-              <li class="normal" id="section-14.2-2.4.2.4">
-                <p id="section-14.2-2.4.2.4.1">Implementations <span class="bcp14">SHOULD</span> consider using visual security indicators.<a href="#section-14.2-2.4.2.4.1" class="pilcrow">¶</a></p>
-</li>
-            </ul>
-</li>
-        </ol>
-<p id="section-14.2-3">These attacks primarily affect human perception rather than cryptographic verification. Proper implementation of user interfaces is critical to help users correctly identify the source of signed content.<a href="#section-14.2-3" class="pilcrow">¶</a></p>
+<p id="section-14.2-1">To mitigate Internationalised Domain Name (IDN) homograph attacks, user interfaces <span class="bcp14">SHOULD</span> adopt the guidelines from Section 2.11.2 (Recommendations for User Agents) of <span>[<a href="#UTR36" class="cite xref">UTR36</a>]</span>.<a href="#section-14.2-1" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="domain-ownership-changes">
@@ -3081,6 +3004,14 @@ If present, the member attribution attribute <span class="bcp14">MUST</span> be 
 <dt id="RFC8174">[RFC8174]</dt>
         <dd>
 <span class="refAuthor">Leiba, B.</span>, <span class="refTitle">"Ambiguity of Uppercase vs Lowercase in RFC 2119 Key Words"</span>, <span class="seriesInfo">BCP 14</span>, <span class="seriesInfo">RFC 8174</span>, <span class="seriesInfo">DOI 10.17487/RFC8174</span>, <time datetime="2017-05" class="refDate">May 2017</time>, <span>&lt;<a href="https://www.rfc-editor.org/rfc/rfc8174">https://www.rfc-editor.org/rfc/rfc8174</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="RFC8265">[RFC8265]</dt>
+        <dd>
+<span class="refAuthor">Saint-Andre, P.</span> and <span class="refAuthor">A. Melnikov</span>, <span class="refTitle">"Preparation, Enforcement, and Comparison of Internationalized Strings Representing Usernames and Passwords"</span>, <span class="seriesInfo">RFC 8265</span>, <span class="seriesInfo">DOI 10.17487/RFC8265</span>, <time datetime="2017-10" class="refDate">October 2017</time>, <span>&lt;<a href="https://www.rfc-editor.org/rfc/rfc8265">https://www.rfc-editor.org/rfc/rfc8265</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="UTR36">[UTR36]</dt>
+        <dd>
+<span class="refAuthor">Davis, M.</span> and <span class="refAuthor">M. Suignard</span>, <span class="refTitle">"UTR #36: Unicode Security Considerations"</span>, <time datetime="2014-09-19" class="refDate">19 September 2014</time>, <span>&lt;<a href="https://www.unicode.org/reports/tr36/tr36-15.html">https://www.unicode.org/reports/tr36/tr36-15.html</a>&gt;</span>. </dd>
 <dd class="break"></dd>
 <dt id="X.509">[X.509]</dt>
       <dd>

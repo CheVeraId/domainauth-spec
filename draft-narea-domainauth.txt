@@ -105,7 +105,7 @@ Table of Contents
      8.1.  Digital Signature Algorithms
      8.2.  Hash Functions
    9.  Maximum Validity Period
-   10. Naming Conventions and Restrictions
+   10. Naming Considerations
    11. Services
      11.1.  Service OIDs
      11.2.  Service-Specific Validation Rules
@@ -118,7 +118,7 @@ Table of Contents
      13.4.  Letro
    14. Security Considerations
      14.1.  DNSSEC Dependency
-     14.2.  Homographic and Character Encoding Attacks
+     14.2.  IDN Homograph Attacks
      14.3.  Domain Ownership Changes
      14.4.  Offline Verification Limitations
      14.5.  Organisation Signatures and Member Attribution
@@ -223,7 +223,7 @@ Table of Contents
        external network queries.
 
    3.  *User-friendly identifiers:* Identities are based on familiar,
-       human-readable domain names and usernames rather than
+       human-readable domain names and user names rather than
        cryptographically-derived values.
 
    4.  *Build upon well-established standards:* DNSSEC for securing DNS
@@ -256,11 +256,11 @@ Table of Contents
    *  *Member:* An entity that produces signatures on behalf of an
       organisation.  There are two types of members:
 
-      -  *User:* A member identified by a unique username within an
+      -  *User:* A member identified by a unique user name within an
          organisation.
 
       -  *Bot:* A special type of member that acts on behalf of the
-         organisation as a whole.  Bots do not have usernames.
+         organisation as a whole.  Bots do not have user names.
 
    *  *DomainAuth TXT Record:* A DNS TXT record at _domainauth.<domain>
       that contains the organisation's public key information.
@@ -785,7 +785,7 @@ _domainauth.example.com. IN TXT "0 1 3 dGhpcyBpcyBub3QgYSByZWFsIGtleSBkaWdlc3Q 8
    MemberAttribution ::= UTF8String
 
    The member attribution value MUST conform to the naming conventions
-   defined in Section 10.  For users, this is the username; for bots,
+   defined in Section 10.  For users, this is the user name; for bots,
    this is the at sign (@).
 
    Member attribution is a claim made by the organisation, not
@@ -1057,37 +1057,23 @@ _domainauth.example.com. IN TXT "0 1 3 dGhpcyBpcyBub3QgYSByZWFsIGtleSBkaWdlc3Q 8
    Similarly, verifiers MUST NOT allow a validity period greater than
    this limit when verifying signatures over a time period.
 
-10.  Naming Conventions and Restrictions
+10.  Naming Considerations
 
-   DomainAuth imposes specific restrictions on member names to prevent
-   phishing attacks and ensure consistent processing across
-   implementations:
+   DomainAuth imposes specific restrictions to prevent phishing attacks
+   and ensure consistent processing across implementations:
 
-   1.  *User Names:* - MUST NOT contain at signs (@).  - MUST NOT
-       contain whitespace characters other than simple spaces (e.g., no
-       tabs, newlines, carriage returns).  - SHOULD be chosen to avoid
-       visual confusion with other usernames.  - SHOULD use consistent
-       case and normalisation forms.
+   1.  User names MUST be normalised to the PRECIS UsernameCaseMapped
+       profile as specified in Section 3.3 of [RFC8265], but spaces
+       (U+0020) and at signs (U+0040) MUST NOT be allowed.
 
-   2.  *Display Considerations:* - User interfaces SHOULD NOT truncate
-       usernames or domain names.  - Implementations SHOULD display
-       member identifiers in full to avoid confusion.  - Implementations
-       SHOULD highlight or visually distinguish the domain portion of
-       identifiers.
+   2.  Signatures from bots MUST be attributed to the organisation and
+       the member name MUST be absent (not an empty string or at sign).
 
-   3.  *Homographic Attack Prevention:* - Implementations SHOULD
-       implement mitigations against homographic attacks.  - Domain
-       names SHOULD be displayed using Punycode when they contain non-
-       ASCII characters.  - Implementations MAY refuse to process
-       signatures from domains with mixed scripts.
+   3.  User interfaces MUST NOT truncate user names or domain names, and
+       they MUST visually distinguish the domain portion of identifiers.
 
-   4.  *Bot Names:* - MUST use the at sign (@) as the CommonName in
-       certificates.  - When displaying bot identities, implementations
-       SHOULD clearly indicate they represent the organisation rather
-       than an individual.
-
-   Organisations SHOULD establish and enforce consistent naming policies
-   for their users to maintain clarity and prevent confusion.
+   See also Section 14.2 for guidelines on mitigating IDN homograph
+   attacks.
 
 11.  Services
 
@@ -1162,7 +1148,7 @@ _domainauth.example.com. IN TXT "0 1 3 dGhpcyBpcyBub3QgYSByZWFsIGtleSBkaWdlc3Q 8
    following guidelines to ensure secure and consistent implementation:
 
    1.  *User Interface Considerations:* - Clearly display the full
-       member identifier (username and domain).  - Visually distinguish
+       member identifier (user name and domain).  - Visually distinguish
        between user and bot signatures.  - Indicate when signatures are
        expired or otherwise invalid.  - Avoid truncating or eliding
        parts of member identifiers.
@@ -1264,6 +1250,10 @@ _domainauth.example.com. IN TXT "0 1 3 dGhpcyBpcyBub3QgYSByZWFsIGtleSBkaWdlc3Q 8
 
       -  Hash functions: VeraId only supports SHA-256, SHA-384, and SHA-
          512.
+
+   *  VeraId only disallows at-signs (@), tabs, and new lines in user
+      names.  Otherwise, user names are case-sensitive and may contain
+      spaces in VeraId.
 
    VeraId is led by the author of this document, who intends to
    deprecate the VeraId specification in favour of DomainAuth and update
@@ -1426,64 +1416,11 @@ _domainauth.example.com. IN TXT "0 1 3 dGhpcyBpcyBub3QgYSByZWFsIGtleSBkaWdlc3Q 8
    compared to centralised PKI models, particularly for offline
    verification scenarios.
 
-14.2.  Homographic and Character Encoding Attacks
+14.2.  IDN Homograph Attacks
 
-   User-friendly identifiers like domain names and usernames are
-   susceptible to visual spoofing attacks:
-
-   1.  *Homographic Attacks:*
-
-       *  Different Unicode characters that appear visually similar can
-          be used for spoofing.
-
-       *  For example, Cyrillic "о" (U+043E) looks similar to Latin "o"
-          (U+006F).
-
-       *  Implementations SHOULD detect and warn about mixed-script
-          identifiers.
-
-       *  User interfaces SHOULD display domain names in Punycode when
-          they contain non-ASCII characters.
-
-   2.  *Normalisation Issues:*
-
-       *  Different Unicode normalisation forms can represent the same
-          visual character.
-
-       *  Implementations SHOULD normalise identifiers before display or
-          comparison.
-
-       *  The preferred normalisation form is NFC (Normalization Form
-          C).
-
-   3.  *Bidirectional Text:*
-
-       *  Bidirectional text can be manipulated to hide or reorder parts
-          of identifiers.
-
-       *  Implementations SHOULD apply the Unicode Bidirectional
-          Algorithm correctly.
-
-       *  User interfaces SHOULD clearly indicate reading direction for
-          identifiers.
-
-   4.  *Display Guidelines:*
-
-       *  User interfaces MUST NOT truncate usernames, domain names, or
-          identifiers.
-
-       *  Identifiers SHOULD be displayed with a distinct font or style.
-
-       *  Domain and username portions SHOULD be visually
-          differentiated.
-
-       *  Implementations SHOULD consider using visual security
-          indicators.
-
-   These attacks primarily affect human perception rather than
-   cryptographic verification.  Proper implementation of user interfaces
-   is critical to help users correctly identify the source of signed
-   content.
+   To mitigate Internationalised Domain Name (IDN) homograph attacks,
+   user interfaces SHOULD adopt the guidelines from Section 2.11.2
+   (Recommendations for User Agents) of [UTR36].
 
 14.3.  Domain Ownership Changes
 
@@ -1790,6 +1727,16 @@ _domainauth.example.com. IN TXT "0 1 3 dGhpcyBpcyBub3QgYSByZWFsIGtleSBkaWdlc3Q 8
    [RFC8174]  Leiba, B., "Ambiguity of Uppercase vs Lowercase in RFC
               2119 Key Words", BCP 14, RFC 8174, DOI 10.17487/RFC8174,
               May 2017, <https://www.rfc-editor.org/rfc/rfc8174>.
+
+   [RFC8265]  Saint-Andre, P. and A. Melnikov, "Preparation,
+              Enforcement, and Comparison of Internationalized Strings
+              Representing Usernames and Passwords", RFC 8265,
+              DOI 10.17487/RFC8265, October 2017,
+              <https://www.rfc-editor.org/rfc/rfc8265>.
+
+   [UTR36]    Davis, M. and M. Suignard, "UTR #36: Unicode Security
+              Considerations", 19 September 2014,
+              <https://www.unicode.org/reports/tr36/tr36-15.html>.
 
    [X.509]    Cooper, D., Santesson, S., Farrell, S., Boeyen, S.,
               Housley, R., and W. Polk, "Internet X.509 Public Key

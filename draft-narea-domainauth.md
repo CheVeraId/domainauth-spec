@@ -553,7 +553,9 @@ According to {{RFC7942}}, "this will allow reviewers and working groups to assig
 
 *Note to RFC Editor: Please remove this section before publication.*
 
-DomainAuth is the successor to the VeraId protocol as defined in {{VERAID}}, which has fully-interoperable implementations as described below. DomainAuth and VeraId are functionally identical, except for the following differences:
+## VeraId
+
+DomainAuth is the successor to the VeraId protocol as defined in {{VERAID}}. DomainAuth and VeraId are functionally identical, except for the following differences:
 
 - DNS TXT record:
   - Name: DomainAuth uses `_domainauth.example.com.`, whilst VeraId uses `_veraid.example.com.`.
@@ -568,38 +570,24 @@ DomainAuth is the successor to the VeraId protocol as defined in {{VERAID}}, whi
 
 VeraId is led by the author of this document, who intends to deprecate the VeraId specification in favour of DomainAuth and update the reference implementations to fully comply with this specification.
 
-All implementations listed below are undergoing independent security audits as of this writing, and their respective reports are expected to be published in April 2025.
+The following reference implementations of VeraId are available, all implemented by Relaycorp and undergoing independent security audits with reports expected by mid-April 2025:
 
-## VeraId JavaScript Library
-
-- Organisation: Relaycorp.
-- URL: https://github.com/relaycorp/veraid-js
-- Level of maturity: Used in production in the VeraId Authority application (see below).
-- Coverage: The implementation covers the entire protocol as defined in {{VERAID}}.
-- Licensing: Freely distributable with acknowledgement (MIT licence).
-- Contact: https://relaycorp.tech/
-- Last updated: 2025
-
-## VeraId JVM Library
-
-- Organisation: Relaycorp.
-- URL: https://github.com/relaycorp/veraid-jvm
-- Level of maturity: Used in the Android version of Letro as described in {{letro}}.
-- Coverage: The implementation covers the entire protocol as defined in {{VERAID}}, except for Organisation Signature Bundles.
-- Licensing: Freely distributable with acknowledgement (Apache 2.0 licence).
-- Contact: https://relaycorp.tech/
-- Last updated: 2025
-
-## VeraId Authority
-
-- Organisation: Relaycorp
-- URL: https://github.com/relaycorp/veraid-authority
-- Description: A multi-tenant, cloud-native application that allows organisations to manage their members and the issuance of their respective Member Id Bundles.
-- Level of maturity: Used in production in the server-side component of Letro as described in {{letro}}.
-- Coverage: The implementation leverages the VeraId JavaScript Library to issue Member Id Bundles and Organisation Signature Bundles.
-- Licensing: Business Source License version 1.1
-- Contact: https://relaycorp.tech/
-- Last updated: 2025
+1. **VeraId JavaScript Library**
+   - URL: https://github.com/relaycorp/veraid-js
+   - Maturity: Used in production in the VeraId Authority application.
+   - Coverage: The entire protocol as defined in {{VERAID}}.
+   - Licensing: MIT licence.
+2. **VeraId JVM Library**
+   - URL: https://github.com/relaycorp/veraid-jvm
+   - Maturity: Used in the Android version of Letro {{LETRO}}.
+   - Coverage: The entire protocol except for Organisation Signature Bundles.
+   - Licensing: Apache 2.0 licence.
+3. **VeraId Authority**
+   - URL: https://github.com/relaycorp/veraid-authority
+   - Description: A multi-tenant, cloud-native application for managing organisation members and issuing Member Id Bundles.
+   - Maturity: Used in production in Letro {{LETRO}}.
+   - Coverage: Uses the VeraId JavaScript Library to issue Member Id Bundles and Organisation Signature Bundles.
+   - Licensing: Business Source License version 1.1.
 
 ## Letro
 
@@ -609,9 +597,9 @@ All implementations listed below are undergoing independent security audits as o
 - URLs:
   - https://github.com/relaycorp/letro-android
   - https://docs.relaycorp.tech/letro-server/
-- Level of maturity: Experimental.
+- Maturity: Experimental.
 - Coverage: The implementation exercises the entire protocol as defined in {{VERAID}}, except for organisation signatures and bot members. It uses the VeraId JVM Library to issue member signatures on Android, and the VeraId Authority to issue Member Id Bundles under a variety of domain names operated by Relaycorp (e.g. `applepie.rocks`, `cuppa.fans`).
-- Licensing: Freely distributable with acknowledgement (GNU GPLv3 and Apache 2.0 licences).
+- Licensing: Freely distributable with acknowledgement (GNU GPLv3 and GNU AGPLv3 licences).
 - Contact: https://relaycorp.tech/
 - Last updated: 2024
 

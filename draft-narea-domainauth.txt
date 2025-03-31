@@ -128,7 +128,9 @@ Table of Contents
    Appendix C.  Service Design Guidance
      C.1.  Service Security Considerations
      C.2.  Service User Experience Considerations
-   Appendix D.  Acknowledgements
+   Appendix D.  Implementation Guidance
+   Appendix E.  Organisation Operation Guidance
+   Appendix F.  Acknowledgements
    Author's Address
 
 1.  Introduction
@@ -1171,6 +1173,11 @@ _domainauth.example.com. IN TXT "0 1 3 dGhpcyBpcyBub3QgYSByZWFsIGtleSBkaWdlc3Q 8
 
        *  Licensing: Business Source License version 1.1.
 
+   To facilitate functional testing, VeraId implementations use a
+   dedicated VeraId TXT record at lib-testing.veraid.net, bound to the
+   test service (Section 11), whose organisation's private key is
+   publicly available in the source code for the projects above.
+
 12.2.  Letro
 
    [LETRO] is the only VeraId service as of this writing.
@@ -1746,7 +1753,76 @@ C.2.  Service User Experience Considerations
          part of an identifier (e.g., "alice of example.com",
          "alice@example.com").
 
-Appendix D.  Acknowledgements
+Appendix D.  Implementation Guidance
+
+   This non-normative section provides guidance for developers
+   implementing DomainAuth libraries.
+
+   Implementations should ensure strict compliance with the ASN.1
+   schemas (Appendix A), serialisation formats (Section 10), and
+   cryptographic algorithms (Section 8).  Separating core protocol
+   functionality from service-specific logic enables reuse across
+   multiple services.
+
+   For testing purposes, implementers should consider establishing a
+   dedicated DNSSEC-enabled test domain with a DomainAuth TXT record
+   whose private key is publicly available, bound specifically to the
+   test service OID (1.3.6.1.4.1.58708.1.1).  This approach is secure
+   when properly scoped: the domain is controlled by the implementation
+   team, the key is bound only to the test service, and documentation
+   clearly indicates these are for testing only.  Serialised DNSSEC
+   chains can also serve as test fixtures, allowing offline testing.
+
+   The verification procedure should support both verification orders
+   described in Section 7.1: either starting with the DNSSEC chain and
+   ending with the signature, or vice versa.  A critical aspect is
+   validating that all components in the trust chain—DNSSEC records,
+   certificates, and signature—have validity periods that overlap for at
+   least one second.  Implementations should also handle multiple TXT
+   records correctly, selecting the appropriate one based on key
+   information and service OID.
+
+   Error handling should categorise failures based on verification steps
+   (Section 7.1), with different diagnostic detail levels for debugging
+   versus production.  Performance optimisations may include caching
+   verified DNSSEC chains, using efficient ASN.1 parsing libraries,
+   ensuring thread safety, and optimising certificate validation
+   operations.
+
+Appendix E.  Organisation Operation Guidance
+
+   This non-normative section provides guidance for organisations
+   operating domains that participate in the DomainAuth protocol.
+
+   Before implementation, organisations should ensure their domain has
+   been under their control for at least the maximum validity period
+   (Section 9) and consider TLD governance (Section 13.1).  DNSSEC must
+   be properly configured, with processes established for key rollovers.
+
+   Key management practices should include secure generation
+   (potentially using HSMs as suggested in Section 13.5), protected
+   storage, and scheduled rotation.  Organisations may publish multiple
+   TXT records for different keys, algorithms, or services, which
+   facilitates smooth key rotation.  The TTL override value in TXT
+   records significantly affects verification windows and should be set
+   appropriately for the service's offline requirements.
+
+   The organisation certificate serves as the trust anchor for all
+   members, making its protection particularly important.  For member
+   management, establish clear processes for certificate issuance,
+   naming conventions that comply with normalisation requirements
+   (Section 13.2), secure distribution of Member Id Bundles, and
+   handling departing members.
+
+   Operational security measures should include regular verification of
+   DomainAuth TXT records, comprehensive logging (Section 13.6),
+   certificate inventory maintenance, and monitoring for unauthorised
+   DNS modifications.  Incident response procedures should address key
+   compromise, DNS hijacking, and trust recovery, noting that the
+   limited validity period of signatures helps contain security incident
+   impact.
+
+Appendix F.  Acknowledgements
 
    The author is grateful to the Open Technology Fund for funding the
    implementation of VeraId, which heavily influenced the final

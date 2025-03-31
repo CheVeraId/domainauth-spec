@@ -397,7 +397,7 @@ The SignerInfo structure MUST include the DomainAuth member attribution in its s
 MemberAttribution ::= UTF8String
 ~~~~~~~
 
-The member attribution value MUST conform to the naming conventions defined in {{naming-considerations}}. For users, this is the user name; for bots, this is the at sign (`@`).
+The member attribution value MUST conform to the restrictions defined in {{phishing-attacks}}. For users, this is the user name; for bots, this is the at sign (`@`).
 
 Member attribution is a claim made by the organisation, not cryptographically proven by the member. Verifiers SHOULD present this distinction clearly to end users.
 
@@ -482,7 +482,7 @@ Implementations MUST verify every syntactically-valid signature bundle as follow
    - The service OID MUST match that specified by the verifier.
    - The validity period MUST overlap with the verification time window, the X.509 certificate chain and the DNSSEC chain for at least one second.
 
-   If present, the member attribution attribute MUST be in the signed attributes of the SignerInfo structure, and its value MUST be a valid member name as specified in {{naming-considerations}}. If absent, the signer MUST be a member whose certificate meets the requirements specified in {{member-certificate}}.
+   If present, the member attribution attribute MUST be in the signed attributes of the SignerInfo structure, and its value MUST be a valid member name as specified in {{phishing-attacks}}. If absent, the signer MUST be a member whose certificate meets the requirements specified in {{member-certificate}}.
 6. **Produce verification output:**
     - The organisation name without a trailing dot (e.g. `example.com`). This string MUST be represented using Unicode, coverting from Punycode if necessary.
     - If the signer is a user, their name MUST be a Unicode string. The name MUST be taken from the signer certificate in the case of member signatures, or from the member attribution in the case of organisation signatures. If the signer is a bot, no name MUST be produced (not even an empty string).
@@ -527,64 +527,9 @@ Digital signatures MUST NOT have a validity period greater than 7,776,000 second
 
 Similarly, verifiers MUST NOT allow a validity period greater than this limit when verifying signatures over a time period.
 
-# Naming Considerations
+Services SHOULD specify a maximum validity period shorter than the protocol-level limit where feasible. This approach improves security by limiting the window of vulnerability in case of key compromise or other security incidents.
 
-DomainAuth imposes specific restrictions to prevent phishing attacks and ensure consistent processing across implementations:
-
-1. User names MUST be normalised to the PRECIS UsernameCaseMapped profile as specified in {{Section 3.3 of RFC8265}}, but spaces (U+0020) and at signs (U+0040) MUST NOT be allowed.
-2. Signatures from bots MUST be attributed to the organisation and the member name MUST be absent (not an empty string or at sign).
-3. User interfaces MUST NOT truncate user names or domain names, and they MUST visually distinguish the domain portion of identifiers.
-
-See also {{idn-homograph-attacks}} for guidelines on mitigating IDN homograph attacks.
-
-# Services
-
-## Service OIDs
-
-DomainAuth uses Object Identifiers (OIDs) to uniquely identify services and applications that use the protocol. Service OIDs serve as namespaces that prevent signature reuse across different contexts.
-
-1. **OID Structure:**
-  - The DomainAuth root OID is `1.3.6.1.4.1.58708.1`.
-  - Official service OIDs MUST be allocated under this root.
-  - For example, the test service OID is `1.3.6.1.4.1.58708.1.1`.
-2. **OID Allocation:**
-  - Service designers MUST obtain a unique OID for their service.
-  - Third-party services MUST use OIDs from their own namespace.
-  - The DomainAuth OID arc is reserved exclusively for official services under the DomainAuth project umbrella.
-3. **OID Usage:**
-  - The service OID MUST be included in the signature metadata.
-  - Verifiers MUST check that the OID in the signature matches the expected service.
-  - DomainAuth TXT records MAY specify a service OID to restrict key usage.
-4. **Versioning:**
-  - Service designers SHOULD include version information in their OID structure.
-  - Major protocol changes SHOULD use a new OID.
-  - Minor, backward-compatible changes MAY use the same OID.
-
-Service OIDs ensure that signatures created for one service cannot be repurposed for another, even if all other aspects of the signature are valid. This provides important namespace isolation and prevents cross-service attacks.
-
-## Service-Specific Validation Rules
-
-Services using DomainAuth MAY define additional validation rules beyond the core protocol requirements. These rules allow services to implement domain-specific security policies.
-
-1. **TTL Constraints:**
-  - Services MUST specify a maximum TTL for signatures.
-  - The TTL MUST be within the range of 1 second to the limit specified in {{maximum-validity-period}}.
-  - For the minimum TTL, several minutes is recommended to account for clock drift.
-  - Services SHOULD choose the shortest TTL that meets their requirements.
-2. **Content Type Restrictions:**
-  - Services MAY restrict the types of content that can be signed.
-  - Content type restrictions SHOULD be documented in the service specification.
-  - Verifiers SHOULD check content type compliance during verification.
-3. **Member Type Restrictions:**
-  - Services MAY restrict which member types can produce valid signatures.
-  - For example, a service might only accept signatures from users (not bots).
-  - Such restrictions SHOULD be enforced during verification.
-4. **Certificate Extensions:**
-  - Services MAY define custom certificate extensions for additional authorisation.
-  - Such extensions SHOULD be clearly documented.
-  - Verifiers MUST check for and validate any required extensions.
-
-Service designers SHOULD document their validation rules comprehensively to ensure consistent implementation across different verifiers. These rules SHOULD be designed to maintain the security properties of the DomainAuth protocol whilst addressing service-specific requirements.
+Applications built on DomainAuth services MAY impose even shorter validity periods based on their specific security requirements and threat models.
 
 # Data Serialisation
 
@@ -593,6 +538,12 @@ All data structures in the DomainAuth protocol are defined using Abstract Syntax
 Implementations MUST support Distinguished Encoding Rules (DER) as defined in {{ASN.1}}.
 
 Services MAY require or recommend additional ASN.1 encoding rules. In such cases, service implementations MUST handle the conversion between DER and the alternative encoding rules, if the additional rules are not supported by the DomainAuth implementation.
+
+# Test Service
+
+Service-agnostic implementations SHOULD use the test service OID `1.3.6.1.4.1.58708.1.1` for testing purposes.
+
+This service is not subject to additional requirements or recommendations.
 
 # Implementation Status
 
@@ -693,9 +644,11 @@ DomainAuth's security model relies fundamentally on DNSSEC, which introduces spe
 
 Whilst these dependencies introduce potential vulnerabilities, the distributed nature of DNS provides significant security advantages compared to centralised PKI models, particularly for offline verification scenarios.
 
-## IDN Homograph Attacks
+## Phishing Attacks
 
 To mitigate Internationalised Domain Name (IDN) homograph attacks, user interfaces SHOULD adopt the guidelines from Section 2.11.2 (Recommendations for User Agents) of {{UTR36}}.
+
+To mitigate phishing attacks leveraging user names, such names MUST be normalised to the PRECIS UsernameCaseMapped profile as specified in {{Section 3.3 of RFC8265}}, but spaces (U+0020) and at signs (U+0040) MUST NOT be allowed.
 
 ## Domain Ownership Changes
 

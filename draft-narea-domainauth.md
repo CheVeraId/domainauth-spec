@@ -484,13 +484,11 @@ Implementations MUST verify every syntactically-valid signature bundle as follow
 
    If present, the member attribution attribute MUST be in the signed attributes of the SignerInfo structure, and its value MUST be a valid member name as specified in {{naming-considerations}}. If absent, the signer MUST be a member whose certificate meets the requirements specified in {{member-certificate}}.
 6. **Produce verification output:**
-    - The organisation name without a trailing dot (e.g. `example.com`).
-    - The member name (for users only, not for bots):
-      - For member signatures, from the signer certificate.
-      - For organisation signatures, from the member attribution.
+    - The organisation name without a trailing dot (e.g. `example.com`). This string MUST be represented using Unicode, coverting from Punycode if necessary.
+    - If the signer is a user, their name MUST be a Unicode string. The name MUST be taken from the signer certificate in the case of member signatures, or from the member attribution in the case of organisation signatures. If the signer is a bot, no name MUST be produced (not even an empty string).
     - Whether the signature was produced by the member or the organisation.
 
-Alternatively, the verification MAY start with the SignedData structure and end with the DNSSEC chain as described below, as long as the validity periods across all components overlap for at least one second:
+Alternatively, the verification MAY start with the SignedData structure and end with the DNSSEC chain as described below, as long as the validity periods across all components still overlap for at least one second:
 
 1. Establish the verification parameters.
 2. Verify the CMS SignedData structure.
@@ -499,9 +497,7 @@ Alternatively, the verification MAY start with the SignedData structure and end 
 5. Verify the DNSSEC chain.
 6. Produce verification output.
 
-If all these steps succeed, the signature is considered valid, and the content is confirmed to originate from the identified member of the specified organisation or from the organisation itself.
-
-The verification process MUST be performed in full, without skipping any steps, to ensure the security properties of the DomainAuth protocol.
+The verification process MUST be performed in full, without skipping any steps.
 
 # Cryptographic Algorithms
 
@@ -649,6 +645,7 @@ DomainAuth is the successor to the VeraId protocol as defined in {{VERAID}}, whi
 - Cryptographic algorithms:
   - Signature algorithms: VeraId only supports RSA-PSS with modulus sizes of 2048, 3072, and 4096 bits. Support for EdDSA signatures was considered, but not implemented due to lack of support in the target Hardware Security Modules (HSMs), as documented in https://issuetracker.google.com/issues/232422224.
   - Hash functions: VeraId only supports SHA-256, SHA-384, and SHA-512.
+- VeraId does not require conversion of domain names from Punycode to Unicode.
 - VeraId only disallows at-signs (`@`), tabs, and new lines in user names. Otherwise, user names are case-sensitive and may contain spaces in VeraId.
 
 VeraId is led by the author of this document, who intends to deprecate the VeraId specification in favour of DomainAuth and update the reference implementations to fully comply with this specification.

@@ -45,6 +45,10 @@ normative:
     seriesinfo:
       ITU-T: Recommendation X.690
   RFC7942:
+  RFC4055:
+  RFC4056:
+  RFC6234:
+  RFC8017:
 
 informative:
   VERAID:
@@ -493,37 +497,25 @@ The verification process MUST be performed in full, without skipping any steps, 
 
 # Cryptographic Algorithms
 
-This section describes the cryptographic algorithms used in the DomainAuth protocol. It applies to the X.509 certificates and CMS SignedData structures, but not to the DNSSEC chain.
+This section describes the cryptographic algorithms used in the X.509 certificates and CMS SignedData structures, but not to the DNSSEC chain.
+
+Algorithms not explicitly allowed by this specification MUST be rejected.
+
+Services MAY recommend specific algorithms within the set of algorithms allowed by this specification.
 
 ## Digital Signature Algorithms
 
-### RSA-PSS
+For ease of adoption and interoperability reasons, this specification only requires support for RSA Signature Scheme with Appendix - Probabilistic Signature Scheme (RSA-PSS), as defined in {{Section 8.1 of RFC8017}}. The DomainAuth Signature Algorithm Registry, as defined in {{domainauth-signature-algorithm-registry}}, MAY introduce support for additional signature algorithms and restrict the use of RSA-PSS (including its deprecation).
 
-DomainAuth uses RSA-PSS (Probabilistic Signature Scheme) as the digital signature algorithm with the following parameters:
+Implementations MUST support RSA-PSS in X.509 certificates as defined in {{RFC4055}} and CMS SignedData structures as defined in {{RFC4056}}.
 
-- RSA-PSS with modulus 2048 bits: Minimum acceptable security level.
-- RSA-PSS with modulus 3072 bits: Recommended for general use.
-- RSA-PSS with modulus 4096 bits: Recommended for high-security applications.
-
-For RSA-PSS signatures:
-
-- RSA-2048 MUST use SHA-256 for both key identification and signature operations.
-- RSA-3072 MUST use SHA-384 for both key identification and signature operations.
-- RSA-4096 MUST use SHA-512 for both key identification and signature operations.
-
-The minimum modulus size for RSA keys is 2048 bits. RSA key generation MUST follow industry best practices for prime generation and testing and MUST use a cryptographically secure random number generator.
+RSA keys with moduli less than 2048 bits MUST be rejected. RSA keys with modulus size of 2048 MUST be supported, and greater sizes SHOULD be supported.
 
 ## Hash Functions
 
-DomainAuth uses the following hash functions:
+For ease of adoption and interoperability reasons, this specification only requires support for SHA2 hash functions, as defined in {{RFC6234}}, in digital signatures. The DomainAuth Hash Function Registry, as defined in {{domainauth-hash-function-registry}}, MAY introduce support for additional hash functions and restrict the use of SHA2 hash functions (including their deprecation).
 
-- SHA-256: Recommended for general use.
-- SHA-384: Recommended for higher security applications.
-- SHA-512: Recommended for highest security applications.
-
-All compliant implementations MUST support these algorithms. The choice of algorithm strength should be appropriate for the security requirements of the application.
-
-Future versions of the protocol MAY introduce additional algorithms, but this V1 specification intentionally limits the supported algorithms to those with well-established security properties and widespread implementation support.
+Implementations MUST support SHA-256, SHA-384, and SHA-512 hash functions. For the avoidance of doubt, SHA-1 and SHA-224 MUST NOT be supported.
 
 # Maximum Validity Period
 
@@ -659,6 +651,9 @@ DomainAuth is the successor to the VeraId protocol as defined in {{VERAID}}, whi
   - Value: DomainAuth requires the value to begin with the number `0`, denoting the version of the DomainAuth TXT record format, followed by a space. This value does not have a version number in VeraId.
 - VeraId does not explicitly support intermediate certificates, and its implementations do not support them. Consequently, the `intermediateCertificates` field in the Member Id Bundle is not present in VeraId.
 - VeraId only allows ASN.1 DER serialisation.
+- Cryptographic algorithms:
+  - Signature algorithms: VeraId only supports RSA-PSS with modulus sizes of 2048, 3072, and 4096 bits. Support for EdDSA signatures was considered, but not implemented due to lack of support in the target Hardware Security Modules (HSMs), as documented in https://issuetracker.google.com/issues/232422224.
+  - Hash functions: VeraId only supports SHA-256, SHA-384, and SHA-512.
 
 VeraId is led by the author of this document, who intends to deprecate the VeraId specification in favour of DomainAuth and update the reference implementations to fully comply with this specification.
 
@@ -872,7 +867,9 @@ Implementations SHOULD provide guidance and tools to assist with secure key mana
 
 # IANA Considerations
 
-This document has no IANA actions.
+## DomainAuth Signature Algorithm Registry
+
+## DomainAuth Hash Function Registry
 
 
 --- back

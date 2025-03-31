@@ -828,6 +828,30 @@ Designers should consider the following points when crafting the user experience
   - Avoid truncating user names or domain names to prevent ambiguity or misrepresentation.
   - Visually distinguish the user name part from the domain name part of an identifier (e.g., "alice of example.com", "alice@example.com").
 
+# Implementation Guidance
+
+This non-normative section provides guidance for developers implementing DomainAuth libraries.
+
+Implementations should ensure strict compliance with the ASN.1 schemas ({{asn1-schemas}}), serialisation formats ({{data-serialisation}}), and cryptographic algorithms ({{cryptographic-algorithms}}). Separating core protocol functionality from service-specific logic enables reuse across multiple services.
+
+For testing purposes, implementers should consider establishing a dedicated DNSSEC-enabled test domain with a DomainAuth TXT record whose private key is publicly available, bound specifically to the test service OID (`1.3.6.1.4.1.58708.1.1`). This approach is secure when properly scoped: the domain is controlled by the implementation team, the key is bound only to the test service, and documentation clearly indicates these are for testing only. Serialised DNSSEC chains can also serve as test fixtures, allowing offline testing.
+
+The verification procedure should support both verification orders described in {{verification-procedure}}: either starting with the DNSSEC chain and ending with the signature, or vice versa. A critical aspect is validating that all components in the trust chain—DNSSEC records, certificates, and signature—have validity periods that overlap for at least one second. Implementations should also handle multiple TXT records correctly, selecting the appropriate one based on key information and service OID.
+
+Error handling should categorise failures based on verification steps ({{verification-procedure}}), with different diagnostic detail levels for debugging versus production. Performance optimisations may include caching verified DNSSEC chains, using efficient ASN.1 parsing libraries, ensuring thread safety, and optimising certificate validation operations.
+
+# Organisation Operation Guidance
+
+This non-normative section provides guidance for organisations operating domains that participate in the DomainAuth protocol.
+
+Before implementation, organisations should ensure their domain has been under their control for at least the maximum validity period ({{maximum-validity-period}}) and consider TLD governance ({{dnssec-dependency}}). DNSSEC must be properly configured, with processes established for key rollovers.
+
+Key management practices should include secure generation (potentially using HSMs as suggested in {{key-management}}), protected storage, and scheduled rotation. Organisations may publish multiple TXT records for different keys, algorithms, or services, which facilitates smooth key rotation. The TTL override value in TXT records significantly affects verification windows and should be set appropriately for the service's offline requirements.
+
+The organisation certificate serves as the trust anchor for all members, making its protection particularly important. For member management, establish clear processes for certificate issuance, naming conventions that comply with normalisation requirements ({{phishing-attacks}}), secure distribution of Member Id Bundles, and handling departing members.
+
+Operational security measures should include regular verification of DomainAuth TXT records, comprehensive logging ({{audit-trails}}), certificate inventory maintenance, and monitoring for unauthorised DNS modifications. Incident response procedures should address key compromise, DNS hijacking, and trust recovery, noting that the limited validity period of signatures helps contain security incident impact.
+
 # Acknowledgements
 
 The author is grateful to the Open Technology Fund for funding the implementation of VeraId, which heavily influenced the final specification of the VeraId protocol, and therefore DomainAuth as its successor.

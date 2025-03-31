@@ -789,36 +789,46 @@ The following Object Identifiers (OIDs) are defined for use in the DomainAuth pr
 
 # Service Design Guidance
 
-This non-normative section summarises key considerations for designers creating services that utilise DomainAuth, drawing upon requirements and recommendations specified elsewhere in this document.
+This non-normative section summarises key considerations for system designers creating services that utilise DomainAuth, drawing upon requirements and recommendations specified elsewhere in this document.
 
-Service designers are required to obtain a unique OID for their service, distinct from the DomainAuth OID arc (see {{oid-registry}}), as this OID is embedded within the signature metadata ({{signature-metadata}}) and used during verification ({{verification-procedure}}). Consideration should be given to incorporating version information either within the OID structure or the service-specific plaintext data being signed. Note that organisations have the option to bind specific keys to a service OID via the DomainAuth TXT record ({{txt-record}}), which verifiers are required to account for when matching signatures to keys.
+Service designers are required to obtain a unique OID for their service, distinct from the DomainAuth OID arc (see {{oid-registry}}), as this OID is embedded within the signature metadata ({{signature-metadata}}) and used during verification ({{verification-procedure}}). Note that organisations have the option to bind specific keys to a service OID via the DomainAuth TXT record ({{txt-record}}), which verifiers are required to account for when matching signatures to keys.
 
-The validity period for signatures, specified in the signature metadata ({{signature-metadata}}), is required to adhere to the maximum limit defined in {{maximum-validity-period}}. It is recommended that services define their own maximum validity period, as short as possible for their use case, to enhance security ({{maximum-validity-period}}). Given the reliance on local clocks for offline verification ({{offline-verification-limitations}}), services may find it beneficial to establish a minimum signature validity duration (e.g., several minutes) to accommodate potential clock skew. Remember that the overall verification requires temporal overlap between the DNSSEC chain's validity window (influenced by the TTL override {{ttl-override}}), the certificate chain's validity ({{x.509-certificate-profile}}), and the signature metadata's validity period ({{verification-procedure}}).
+Consideration should be given to incorporating version information either within the OID structure or the service-specific plaintext data being signed, to facilitate future upgrades to the plaintext format.
 
-DomainAuth specifies mandatory-to-implement cryptographic algorithms ({{cryptographic-algorithms}}). Services have the option to recommend specific algorithms from the allowed set but cannot mandate unsupported ones. Similarly, whilst the protocol mandates ASN.1 DER encoding ({{data-serialisation}}), services have the option to specify alternative ASN.1 encoding rules, but service-level implementations bear the responsibility for any necessary conversions if the underlying DomainAuth library does not support the alternative rules ({{data-serialisation}}).
+Given the reliance on local clocks for offline verification ({{offline-verification-limitations}}), services may find it beneficial to establish a minimum signature validity duration (e.g., several minutes) to accommodate potential clock skew. Remember that the overall verification requires temporal overlap between the DNSSEC chain's validity window (influenced by the TTL override {{ttl-override}}), the certificate chain's validity ({{x509-certificate-profile}}), and the signature metadata's validity period ({{verification-procedure}}).
 
-Services need to determine which signature types (Member, Organisation, or both) are appropriate for their use case ({{signature-types}}) and how plaintext will be handled (encapsulated or detached) ({{signature-bundle-production}}).
+Whilst the protocol mandates ASN.1 DER encoding ({{data-serialisation}}), services have the option to specify alternative ASN.1 encoding rules, but service-level implementations bear the responsibility for any necessary conversions if the underlying DomainAuth library does not support the alternative rules ({{data-serialisation}}).
 
-For security-related considerations, services should also consider the following:
+Services need to determine which signature types (Member, Organisation, or both) are appropriate for their use case ({{signature-types}}), and whether plaintext will be encapsulated or detached ({{signature-bundle-production}}).
+
+## Service Security Considerations
+
+The validity period for signatures, specified in the signature metadata ({{signature-metadata}}), is required to adhere to the maximum limit defined in {{maximum-validity-period}}. It is recommended that services define their own maximum validity period, as short as possible for their use case, to enhance security ({{maximum-validity-period}}).
+
+DomainAuth specifies mandatory-to-implement cryptographic algorithms ({{cryptographic-algorithms}}). Services have the option to recommend specific algorithms from the allowed set but cannot mandate unsupported ones.
+
+Services designers should also consider the following potential attack vectors:
 
 - **Replay attacks:** DomainAuth provides authenticity and integrity but does not inherently mitigate replay attacks. Services may need to implement additional measures, such as nonces, depending on the application's sensitivity to replays ({{offline-verification-limitations}}).
-- **Logging:** Services may define their own requirements for logging signature events, which would complement the organisation-level audit trails recommended in {{audit-trails}}.
-- **Phishing attacks:** Service logic built upon the verified identity must correctly handle the required Unicode representation of domain names and the specific normalisation and character restrictions applicable to user names ({{phishing-attacks}}, {{verification-procedure}}).
-- **User Experience:** Service design choices directly impact the user experience. It is important to inform the user interface design based on the principles outlined in {{user-interface-guidelines}}, ensuring clarity around signature types, the nature of member attribution in organisation signatures, verification status, and error handling.
+- **Phishing attacks:** Service logic built upon the verified identity ought to correctly handle the required Unicode representation of domain names, and the specific normalisation and character restrictions applicable to user names ({{phishing-attacks}}, {{verification-procedure}}). Adhering to guidelines like those in {{UTR36}} for displaying Internationalised Domain Names can help mitigate homograph attacks.
 
-# User Interface Guidelines
+Services may define their own requirements for logging signature events, which would complement the organisation-level audit trails recommended in {{audit-trails}}.
 
-1. **Signature Type Indication:** User interfaces SHOULD clearly indicate whether a signature is a member signature or an organisation signature with member attribution. Different visual indicators (icons, colors, labels) SHOULD be used to distinguish between the two signature types.
-2. **Attribution Presentation:** For organisation signatures, interfaces SHOULD clearly indicate that the member attribution is a claim made by the organisation, not cryptographic proof. Example phrasing: `Signed by example.com on behalf of alice` rather than `Signed by alice of example.com`.
-3. **Verification Details:** Interfaces SHOULD provide access to detailed verification information, including the full certification path and validity periods. Advanced users SHOULD be able to view the complete verification process and results.
-4. **Error Handling:** Clear error messages SHOULD be displayed when verification fails, with appropriate guidance for users. Different error handling may be appropriate for different signature types, reflecting their distinct trust models.
+## Service User Experience Considerations
 
-Signatures from bots MUST be attributed to the organisation and the member name MUST be absent (not an empty string or at sign).
+Presenting DomainAuth verification results clearly is important for users to understand the basis of trust. Since DomainAuth supports different signature types with distinct trust implications, user interfaces can play a crucial role in conveying this information accurately.
 
-User interfaces MUST NOT truncate user names or domain names, and they MUST visually distinguish the domain portion of identifiers.
+Designers should consider the following points when crafting the user experience for DomainAuth services:
+
+- **Communicating signature origin.** Consider distinguishing between member signatures (cryptographically proven) and organisation signatures (where the organisation vouches for content with member attribution). For organisation signatures, the attribution may be presented as a claim by the organisation (e.g., "Vouched for by example.com, attributed to alice") rather than implying direct proof from the member. However, the distinction may or may not be relevant depending on the service.
+- **Representing bot signatures.** When displaying signatures associated with bots, the interface has to attribute the signature to the organisation itself, omitting any specific user name (e.g. "Signed by example.com").
+- **Displaying identifiers safely.** 
+  - Consider implementing IDN homograph attack mitigations, such as those suggested in {{UTR36}}.
+  - Display the user name exactly as provided by the verification process (which is based on normalised data per {{phishing-attacks}}).
+  - Avoid truncating user names or domain names to prevent ambiguity or misrepresentation.
+  - Visually distinguish the user name part from the domain name part of an identifier (e.g., "alice of example.com", "alice@example.com").
 
 # Acknowledgements
-{:numbered="false"}
 
 The author is grateful to the Open Technology Fund for funding the implementation of VeraId, which heavily influenced the final specification of the VeraId protocol, and therefore DomainAuth as its successor.
 

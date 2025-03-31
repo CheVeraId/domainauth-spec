@@ -822,7 +822,7 @@ Designers should consider the following points when crafting the user experience
 
 - **Communicating signature origin.** Consider distinguishing between member signatures (cryptographically proven) and organisation signatures (where the organisation vouches for content with member attribution). For organisation signatures, the attribution may be presented as a claim by the organisation (e.g., "Vouched for by example.com, attributed to alice") rather than implying direct proof from the member. However, the distinction may or may not be relevant depending on the service.
 - **Representing bot signatures.** When displaying signatures associated with bots, the interface has to attribute the signature to the organisation itself, omitting any specific user name (e.g. "Signed by example.com").
-- **Displaying identifiers safely.** 
+- **Displaying identifiers safely.**
   - Consider implementing IDN homograph attack mitigations, such as those suggested in {{UTR36}}.
   - Display the user name exactly as provided by the verification process (which is based on normalised data per {{phishing-attacks}}).
   - Avoid truncating user names or domain names to prevent ambiguity or misrepresentation.

@@ -1330,24 +1330,24 @@ svg :is([fill="white"], [fill^="#fff"]) {
             <p id="section-toc.1-1.16.1"><a href="#appendix-A" class="auto internal xref">Appendix A</a>.  <a href="#name-asn1-schemas" class="internal xref">ASN.1 Schemas</a></p>
 </li>
           <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.17">
-            <p id="section-toc.1-1.17.1"><a href="#appendix-B" class="auto internal xref">Appendix B</a>.  <a href="#name-oid-registry" class="internal xref">OID Registry</a></p>
-</li>
-          <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.18">
-            <p id="section-toc.1-1.18.1"><a href="#appendix-C" class="auto internal xref">Appendix C</a>.  <a href="#name-implementation-guidance" class="internal xref">Implementation Guidance</a></p>
+            <p id="section-toc.1-1.17.1"><a href="#appendix-B" class="auto internal xref">Appendix B</a>.  <a href="#name-implementation-guidance" class="internal xref">Implementation Guidance</a></p>
 <ul class="compact toc ulBare ulEmpty">
-<li class="compact toc ulBare ulEmpty" id="section-toc.1-1.18.2.1">
-                <p id="section-toc.1-1.18.2.1.1"><a href="#appendix-C.1" class="auto internal xref">C.1</a>.  <a href="#name-performance-optimisations" class="internal xref">Performance Optimisations</a></p>
+<li class="compact toc ulBare ulEmpty" id="section-toc.1-1.17.2.1">
+                <p id="section-toc.1-1.17.2.1.1"><a href="#appendix-B.1" class="auto internal xref">B.1</a>.  <a href="#name-performance-optimisations" class="internal xref">Performance Optimisations</a></p>
 </li>
-              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.18.2.2">
-                <p id="section-toc.1-1.18.2.2.1"><a href="#appendix-C.2" class="auto internal xref">C.2</a>.  <a href="#name-implementation-recommendati" class="internal xref">Implementation Recommendations</a></p>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.17.2.2">
+                <p id="section-toc.1-1.17.2.2.1"><a href="#appendix-B.2" class="auto internal xref">B.2</a>.  <a href="#name-implementation-recommendati" class="internal xref">Implementation Recommendations</a></p>
 </li>
-              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.18.2.3">
-                <p id="section-toc.1-1.18.2.3.1"><a href="#appendix-C.3" class="auto internal xref">C.3</a>.  <a href="#name-service-design" class="internal xref">Service Design</a></p>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.17.2.3">
+                <p id="section-toc.1-1.17.2.3.1"><a href="#appendix-B.3" class="auto internal xref">B.3</a>.  <a href="#name-service-design" class="internal xref">Service Design</a></p>
 </li>
-              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.18.2.4">
-                <p id="section-toc.1-1.18.2.4.1"><a href="#appendix-C.4" class="auto internal xref">C.4</a>.  <a href="#name-user-interface-guidelines" class="internal xref">User Interface Guidelines</a></p>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.17.2.4">
+                <p id="section-toc.1-1.17.2.4.1"><a href="#appendix-B.4" class="auto internal xref">B.4</a>.  <a href="#name-user-interface-guidelines" class="internal xref">User Interface Guidelines</a></p>
 </li>
             </ul>
+</li>
+          <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.18">
+            <p id="section-toc.1-1.18.1"><a href="#appendix-C" class="auto internal xref">Appendix C</a>.  <a href="#name-oid-registry" class="internal xref">OID Registry</a></p>
 </li>
           <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.19">
             <p id="section-toc.1-1.19.1"><a href="#appendix-D" class="auto internal xref"></a><a href="#name-acknowledgements" class="internal xref">Acknowledgements</a></p>
@@ -2816,157 +2816,103 @@ MemberAttribution ::= UTF8String
 <p id="appendix-A-4">The ASN.1 structures reference standard types from other specifications:<a href="#appendix-A-4" class="pilcrow">¶</a></p>
 <ul class="normal">
 <li class="normal" id="appendix-A-5.1">
-          <p id="appendix-A-5.1.1">Certificate is defined in X.509 (RFC 5280).<a href="#appendix-A-5.1.1" class="pilcrow">¶</a></p>
+          <p id="appendix-A-5.1.1">Certificate is defined in <span>[<a href="#X.509" class="cite xref">X.509</a>]</span>.<a href="#appendix-A-5.1.1" class="pilcrow">¶</a></p>
 </li>
         <li class="normal" id="appendix-A-5.2">
-          <p id="appendix-A-5.2.1">ContentInfo is defined in CMS (RFC 5652).<a href="#appendix-A-5.2.1" class="pilcrow">¶</a></p>
+          <p id="appendix-A-5.2.1">ContentInfo is defined in <span>[<a href="#CMS" class="cite xref">CMS</a>]</span>.<a href="#appendix-A-5.2.1" class="pilcrow">¶</a></p>
 </li>
       </ul>
-<p id="appendix-A-6">All implementations <span class="bcp14">MUST</span> strictly adhere to these schemas. Any deviation in structure or encoding may result in verification failures.<a href="#appendix-A-6" class="pilcrow">¶</a></p>
-</section>
-</div>
-<div id="oid-registry">
-<section id="appendix-B">
-      <h2 id="name-oid-registry">
-<a href="#appendix-B" class="section-number selfRef">Appendix B. </a><a href="#name-oid-registry" class="section-name selfRef">OID Registry</a>
-      </h2>
-<p id="appendix-B-1">The following Object Identifiers (OIDs) are defined for use in the DomainAuth protocol:<a href="#appendix-B-1" class="pilcrow">¶</a></p>
-<ol start="1" type="1" class="normal type-1" id="appendix-B-2">
-<li id="appendix-B-2.1">
-          <p id="appendix-B-2.1.1"><strong>DomainAuth Base OID:</strong><a href="#appendix-B-2.1.1" class="pilcrow">¶</a></p>
-<ul class="normal">
-<li class="normal" id="appendix-B-2.1.2.1">
-              <p id="appendix-B-2.1.2.1.1"><code>1.3.6.1.4.1.58708.1</code> (iso.org.dod.internet.private.enterprise.relaycorp.domainauth).<a href="#appendix-B-2.1.2.1.1" class="pilcrow">¶</a></p>
-</li>
-          </ul>
-</li>
-        <li id="appendix-B-2.2">
-          <p id="appendix-B-2.2.1"><strong>Protocol OIDs:</strong><a href="#appendix-B-2.2.1" class="pilcrow">¶</a></p>
-<ul class="normal">
-<li class="normal" id="appendix-B-2.2.2.1">
-              <p id="appendix-B-2.2.2.1.1"><code>1.3.6.1.4.1.58708.1.0</code>: Signature Metadata Attribute.<a href="#appendix-B-2.2.2.1.1" class="pilcrow">¶</a></p>
-</li>
-            <li class="normal" id="appendix-B-2.2.2.2">
-              <p id="appendix-B-2.2.2.2.1"><code>1.3.6.1.4.1.58708.1.2</code>: Member Attribution Attribute.<a href="#appendix-B-2.2.2.2.1" class="pilcrow">¶</a></p>
-</li>
-          </ul>
-</li>
-        <li id="appendix-B-2.3">
-          <p id="appendix-B-2.3.1"><strong>Service OIDs:</strong><a href="#appendix-B-2.3.1" class="pilcrow">¶</a></p>
-<ul class="normal">
-<li class="normal" id="appendix-B-2.3.2.1">
-              <p id="appendix-B-2.3.2.1.1"><code>1.3.6.1.4.1.58708.1.1</code>: Test Service.<a href="#appendix-B-2.3.2.1.1" class="pilcrow">¶</a></p>
-</li>
-          </ul>
-</li>
-      </ol>
-<p id="appendix-B-3">Third-party services implementing DomainAuth <span class="bcp14">MUST</span> register and use their own OIDs under their own arcs. The DomainAuth OID arc (<code>1.3.6.1.4.1.58708.1</code>) is reserved exclusively for official services and protocol components under the DomainAuth project umbrella.<a href="#appendix-B-3" class="pilcrow">¶</a></p>
-<p id="appendix-B-4">OID registration procedures:<a href="#appendix-B-4" class="pilcrow">¶</a></p>
-<ol start="1" type="1" class="normal type-1" id="appendix-B-5">
-<li id="appendix-B-5.1">
-          <p id="appendix-B-5.1.1">OIDs under the DomainAuth base OID are managed by the DomainAuth maintainers and reserved for official DomainAuth project purposes.<a href="#appendix-B-5.1.1" class="pilcrow">¶</a></p>
-</li>
-        <li id="appendix-B-5.2">
-          <p id="appendix-B-5.2.1">Third parties <span class="bcp14">MUST NOT</span> use OIDs under the DomainAuth arc for their services.<a href="#appendix-B-5.2.1" class="pilcrow">¶</a></p>
-</li>
-        <li id="appendix-B-5.3">
-          <p id="appendix-B-5.3.1">Third parties without their own OID arc <span class="bcp14">SHOULD</span> obtain one from their national registration authority or through IANA's Private Enterprise Number (PEN) registry.<a href="#appendix-B-5.3.1" class="pilcrow">¶</a></p>
-</li>
-        <li id="appendix-B-5.4">
-          <p id="appendix-B-5.4.1">Once allocated, OIDs are never reassigned to different services.<a href="#appendix-B-5.4.1" class="pilcrow">¶</a></p>
-</li>
-      </ol>
-<p id="appendix-B-6">Services <span class="bcp14">SHOULD</span> use versioning in their OID structure to manage protocol evolution. Major, incompatible changes <span class="bcp14">SHOULD</span> use a new OID, whilst minor, backward-compatible changes <span class="bcp14">MAY</span> use the same OID.<a href="#appendix-B-6" class="pilcrow">¶</a></p>
+<p id="appendix-A-6">All implementations <span class="bcp14">MUST</span> strictly adhere to these schemas.<a href="#appendix-A-6" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="implementation-guidance">
-<section id="appendix-C">
+<section id="appendix-B">
       <h2 id="name-implementation-guidance">
-<a href="#appendix-C" class="section-number selfRef">Appendix C. </a><a href="#name-implementation-guidance" class="section-name selfRef">Implementation Guidance</a>
+<a href="#appendix-B" class="section-number selfRef">Appendix B. </a><a href="#name-implementation-guidance" class="section-name selfRef">Implementation Guidance</a>
       </h2>
 <div id="performance-optimisations">
-<section id="appendix-C.1">
+<section id="appendix-B.1">
         <h3 id="name-performance-optimisations">
-<a href="#appendix-C.1" class="section-number selfRef">C.1. </a><a href="#name-performance-optimisations" class="section-name selfRef">Performance Optimisations</a>
+<a href="#appendix-B.1" class="section-number selfRef">B.1. </a><a href="#name-performance-optimisations" class="section-name selfRef">Performance Optimisations</a>
         </h3>
-<p id="appendix-C.1-1">DomainAuth implementations can benefit from several performance optimisations whilst maintaining security:<a href="#appendix-C.1-1" class="pilcrow">¶</a></p>
-<ol start="1" type="1" class="normal type-1" id="appendix-C.1-2">
-<li id="appendix-C.1-2.1">
-            <p id="appendix-C.1-2.1.1"><strong>Caching Strategies:</strong><a href="#appendix-C.1-2.1.1" class="pilcrow">¶</a></p>
+<p id="appendix-B.1-1">DomainAuth implementations can benefit from several performance optimisations whilst maintaining security:<a href="#appendix-B.1-1" class="pilcrow">¶</a></p>
+<ol start="1" type="1" class="normal type-1" id="appendix-B.1-2">
+<li id="appendix-B.1-2.1">
+            <p id="appendix-B.1-2.1.1"><strong>Caching Strategies:</strong><a href="#appendix-B.1-2.1.1" class="pilcrow">¶</a></p>
 <ul class="normal">
-<li class="normal" id="appendix-C.1-2.1.2.1">
-                <p id="appendix-C.1-2.1.2.1.1">Cache parsed certificates and DNSSEC chains to avoid repeated parsing.<a href="#appendix-C.1-2.1.2.1.1" class="pilcrow">¶</a></p>
+<li class="normal" id="appendix-B.1-2.1.2.1">
+                <p id="appendix-B.1-2.1.2.1.1">Cache parsed certificates and DNSSEC chains to avoid repeated parsing.<a href="#appendix-B.1-2.1.2.1.1" class="pilcrow">¶</a></p>
 </li>
-              <li class="normal" id="appendix-C.1-2.1.2.2">
-                <p id="appendix-C.1-2.1.2.2.1">Cache verification results for the duration of their validity.<a href="#appendix-C.1-2.1.2.2.1" class="pilcrow">¶</a></p>
+              <li class="normal" id="appendix-B.1-2.1.2.2">
+                <p id="appendix-B.1-2.1.2.2.1">Cache verification results for the duration of their validity.<a href="#appendix-B.1-2.1.2.2.1" class="pilcrow">¶</a></p>
 </li>
-              <li class="normal" id="appendix-C.1-2.1.2.3">
-                <p id="appendix-C.1-2.1.2.3.1">Use LRU (Least Recently Used) or similar algorithms for cache management.<a href="#appendix-C.1-2.1.2.3.1" class="pilcrow">¶</a></p>
+              <li class="normal" id="appendix-B.1-2.1.2.3">
+                <p id="appendix-B.1-2.1.2.3.1">Use LRU (Least Recently Used) or similar algorithms for cache management.<a href="#appendix-B.1-2.1.2.3.1" class="pilcrow">¶</a></p>
 </li>
-              <li class="normal" id="appendix-C.1-2.1.2.4">
-                <p id="appendix-C.1-2.1.2.4.1">Ensure cache entries are invalidated when they expire.<a href="#appendix-C.1-2.1.2.4.1" class="pilcrow">¶</a></p>
+              <li class="normal" id="appendix-B.1-2.1.2.4">
+                <p id="appendix-B.1-2.1.2.4.1">Ensure cache entries are invalidated when they expire.<a href="#appendix-B.1-2.1.2.4.1" class="pilcrow">¶</a></p>
 </li>
             </ul>
 </li>
-          <li id="appendix-C.1-2.2">
-            <p id="appendix-C.1-2.2.1"><strong>Size Optimisations:</strong><a href="#appendix-C.1-2.2.1" class="pilcrow">¶</a></p>
+          <li id="appendix-B.1-2.2">
+            <p id="appendix-B.1-2.2.1"><strong>Size Optimisations:</strong><a href="#appendix-B.1-2.2.1" class="pilcrow">¶</a></p>
 <ul class="normal">
-<li class="normal" id="appendix-C.1-2.2.2.1">
-                <p id="appendix-C.1-2.2.2.1.1">Minimise the size of DNSSEC chains by removing redundant records.<a href="#appendix-C.1-2.2.2.1.1" class="pilcrow">¶</a></p>
+<li class="normal" id="appendix-B.1-2.2.2.1">
+                <p id="appendix-B.1-2.2.2.1.1">Minimise the size of DNSSEC chains by removing redundant records.<a href="#appendix-B.1-2.2.2.1.1" class="pilcrow">¶</a></p>
 </li>
-              <li class="normal" id="appendix-C.1-2.2.2.2">
-                <p id="appendix-C.1-2.2.2.2.1">Use the minimum required set of certificates in signature bundles.<a href="#appendix-C.1-2.2.2.2.1" class="pilcrow">¶</a></p>
+              <li class="normal" id="appendix-B.1-2.2.2.2">
+                <p id="appendix-B.1-2.2.2.2.1">Use the minimum required set of certificates in signature bundles.<a href="#appendix-B.1-2.2.2.2.1" class="pilcrow">¶</a></p>
 </li>
-              <li class="normal" id="appendix-C.1-2.2.2.3">
-                <p id="appendix-C.1-2.2.2.3.1">Consider compression for storage or transmission (whilst maintaining original formats for cryptographic operations).<a href="#appendix-C.1-2.2.2.3.1" class="pilcrow">¶</a></p>
+              <li class="normal" id="appendix-B.1-2.2.2.3">
+                <p id="appendix-B.1-2.2.2.3.1">Consider compression for storage or transmission (whilst maintaining original formats for cryptographic operations).<a href="#appendix-B.1-2.2.2.3.1" class="pilcrow">¶</a></p>
 </li>
             </ul>
 </li>
-          <li id="appendix-C.1-2.3">
-            <p id="appendix-C.1-2.3.1"><strong>Computational Efficiency:</strong><a href="#appendix-C.1-2.3.1" class="pilcrow">¶</a></p>
+          <li id="appendix-B.1-2.3">
+            <p id="appendix-B.1-2.3.1"><strong>Computational Efficiency:</strong><a href="#appendix-B.1-2.3.1" class="pilcrow">¶</a></p>
 <ul class="normal">
-<li class="normal" id="appendix-C.1-2.3.2.1">
-                <p id="appendix-C.1-2.3.2.1.1">Use efficient ASN.1 parsing libraries.<a href="#appendix-C.1-2.3.2.1.1" class="pilcrow">¶</a></p>
+<li class="normal" id="appendix-B.1-2.3.2.1">
+                <p id="appendix-B.1-2.3.2.1.1">Use efficient ASN.1 parsing libraries.<a href="#appendix-B.1-2.3.2.1.1" class="pilcrow">¶</a></p>
 </li>
-              <li class="normal" id="appendix-C.1-2.3.2.2">
-                <p id="appendix-C.1-2.3.2.2.1">Implement lazy parsing for large structures.<a href="#appendix-C.1-2.3.2.2.1" class="pilcrow">¶</a></p>
+              <li class="normal" id="appendix-B.1-2.3.2.2">
+                <p id="appendix-B.1-2.3.2.2.1">Implement lazy parsing for large structures.<a href="#appendix-B.1-2.3.2.2.1" class="pilcrow">¶</a></p>
 </li>
-              <li class="normal" id="appendix-C.1-2.3.2.3">
-                <p id="appendix-C.1-2.3.2.3.1">Consider hardware acceleration for cryptographic operations when available.<a href="#appendix-C.1-2.3.2.3.1" class="pilcrow">¶</a></p>
+              <li class="normal" id="appendix-B.1-2.3.2.3">
+                <p id="appendix-B.1-2.3.2.3.1">Consider hardware acceleration for cryptographic operations when available.<a href="#appendix-B.1-2.3.2.3.1" class="pilcrow">¶</a></p>
 </li>
-              <li class="normal" id="appendix-C.1-2.3.2.4">
-                <p id="appendix-C.1-2.3.2.4.1">Batch operations when processing multiple signatures.<a href="#appendix-C.1-2.3.2.4.1" class="pilcrow">¶</a></p>
+              <li class="normal" id="appendix-B.1-2.3.2.4">
+                <p id="appendix-B.1-2.3.2.4.1">Batch operations when processing multiple signatures.<a href="#appendix-B.1-2.3.2.4.1" class="pilcrow">¶</a></p>
 </li>
             </ul>
 </li>
-          <li id="appendix-C.1-2.4">
-            <p id="appendix-C.1-2.4.1"><strong>Memory Management:</strong><a href="#appendix-C.1-2.4.1" class="pilcrow">¶</a></p>
+          <li id="appendix-B.1-2.4">
+            <p id="appendix-B.1-2.4.1"><strong>Memory Management:</strong><a href="#appendix-B.1-2.4.1" class="pilcrow">¶</a></p>
 <ul class="normal">
-<li class="normal" id="appendix-C.1-2.4.2.1">
-                <p id="appendix-C.1-2.4.2.1.1">Implement streaming processing for large documents.<a href="#appendix-C.1-2.4.2.1.1" class="pilcrow">¶</a></p>
+<li class="normal" id="appendix-B.1-2.4.2.1">
+                <p id="appendix-B.1-2.4.2.1.1">Implement streaming processing for large documents.<a href="#appendix-B.1-2.4.2.1.1" class="pilcrow">¶</a></p>
 </li>
-              <li class="normal" id="appendix-C.1-2.4.2.2">
-                <p id="appendix-C.1-2.4.2.2.1">Avoid keeping entire documents in memory when possible.<a href="#appendix-C.1-2.4.2.2.1" class="pilcrow">¶</a></p>
+              <li class="normal" id="appendix-B.1-2.4.2.2">
+                <p id="appendix-B.1-2.4.2.2.1">Avoid keeping entire documents in memory when possible.<a href="#appendix-B.1-2.4.2.2.1" class="pilcrow">¶</a></p>
 </li>
-              <li class="normal" id="appendix-C.1-2.4.2.3">
-                <p id="appendix-C.1-2.4.2.3.1">Free resources promptly after use.<a href="#appendix-C.1-2.4.2.3.1" class="pilcrow">¶</a></p>
+              <li class="normal" id="appendix-B.1-2.4.2.3">
+                <p id="appendix-B.1-2.4.2.3.1">Free resources promptly after use.<a href="#appendix-B.1-2.4.2.3.1" class="pilcrow">¶</a></p>
 </li>
-              <li class="normal" id="appendix-C.1-2.4.2.4">
-                <p id="appendix-C.1-2.4.2.4.1">Consider memory constraints on resource-limited devices.<a href="#appendix-C.1-2.4.2.4.1" class="pilcrow">¶</a></p>
+              <li class="normal" id="appendix-B.1-2.4.2.4">
+                <p id="appendix-B.1-2.4.2.4.1">Consider memory constraints on resource-limited devices.<a href="#appendix-B.1-2.4.2.4.1" class="pilcrow">¶</a></p>
 </li>
             </ul>
 </li>
-          <li id="appendix-C.1-2.5">
-            <p id="appendix-C.1-2.5.1"><strong>Parallel Processing:</strong><a href="#appendix-C.1-2.5.1" class="pilcrow">¶</a></p>
+          <li id="appendix-B.1-2.5">
+            <p id="appendix-B.1-2.5.1"><strong>Parallel Processing:</strong><a href="#appendix-B.1-2.5.1" class="pilcrow">¶</a></p>
 <ul class="normal">
-<li class="normal" id="appendix-C.1-2.5.2.1">
-                <p id="appendix-C.1-2.5.2.1.1">Parallelise independent verification steps when possible.<a href="#appendix-C.1-2.5.2.1.1" class="pilcrow">¶</a></p>
+<li class="normal" id="appendix-B.1-2.5.2.1">
+                <p id="appendix-B.1-2.5.2.1.1">Parallelise independent verification steps when possible.<a href="#appendix-B.1-2.5.2.1.1" class="pilcrow">¶</a></p>
 </li>
-              <li class="normal" id="appendix-C.1-2.5.2.2">
-                <p id="appendix-C.1-2.5.2.2.1">Consider using worker threads for CPU-intensive operations.<a href="#appendix-C.1-2.5.2.2.1" class="pilcrow">¶</a></p>
+              <li class="normal" id="appendix-B.1-2.5.2.2">
+                <p id="appendix-B.1-2.5.2.2.1">Consider using worker threads for CPU-intensive operations.<a href="#appendix-B.1-2.5.2.2.1" class="pilcrow">¶</a></p>
 </li>
-              <li class="normal" id="appendix-C.1-2.5.2.3">
-                <p id="appendix-C.1-2.5.2.3.1">Balance parallelisation benefits against overhead costs.<a href="#appendix-C.1-2.5.2.3.1" class="pilcrow">¶</a></p>
+              <li class="normal" id="appendix-B.1-2.5.2.3">
+                <p id="appendix-B.1-2.5.2.3.1">Balance parallelisation benefits against overhead costs.<a href="#appendix-B.1-2.5.2.3.1" class="pilcrow">¶</a></p>
 </li>
             </ul>
 </li>
@@ -2974,91 +2920,110 @@ MemberAttribution ::= UTF8String
 </section>
 </div>
 <div id="implementation-recommendations">
-<section id="appendix-C.2">
+<section id="appendix-B.2">
         <h3 id="name-implementation-recommendati">
-<a href="#appendix-C.2" class="section-number selfRef">C.2. </a><a href="#name-implementation-recommendati" class="section-name selfRef">Implementation Recommendations</a>
+<a href="#appendix-B.2" class="section-number selfRef">B.2. </a><a href="#name-implementation-recommendati" class="section-name selfRef">Implementation Recommendations</a>
         </h3>
-<ol start="1" type="1" class="normal type-1" id="appendix-C.2-1">
-<li id="appendix-C.2-1.1">
-            <p id="appendix-C.2-1.1.1"><strong>Library/SDK Design:</strong>
+<ol start="1" type="1" class="normal type-1" id="appendix-B.2-1">
+<li id="appendix-B.2-1.1">
+            <p id="appendix-B.2-1.1.1"><strong>Library/SDK Design:</strong>
   - DomainAuth libraries and SDKs <span class="bcp14">SHOULD</span> provide distinct functions for creating member signatures and organisation signatures.
   - Verification functions <span class="bcp14">SHOULD</span> be unified, with the signature type included in the verification output.
-  - Libraries <span class="bcp14">SHOULD NOT</span> require developers to specify the signature type during verification, as this should be determined automatically from the signature bundle.<a href="#appendix-C.2-1.1.1" class="pilcrow">¶</a></p>
+  - Libraries <span class="bcp14">SHOULD NOT</span> require developers to specify the signature type during verification, as this should be determined automatically from the signature bundle.<a href="#appendix-B.2-1.1.1" class="pilcrow">¶</a></p>
 </li>
-          <li id="appendix-C.2-1.2">
-            <p id="appendix-C.2-1.2.1"><strong>Use Case Considerations:</strong>
+          <li id="appendix-B.2-1.2">
+            <p id="appendix-B.2-1.2.1"><strong>Use Case Considerations:</strong>
   - Member signatures are recommended for applications where non-repudiation at the individual level is critical.
-  - Organisation signatures with member attribution are appropriate for applications where certificate management for individual members is impractical or where organisational accountability is sufficient.<a href="#appendix-C.2-1.2.1" class="pilcrow">¶</a></p>
+  - Organisation signatures with member attribution are appropriate for applications where certificate management for individual members is impractical or where organisational accountability is sufficient.<a href="#appendix-B.2-1.2.1" class="pilcrow">¶</a></p>
 </li>
-          <li id="appendix-C.2-1.3">
-            <p id="appendix-C.2-1.3.1"><strong>Hybrid Approaches:</strong>
+          <li id="appendix-B.2-1.3">
+            <p id="appendix-B.2-1.3.1"><strong>Hybrid Approaches:</strong>
   - Some applications may benefit from supporting both signature types, allowing flexibility based on the specific context or user role.
-  - In hybrid implementations, clear policies should govern when each signature type is used.<a href="#appendix-C.2-1.3.1" class="pilcrow">¶</a></p>
+  - In hybrid implementations, clear policies should govern when each signature type is used.<a href="#appendix-B.2-1.3.1" class="pilcrow">¶</a></p>
 </li>
         </ol>
 </section>
 </div>
 <div id="service-design">
-<section id="appendix-C.3">
+<section id="appendix-B.3">
         <h3 id="name-service-design">
-<a href="#appendix-C.3" class="section-number selfRef">C.3. </a><a href="#name-service-design" class="section-name selfRef">Service Design</a>
+<a href="#appendix-B.3" class="section-number selfRef">B.3. </a><a href="#name-service-design" class="section-name selfRef">Service Design</a>
         </h3>
-<p id="appendix-C.3-1">Service designers <span class="bcp14">MUST</span> obtain a unique OID for their service outside the DomainAuth OID arc. E.g. randomly generated ones.
-- Include version information in their OID structure, or include version information in the service plaintexts.<a href="#appendix-C.3-1" class="pilcrow">¶</a></p>
-<p id="appendix-C.3-2">Services using DomainAuth <span class="bcp14">MAY</span> define additional validation rules beyond the core protocol requirements. These rules allow services to implement domain-specific security policies.<a href="#appendix-C.3-2" class="pilcrow">¶</a></p>
-<ol start="1" type="1" class="normal type-1" id="appendix-C.3-3">
-<li id="appendix-C.3-3.1">
-            <p id="appendix-C.3-3.1.1"><strong>TTL Constraints:</strong>
+<p id="appendix-B.3-1">Service designers <span class="bcp14">MUST</span> obtain a unique OID for their service outside the DomainAuth OID arc. E.g. randomly generated ones.
+- Include version information in their OID structure, or include version information in the service plaintexts.<a href="#appendix-B.3-1" class="pilcrow">¶</a></p>
+<p id="appendix-B.3-2">Services using DomainAuth <span class="bcp14">MAY</span> define additional validation rules beyond the core protocol requirements. These rules allow services to implement domain-specific security policies.<a href="#appendix-B.3-2" class="pilcrow">¶</a></p>
+<ol start="1" type="1" class="normal type-1" id="appendix-B.3-3">
+<li id="appendix-B.3-3.1">
+            <p id="appendix-B.3-3.1.1"><strong>TTL Constraints:</strong>
   - Services <span class="bcp14">MUST</span> specify a maximum TTL for signatures.
   - The TTL <span class="bcp14">MUST</span> be within the range of 1 second to the limit specified in <a href="#maximum-validity-period" class="auto internal xref">Section 9</a>.
   - For the minimum TTL, several minutes is recommended to account for clock drift.
-  - Services <span class="bcp14">SHOULD</span> choose the shortest TTL that meets their requirements.<a href="#appendix-C.3-3.1.1" class="pilcrow">¶</a></p>
+  - Services <span class="bcp14">SHOULD</span> choose the shortest TTL that meets their requirements.<a href="#appendix-B.3-3.1.1" class="pilcrow">¶</a></p>
 </li>
-          <li id="appendix-C.3-3.2">
-            <p id="appendix-C.3-3.2.1"><strong>Content Type Restrictions:</strong>
+          <li id="appendix-B.3-3.2">
+            <p id="appendix-B.3-3.2.1"><strong>Content Type Restrictions:</strong>
   - Services <span class="bcp14">MAY</span> restrict the types of content that can be signed.
   - Content type restrictions <span class="bcp14">SHOULD</span> be documented in the service specification.
-  - Verifiers <span class="bcp14">SHOULD</span> check content type compliance during verification.<a href="#appendix-C.3-3.2.1" class="pilcrow">¶</a></p>
+  - Verifiers <span class="bcp14">SHOULD</span> check content type compliance during verification.<a href="#appendix-B.3-3.2.1" class="pilcrow">¶</a></p>
 </li>
-          <li id="appendix-C.3-3.3">
-            <p id="appendix-C.3-3.3.1"><strong>Member Type Restrictions:</strong>
+          <li id="appendix-B.3-3.3">
+            <p id="appendix-B.3-3.3.1"><strong>Member Type Restrictions:</strong>
   - Services <span class="bcp14">MAY</span> restrict which member types can produce valid signatures.
   - For example, a service might only accept signatures from users (not bots).
-  - Such restrictions <span class="bcp14">SHOULD</span> be enforced during verification.<a href="#appendix-C.3-3.3.1" class="pilcrow">¶</a></p>
+  - Such restrictions <span class="bcp14">SHOULD</span> be enforced during verification.<a href="#appendix-B.3-3.3.1" class="pilcrow">¶</a></p>
 </li>
-          <li id="appendix-C.3-3.4">
-            <p id="appendix-C.3-3.4.1"><strong>Certificate Extensions:</strong>
+          <li id="appendix-B.3-3.4">
+            <p id="appendix-B.3-3.4.1"><strong>Certificate Extensions:</strong>
   - Services <span class="bcp14">MAY</span> define custom certificate extensions for additional authorisation.
   - Such extensions <span class="bcp14">SHOULD</span> be clearly documented.
-  - Verifiers <span class="bcp14">MUST</span> check for and validate any required extensions.<a href="#appendix-C.3-3.4.1" class="pilcrow">¶</a></p>
+  - Verifiers <span class="bcp14">MUST</span> check for and validate any required extensions.<a href="#appendix-B.3-3.4.1" class="pilcrow">¶</a></p>
 </li>
         </ol>
-<p id="appendix-C.3-4">Service designers <span class="bcp14">SHOULD</span> document their validation rules comprehensively to ensure consistent implementation across different verifiers. These rules <span class="bcp14">SHOULD</span> be designed to maintain the security properties of the DomainAuth protocol whilst addressing service-specific requirements.<a href="#appendix-C.3-4" class="pilcrow">¶</a></p>
+<p id="appendix-B.3-4">Service designers <span class="bcp14">SHOULD</span> document their validation rules comprehensively to ensure consistent implementation across different verifiers. These rules <span class="bcp14">SHOULD</span> be designed to maintain the security properties of the DomainAuth protocol whilst addressing service-specific requirements.<a href="#appendix-B.3-4" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="user-interface-guidelines">
-<section id="appendix-C.4">
+<section id="appendix-B.4">
         <h3 id="name-user-interface-guidelines">
-<a href="#appendix-C.4" class="section-number selfRef">C.4. </a><a href="#name-user-interface-guidelines" class="section-name selfRef">User Interface Guidelines</a>
+<a href="#appendix-B.4" class="section-number selfRef">B.4. </a><a href="#name-user-interface-guidelines" class="section-name selfRef">User Interface Guidelines</a>
         </h3>
-<ol start="1" type="1" class="normal type-1" id="appendix-C.4-1">
-<li id="appendix-C.4-1.1">
-            <p id="appendix-C.4-1.1.1"><strong>Signature Type Indication:</strong> User interfaces <span class="bcp14">SHOULD</span> clearly indicate whether a signature is a member signature or an organisation signature with member attribution. Different visual indicators (icons, colors, labels) <span class="bcp14">SHOULD</span> be used to distinguish between the two signature types.<a href="#appendix-C.4-1.1.1" class="pilcrow">¶</a></p>
+<ol start="1" type="1" class="normal type-1" id="appendix-B.4-1">
+<li id="appendix-B.4-1.1">
+            <p id="appendix-B.4-1.1.1"><strong>Signature Type Indication:</strong> User interfaces <span class="bcp14">SHOULD</span> clearly indicate whether a signature is a member signature or an organisation signature with member attribution. Different visual indicators (icons, colors, labels) <span class="bcp14">SHOULD</span> be used to distinguish between the two signature types.<a href="#appendix-B.4-1.1.1" class="pilcrow">¶</a></p>
 </li>
-          <li id="appendix-C.4-1.2">
-            <p id="appendix-C.4-1.2.1"><strong>Attribution Presentation:</strong> For organisation signatures, interfaces <span class="bcp14">SHOULD</span> clearly indicate that the member attribution is a claim made by the organisation, not cryptographic proof. Example phrasing: <code>Signed by example.com on behalf of alice</code> rather than <code>Signed by alice of example.com</code>.<a href="#appendix-C.4-1.2.1" class="pilcrow">¶</a></p>
+          <li id="appendix-B.4-1.2">
+            <p id="appendix-B.4-1.2.1"><strong>Attribution Presentation:</strong> For organisation signatures, interfaces <span class="bcp14">SHOULD</span> clearly indicate that the member attribution is a claim made by the organisation, not cryptographic proof. Example phrasing: <code>Signed by example.com on behalf of alice</code> rather than <code>Signed by alice of example.com</code>.<a href="#appendix-B.4-1.2.1" class="pilcrow">¶</a></p>
 </li>
-          <li id="appendix-C.4-1.3">
-            <p id="appendix-C.4-1.3.1"><strong>Verification Details:</strong> Interfaces <span class="bcp14">SHOULD</span> provide access to detailed verification information, including the full certification path and validity periods. Advanced users <span class="bcp14">SHOULD</span> be able to view the complete verification process and results.<a href="#appendix-C.4-1.3.1" class="pilcrow">¶</a></p>
+          <li id="appendix-B.4-1.3">
+            <p id="appendix-B.4-1.3.1"><strong>Verification Details:</strong> Interfaces <span class="bcp14">SHOULD</span> provide access to detailed verification information, including the full certification path and validity periods. Advanced users <span class="bcp14">SHOULD</span> be able to view the complete verification process and results.<a href="#appendix-B.4-1.3.1" class="pilcrow">¶</a></p>
 </li>
-          <li id="appendix-C.4-1.4">
-            <p id="appendix-C.4-1.4.1"><strong>Error Handling:</strong> Clear error messages <span class="bcp14">SHOULD</span> be displayed when verification fails, with appropriate guidance for users. Different error handling may be appropriate for different signature types, reflecting their distinct trust models.<a href="#appendix-C.4-1.4.1" class="pilcrow">¶</a></p>
+          <li id="appendix-B.4-1.4">
+            <p id="appendix-B.4-1.4.1"><strong>Error Handling:</strong> Clear error messages <span class="bcp14">SHOULD</span> be displayed when verification fails, with appropriate guidance for users. Different error handling may be appropriate for different signature types, reflecting their distinct trust models.<a href="#appendix-B.4-1.4.1" class="pilcrow">¶</a></p>
 </li>
         </ol>
-<p id="appendix-C.4-2">Signatures from bots <span class="bcp14">MUST</span> be attributed to the organisation and the member name <span class="bcp14">MUST</span> be absent (not an empty string or at sign).<a href="#appendix-C.4-2" class="pilcrow">¶</a></p>
-<p id="appendix-C.4-3">User interfaces <span class="bcp14">MUST NOT</span> truncate user names or domain names, and they <span class="bcp14">MUST</span> visually distinguish the domain portion of identifiers.<a href="#appendix-C.4-3" class="pilcrow">¶</a></p>
+<p id="appendix-B.4-2">Signatures from bots <span class="bcp14">MUST</span> be attributed to the organisation and the member name <span class="bcp14">MUST</span> be absent (not an empty string or at sign).<a href="#appendix-B.4-2" class="pilcrow">¶</a></p>
+<p id="appendix-B.4-3">User interfaces <span class="bcp14">MUST NOT</span> truncate user names or domain names, and they <span class="bcp14">MUST</span> visually distinguish the domain portion of identifiers.<a href="#appendix-B.4-3" class="pilcrow">¶</a></p>
 </section>
 </div>
+</section>
+</div>
+<div id="oid-registry">
+<section id="appendix-C">
+      <h2 id="name-oid-registry">
+<a href="#appendix-C" class="section-number selfRef">Appendix C. </a><a href="#name-oid-registry" class="section-name selfRef">OID Registry</a>
+      </h2>
+<p id="appendix-C-1">The following Object Identifiers (OIDs) are defined for use in the DomainAuth protocol, under the <code>1.3.6.1.4.1.58708.1</code> (iso.org.dod.internet.private.enterprise.relaycorp.domainauth) arc:<a href="#appendix-C-1" class="pilcrow">¶</a></p>
+<ul class="normal">
+<li class="normal" id="appendix-C-2.1">
+          <p id="appendix-C-2.1.1"><code>1.3.6.1.4.1.58708.1.0</code>: Signature Metadata Attribute.<a href="#appendix-C-2.1.1" class="pilcrow">¶</a></p>
+</li>
+        <li class="normal" id="appendix-C-2.2">
+          <p id="appendix-C-2.2.1"><code>1.3.6.1.4.1.58708.1.1</code>: Test Service.<a href="#appendix-C-2.2.1" class="pilcrow">¶</a></p>
+</li>
+        <li class="normal" id="appendix-C-2.3">
+          <p id="appendix-C-2.3.1"><code>1.3.6.1.4.1.58708.1.2</code>: Member Attribution Attribute.<a href="#appendix-C-2.3.1" class="pilcrow">¶</a></p>
+</li>
+      </ul>
 </section>
 </div>
 <div id="acknowledgements">

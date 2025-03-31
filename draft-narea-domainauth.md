@@ -44,6 +44,7 @@ normative:
     date: 1994
     seriesinfo:
       ITU-T: Recommendation X.690
+  RFC4086:
   RFC7942:
   RFC4055:
   RFC4056:
@@ -632,23 +633,7 @@ To mitigate phishing attacks leveraging user names, such names MUST be normalise
 
 ## Domain Ownership Changes
 
-Domain transfers present specific security challenges for the DomainAuth protocol:
-
-1. **Waiting Period:**
-   - Organisations SHOULD delay implementing DomainAuth until at least the period specified in {{maximum-validity-period}} has elapsed since the domain was registered or acquired.
-   - This prevents the DNSSEC chain from the previous owner from remaining valid.
-2. **Signature Validity After Transfer:**
-   - Signatures created before a domain transfer remain cryptographically valid.
-   - Verifiers MAY implement additional checks for recent domain transfers.
-   - Service policies SHOULD address the handling of signatures across ownership changes.
-3. **Domain Expiration:**
-   - Expired domains can be registered by new owners.
-   - Verifiers SHOULD consider domain registration date when processing signatures.
-   - Signatures SHOULD NOT be trusted if the domain has changed hands since issuance.
-4. **Subdomain Delegation:**
-   - Changes in subdomain delegation may affect DomainAuth verification.
-   - Organisations SHOULD carefully manage subdomain delegation.
-   - Signature verification considers the state of delegations at verification time.
+Organisations SHOULD delay implementing DomainAuth until at least the period specified in {{maximum-validity-period}} has elapsed since the domain was registered or acquired. This prevents the DNSSEC chain from the previous owner from remaining valid.
 
 Domain ownership changes represent a fundamental challenge to any domain-based authentication system. DomainAuth's approach of using short-lived certificates and signatures helps mitigate these risks by limiting the time window during which historical signatures remain valid.
 
@@ -656,86 +641,41 @@ Domain ownership changes represent a fundamental challenge to any domain-based a
 
 Offline verification introduces specific security considerations:
 
-1. **Time Synchronisation:**
-   - Accurate verification requires correct system time.
-   - Devices with incorrect clocks may incorrectly validate expired signatures.
-   - Implementations SHOULD check for obviously incorrect system time.
-   - Critical applications SHOULD use external time sources when available.
-2. **Replay Attacks:**
-   - Valid signatures can be replayed beyond their intended context.
-   - Services SHOULD implement additional measures (e.g., nonces) for replay-sensitive operations.
-   - Signature metadata SHOULD include context-specific information when appropriate.
-3. **Revocation Limitations:**
-   - Offline verification cannot check real-time revocation status.
-   - The protocol relies on short validity periods rather than revocation checking.
-   - In high-security contexts, verification SHOULD go online when possible to check current status.
-4. **Freshness Guarantees:**
-   - Offline verification can only guarantee that a signature was valid at some point.
-   - Applications requiring strong freshness guarantees SHOULD use additional mechanisms.
-   - The signature validity period provides some time-bounding guarantees.
-5. **Network Partition Attacks:**
-   - Adversaries may attempt to prevent devices from going online to check current status.
-   - Applications SHOULD track and report extended offline periods.
-   - Critical operations MAY require periodic online connectivity.
-
-These limitations are inherent to any offline verification system and reflect fundamental tradeoffs between availability and security. DomainAuth provides a balanced approach that offers strong verification guarantees whilst supporting offline operation.
-
-## Organisation Signatures and Member Attribution
-
-Organisation signatures with member attribution introduce specific security considerations that implementers and developers should be aware of:
-
-1. **Trust Model Shift:**
-   - Member signatures provide cryptographic proof that a specific member created the content, with the member's private key directly signing the content.
-   - Organisation signatures with member attribution provide only a claim by the organisation about which member authored the content, without cryptographic proof from the member.
-   - This distinction represents a fundamental shift in the trust model from cryptographic verification to organisational attestation.
-2. **Potential for Misattribution:**
-   - Organisations have the technical ability to attribute content to any member, whether or not that member actually created the content.
-   - Malicious or compromised organisations could falsely attribute content to members who did not create it.
-   - This risk is mitigated by the fact that the organisation must still sign the content with its private key, creating an auditable record of the attribution.
-3. **Accountability Considerations:**
-   - Member signatures create direct cryptographic accountability for the member.
-   - Organisation signatures shift accountability to the organisation, even when content is attributed to a specific member.
-   - Legal and regulatory frameworks may treat these different types of signatures differently with respect to non-repudiation and liability.
-4. **Operational Security:**
-   - Organisation signatures require access to the organisation's private key, which should be more tightly controlled than member private keys.
-   - Organisations should implement strict access controls and audit mechanisms for the use of organisation signatures, particularly when attributing content to members.
-   - The use of certification paths in organisation signatures introduces additional complexity and potential security vulnerabilities.
-5. **Verification Presentation:**
-   - Verification interfaces MUST clearly distinguish between cryptographically proven member signatures and organisation signatures with member attribution.
-   - End users of applications implementing DomainAuth may need to be informed about the different trust implications of these signature types.
-   - Implementations SHOULD use distinct visual indicators or terminology to prevent confusion between the two signature types.
-
-To mitigate these risks, developers integrating DomainAuth SHOULD:
-
-- Prefer member signatures over organisation signatures when practical.
-- Limit the use of organisation signatures to specific use cases where certificate management for members is impractical.
-- Implement strong audit logging for all organisation signatures, especially those with member attribution.
-- Clearly communicate the distinction between signature types to end users.
-- Consider implementing additional verification steps for organisation signatures with member attribution in high-security contexts.
+- **Time Synchronisation.** Verifiers rely on accurate local clocks to determine if signatures and certificates are within their validity periods. Devices with incorrect time settings may incorrectly accept expired signatures or reject valid ones.
+- **Replay Attacks.** Services SHOULD implement additional measures (e.g., nonces) for replay-sensitive operations.
+- **Revocation Limitations.** Offline verification cannot check real-time revocation status, and therefore the protocol relies on short validity periods rather than revocation checking.
 
 ## Key Management
 
-Proper key management is essential for the security of the DomainAuth protocol. The following requirements apply:
+Proper key management is essential for the security of the DomainAuth protocol. The following requirements and recommendations apply:
 
-1. **Key Generation:**
-  - Keys MUST be generated using a cryptographically secure random number generator.
-  - RSA key generation MUST follow industry best practices for prime generation and testing.
-  - The minimum modulus size for RSA keys is 2048 bits.
-2. **Key Storage:**
-  - Private keys MUST be protected from unauthorised access.
-  - Organisation private keys SHOULD be stored with the highest level of protection available, preferably in hardware security modules (HSMs).
-  - Member private keys SHOULD be protected with appropriate measures, such as operating system security mechanisms or hardware tokens.
-3. **Key Rotation:**
-  - Organisations SHOULD establish a regular schedule for rotating their keys.
-  - Key rotation SHOULD be performed by generating a new key pair and updating the DomainAuth TXT record.
-  - During key rotation, organisations SHOULD maintain both the old and new keys in DNS for a transition period, allowing for graceful migration.
-  - Member certificates issued under the old key remain valid until their expiration but SHOULD be renewed under the new key when practical.
-4. **Key Compromise:**
-  - In the event of a key compromise, immediate rotation is REQUIRED.
-  - The compromised key's TXT record SHOULD be removed as soon as possible.
-  - Short certificate lifetimes help mitigate the impact of key compromises.
+- **Key Generation.** DomainAuth REQUIRES a Cryptographically-Secure Pseudorandom Number Generator (CSPRNG) compliant with {{RFC4086}}. Implementations SHOULD integrate an existing CSPRNG implementation instead of creating their own.
+- **Key Storage.** Private keys MUST be protected from unauthorised access. Organisation private keys SHOULD be stored with the highest level of protection available, preferably in Hardware Security Modules (HSMs). Member private keys SHOULD be protected with appropriate measures, such as operating system security mechanisms or hardware tokens.
+- **Key Rotation.** Organisations SHOULD establish a regular schedule for rotating their keys. Given the nature of the protocol, DomainAuth TXT records for old keys MAY be removed as soon as the new key is deployed without affecting signatures produced with the old key.
+- **Key Compromise.** In the event of a key compromise, immediate rotation is REQUIRED and the compromised key's TXT record MUST be removed as soon as possible.
 
-Implementations SHOULD provide guidance and tools to assist with secure key management practices appropriate to the security requirements of the organisation.
+## Audit Trails
+
+Organisations implementing DomainAuth SHOULD maintain comprehensive audit logs of key management operations and certificate lifecycle events to support security incident investigation and facilitate non-repudiation.
+
+- **Key Event Logging:**
+   - Organisations MUST log key generation, rotation, and retirement events.
+   - Each log entry SHOULD include the key identifier, timestamp, operation type, and authorised operator identity.
+   - Key material itself MUST NOT be included in logs.
+- **Certificate Operations:**
+   - Certificate issuance and renewal events MUST be logged.
+   - Logs SHOULD include certificate subject, issuer, serial number, validity period, and authorising entity.
+- **Member Management:**
+   - Member registration, name changes, and removal operations MUST be logged.
+   - Logs SHOULD include the affected member identifier and the authorising entity.
+- **Signature Operations:**
+   - Organisations SHOULD log signature creation events for organisation signatures.
+   - Member signatures MAY be logged depending on service requirements.
+   - Logs SHOULD include signer identifier, signature validity period, service OID, and a content reference or hash.
+- **Log Security:**
+   - Audit logs MUST be protected against unauthorised modification and access.
+   - Logs SHOULD be stored with integrity protection mechanisms.
+   - In high-risk environments, organisations SHOULD implement tamper-evident logging.
 
 # IANA Considerations
 
@@ -863,12 +803,43 @@ DomainAuth implementations can benefit from several performance optimisations wh
   - Some applications may benefit from supporting both signature types, allowing flexibility based on the specific context or user role.
   - In hybrid implementations, clear policies should govern when each signature type is used.
 
+## Service Design
+
+Service designers MUST obtain a unique OID for their service outside the DomainAuth OID arc. E.g. randomly generated ones.
+- Include version information in their OID structure, or include version information in the service plaintexts.
+
+Services using DomainAuth MAY define additional validation rules beyond the core protocol requirements. These rules allow services to implement domain-specific security policies.
+
+1. **TTL Constraints:**
+  - Services MUST specify a maximum TTL for signatures.
+  - The TTL MUST be within the range of 1 second to the limit specified in {{maximum-validity-period}}.
+  - For the minimum TTL, several minutes is recommended to account for clock drift.
+  - Services SHOULD choose the shortest TTL that meets their requirements.
+2. **Content Type Restrictions:**
+  - Services MAY restrict the types of content that can be signed.
+  - Content type restrictions SHOULD be documented in the service specification.
+  - Verifiers SHOULD check content type compliance during verification.
+3. **Member Type Restrictions:**
+  - Services MAY restrict which member types can produce valid signatures.
+  - For example, a service might only accept signatures from users (not bots).
+  - Such restrictions SHOULD be enforced during verification.
+4. **Certificate Extensions:**
+  - Services MAY define custom certificate extensions for additional authorisation.
+  - Such extensions SHOULD be clearly documented.
+  - Verifiers MUST check for and validate any required extensions.
+
+Service designers SHOULD document their validation rules comprehensively to ensure consistent implementation across different verifiers. These rules SHOULD be designed to maintain the security properties of the DomainAuth protocol whilst addressing service-specific requirements.
+
 ## User Interface Guidelines
 
 1. **Signature Type Indication:** User interfaces SHOULD clearly indicate whether a signature is a member signature or an organisation signature with member attribution. Different visual indicators (icons, colors, labels) SHOULD be used to distinguish between the two signature types.
 2. **Attribution Presentation:** For organisation signatures, interfaces SHOULD clearly indicate that the member attribution is a claim made by the organisation, not cryptographic proof. Example phrasing: `Signed by example.com on behalf of alice` rather than `Signed by alice of example.com`.
 3. **Verification Details:** Interfaces SHOULD provide access to detailed verification information, including the full certification path and validity periods. Advanced users SHOULD be able to view the complete verification process and results.
 4. **Error Handling:** Clear error messages SHOULD be displayed when verification fails, with appropriate guidance for users. Different error handling may be appropriate for different signature types, reflecting their distinct trust models.
+
+Signatures from bots MUST be attributed to the organisation and the member name MUST be absent (not an empty string or at sign).
+
+User interfaces MUST NOT truncate user names or domain names, and they MUST visually distinguish the domain portion of identifiers.
 
 # Acknowledgements
 {:numbered="false"}

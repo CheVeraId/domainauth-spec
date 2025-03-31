@@ -789,30 +789,22 @@ The following Object Identifiers (OIDs) are defined for use in the DomainAuth pr
 
 # Service Design Guidance
 
-Service designers MUST obtain a unique OID for their service outside the DomainAuth OID arc. E.g. randomly generated ones.
-- Include version information in their OID structure, or include version information in the service plaintexts.
+This non-normative section summarises key considerations for designers creating services that utilise DomainAuth, drawing upon requirements and recommendations specified elsewhere in this document.
 
-Services using DomainAuth MAY define additional validation rules beyond the core protocol requirements. These rules allow services to implement domain-specific security policies.
+Service designers are required to obtain a unique OID for their service, distinct from the DomainAuth OID arc (see {{oid-registry}}), as this OID is embedded within the signature metadata ({{signature-metadata}}) and used during verification ({{verification-procedure}}). Consideration should be given to incorporating version information either within the OID structure or the service-specific plaintext data being signed. Note that organisations have the option to bind specific keys to a service OID via the DomainAuth TXT record ({{txt-record}}), which verifiers are required to account for when matching signatures to keys.
 
-1. **TTL Constraints:**
-  - Services MUST specify a maximum TTL for signatures.
-  - The TTL MUST be within the range of 1 second to the limit specified in {{maximum-validity-period}}.
-  - For the minimum TTL, several minutes is recommended to account for clock drift.
-  - Services SHOULD choose the shortest TTL that meets their requirements.
-2. **Content Type Restrictions:**
-  - Services MAY restrict the types of content that can be signed.
-  - Content type restrictions SHOULD be documented in the service specification.
-  - Verifiers SHOULD check content type compliance during verification.
-3. **Member Type Restrictions:**
-  - Services MAY restrict which member types can produce valid signatures.
-  - For example, a service might only accept signatures from users (not bots).
-  - Such restrictions SHOULD be enforced during verification.
-4. **Certificate Extensions:**
-  - Services MAY define custom certificate extensions for additional authorisation.
-  - Such extensions SHOULD be clearly documented.
-  - Verifiers MUST check for and validate any required extensions.
+The validity period for signatures, specified in the signature metadata ({{signature-metadata}}), is required to adhere to the maximum limit defined in {{maximum-validity-period}}. It is recommended that services define their own maximum validity period, as short as possible for their use case, to enhance security ({{maximum-validity-period}}). Given the reliance on local clocks for offline verification ({{offline-verification-limitations}}), services may find it beneficial to establish a minimum signature validity duration (e.g., several minutes) to accommodate potential clock skew. Remember that the overall verification requires temporal overlap between the DNSSEC chain's validity window (influenced by the TTL override {{ttl-override}}), the certificate chain's validity ({{x.509-certificate-profile}}), and the signature metadata's validity period ({{verification-procedure}}).
 
-Service designers SHOULD document their validation rules comprehensively to ensure consistent implementation across different verifiers. These rules SHOULD be designed to maintain the security properties of the DomainAuth protocol whilst addressing service-specific requirements.
+DomainAuth specifies mandatory-to-implement cryptographic algorithms ({{cryptographic-algorithms}}). Services have the option to recommend specific algorithms from the allowed set but cannot mandate unsupported ones. Similarly, whilst the protocol mandates ASN.1 DER encoding ({{data-serialisation}}), services have the option to specify alternative ASN.1 encoding rules, but service-level implementations bear the responsibility for any necessary conversions if the underlying DomainAuth library does not support the alternative rules ({{data-serialisation}}).
+
+Services need to determine which signature types (Member, Organisation, or both) are appropriate for their use case ({{signature-types}}) and how plaintext will be handled (encapsulated or detached) ({{signature-bundle-production}}).
+
+For security-related considerations, services should also consider the following:
+
+- **Replay attacks:** DomainAuth provides authenticity and integrity but does not inherently mitigate replay attacks. Services may need to implement additional measures, such as nonces, depending on the application's sensitivity to replays ({{offline-verification-limitations}}).
+- **Logging:** Services may define their own requirements for logging signature events, which would complement the organisation-level audit trails recommended in {{audit-trails}}.
+- **Phishing attacks:** Service logic built upon the verified identity must correctly handle the required Unicode representation of domain names and the specific normalisation and character restrictions applicable to user names ({{phishing-attacks}}, {{verification-procedure}}).
+- **User Experience:** Service design choices directly impact the user experience. It is important to inform the user interface design based on the principles outlined in {{user-interface-guidelines}}, ensuring clarity around signature types, the nature of member attribution in organisation signatures, verification status, and error handling.
 
 # User Interface Guidelines
 

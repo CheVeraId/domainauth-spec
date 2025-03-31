@@ -274,7 +274,7 @@ Multiple TXT records MAY be published at the same zone to support different keys
 
 Verifiers MUST select the appropriate TXT record based on the key information and service OID in the signature being verified.
 
-For example, the following TXT record specifies an RSA-2048 key identified by its SHA-512 digest with a TTL override of 24 hours (86400 seconds) and no service binding:
+For example, the following TXT record specifies an RSA-2048 key identified by its SHA-512 digest with a TTL override of 24 hours (86,400 seconds) and no service binding:
 
 ~~~~~~~
 _domainauth.example.com. IN TXT "0 1 3 dGhpcyBpcyBub3QgYSByZWFsIGtleSBkaWdlc3Q 86400"

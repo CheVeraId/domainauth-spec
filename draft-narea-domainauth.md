@@ -50,6 +50,7 @@ normative:
   RFC4056:
   RFC6234:
   RFC8017:
+  RFC8126:
   RFC8265:
   UTR36:
     title: "UTR #36: Unicode Security Considerations"
@@ -255,18 +256,8 @@ Newly registered domains SHOULD wait at least the maximum validity period in {{m
 Each organisation participating in the DomainAuth protocol MUST publish a TXT record at `_domainauth.<domain>` with the following fields separated by simple spaces:
 
 1. **Version** (required): An integer denoting the version of the DomainAuth TXT record format, set to `0` (zero) for this version of the specification.
-2. **Key Algorithm** (required): An integer denoting the key algorithm:
-   - `1`: RSA-PSS with modulus 2048 bits.
-   - `2`: RSA-PSS with modulus 3072 bits.
-   - `3`: RSA-PSS with modulus 4096 bits.
-
-   More details on the RSA-PSS algorithm can be found in {{digital-signature-algorithms}}.
-3. **Key Id Type** (required): An integer denoting how the key is identified:
-   - `1`: The key id is the SHA-256 digest of the key.
-   - `2`: The key id is the SHA-384 digest of the key.
-   - `3`: The key id is the SHA-512 digest of the key.
-
-   More details on hash functions can be found in {{hash-functions}}.
+2. **Key Algorithm** (required): An integer denoting the key algorithm as registered in the "DomainAuth Signature Algorithm Registry" ({{domainauth-signature-algorithm-registry}}). See also {{digital-signature-algorithms}}.
+3. **Key Id Type** (required): An integer denoting how the key is identified, as registered in the "DomainAuth Hash Function Registry" ({{domainauth-hash-function-registry}}). See also {{hash-functions}}.
 4. **Key Id** (required): The Base64-encoded (unpadded) representation of the key digest, as specified by the Key Id Type.
 5. **TTL Override** (required): A positive integer representing the number of seconds for the maximum validity period of signatures. This value MUST be at least 1 second and not exceed the limit specified in {{maximum-validity-period}}. Refer to {{ttl-override}} for more details.
 6. **Service OID** (optional): An Object Identifier (in dotted decimal notation) binding the key to a specific service. If omitted, the key is valid for any service.
@@ -679,10 +670,61 @@ Organisations implementing DomainAuth SHOULD maintain comprehensive audit logs o
 
 # IANA Considerations
 
+This document requests IANA to create a new registry group called "DomainAuth Protocol Parameters".
+
 ## DomainAuth Signature Algorithm Registry
+
+IANA is requested to create a new registry titled "DomainAuth Signature Algorithm Registry" under the "DomainAuth Protocol Parameters" registry group.
+
+The registry policy is Specification Required as defined in [RFC8126].
+
+Each entry in this registry includes the following fields:
+
+* Value: A numeric identifier for the signature algorithm.
+* Algorithm: Name of the signature algorithm.
+* Reference: Reference to the document that defines the algorithm.
+* Status: Either "Active", "Deprecated", or "Obsolete".
+
+The initial entries in this registry are:
+
+| Value | Algorithm                      | Reference           | Status    |
+|-------|--------------------------------|---------------------|-----------|
+| 1     | RSA-PSS with modulus 2048 bits | (This document)     | Active    |
+| 2     | RSA-PSS with modulus 3072 bits | (This document)     | Active    |
+| 3     | RSA-PSS with modulus 4096 bits | (This document)     | Active    |
+{: title="Initial entries in the DomainAuth Signature Algorithm Registry"}
+
+The designated expert(s) MUST ensure that the proposed algorithm is appropriate for digital signatures and that the specification adequately defines its parameters and security properties. The expert MUST consider whether the algorithm has undergone sufficient security analysis and whether its inclusion would promote interoperability.
+
+Algorithms MUST be marked as "Deprecated" if cryptographic vulnerabilities are discovered that could significantly affect their security properties. Algorithms SHOULD be marked as "Obsolete" if they should no longer be used due to serious security vulnerabilities. Implementers SHOULD NOT use deprecated algorithms for new signatures and MUST NOT use obsolete algorithms.
 
 ## DomainAuth Hash Function Registry
 
+IANA is requested to create a new registry titled "DomainAuth Hash Function Registry" under the "DomainAuth Protocol Parameters" registry group.
+
+The registry policy is Specification Required as defined in [RFC8126].
+
+Each entry in this registry includes the following fields:
+
+* Value: A numeric identifier for the hash function.
+* Hash Function: Name of the hash function.
+* Reference: Reference to the document that defines the hash function.
+* Status: Either "Active", "Deprecated", or "Obsolete".
+
+The initial entries in this registry are:
+
+| Value | Hash Function | Reference        | Status    |
+|-------|--------------|------------------|-----------|
+| 1     | SHA-256      | (This document)  | Active    |
+| 2     | SHA-384      | (This document)  | Active    |
+| 3     | SHA-512      | (This document)  | Active    |
+{: title="Initial entries in the DomainAuth Hash Function Registry"}
+
+The designated expert(s) MUST ensure that the proposed hash function is cryptographically suitable for digital signatures and that the specification adequately defines its parameters and security properties. The expert MUST consider whether the hash function has undergone sufficient security analysis and whether its inclusion would promote interoperability.
+
+Hash functions MUST be marked as "Deprecated" if cryptographic vulnerabilities are discovered that could significantly affect their security properties. Hash functions SHOULD be marked as "Obsolete" if they should no longer be used due to serious security vulnerabilities. Implementers SHOULD NOT use deprecated hash functions for new signatures and MUST NOT use obsolete hash functions.
+
+*Note to RFC Editor: Please replace all instances of `(This document)` with the RFC number of this document upon publication.*
 
 --- back
 

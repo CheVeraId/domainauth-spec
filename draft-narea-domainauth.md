@@ -779,50 +779,15 @@ The ASN.1 structures reference standard types from other specifications:
 
 All implementations MUST strictly adhere to these schemas.
 
-# Implementation Guidance
+# OID Registry
 
-## Performance Optimisations
+The following Object Identifiers (OIDs) are defined for use in the DomainAuth protocol, under the `1.3.6.1.4.1.58708.1` (iso.org.dod.internet.private.enterprise.relaycorp.domainauth) arc:
 
-DomainAuth implementations can benefit from several performance optimisations whilst maintaining security:
+- `1.3.6.1.4.1.58708.1.0`: Signature Metadata Attribute.
+- `1.3.6.1.4.1.58708.1.1`: Test Service.
+- `1.3.6.1.4.1.58708.1.2`: Member Attribution Attribute.
 
-1. **Caching Strategies:**
-   - Cache parsed certificates and DNSSEC chains to avoid repeated parsing.
-   - Cache verification results for the duration of their validity.
-   - Use LRU (Least Recently Used) or similar algorithms for cache management.
-   - Ensure cache entries are invalidated when they expire.
-2. **Size Optimisations:**
-   - Minimise the size of DNSSEC chains by removing redundant records.
-   - Use the minimum required set of certificates in signature bundles.
-   - Consider compression for storage or transmission (whilst maintaining original formats for cryptographic operations).
-3. **Computational Efficiency:**
-   - Use efficient ASN.1 parsing libraries.
-   - Implement lazy parsing for large structures.
-   - Consider hardware acceleration for cryptographic operations when available.
-   - Batch operations when processing multiple signatures.
-4. **Memory Management:**
-   - Implement streaming processing for large documents.
-   - Avoid keeping entire documents in memory when possible.
-   - Free resources promptly after use.
-   - Consider memory constraints on resource-limited devices.
-5. **Parallel Processing:**
-   - Parallelise independent verification steps when possible.
-   - Consider using worker threads for CPU-intensive operations.
-   - Balance parallelisation benefits against overhead costs.
-
-## Implementation Recommendations
-
-1. **Library/SDK Design:**
-  - DomainAuth libraries and SDKs SHOULD provide distinct functions for creating member signatures and organisation signatures.
-  - Verification functions SHOULD be unified, with the signature type included in the verification output.
-  - Libraries SHOULD NOT require developers to specify the signature type during verification, as this should be determined automatically from the signature bundle.
-2. **Use Case Considerations:**
-  - Member signatures are recommended for applications where non-repudiation at the individual level is critical.
-  - Organisation signatures with member attribution are appropriate for applications where certificate management for individual members is impractical or where organisational accountability is sufficient.
-3. **Hybrid Approaches:**
-  - Some applications may benefit from supporting both signature types, allowing flexibility based on the specific context or user role.
-  - In hybrid implementations, clear policies should govern when each signature type is used.
-
-## Service Design
+# Service Design Guidance
 
 Service designers MUST obtain a unique OID for their service outside the DomainAuth OID arc. E.g. randomly generated ones.
 - Include version information in their OID structure, or include version information in the service plaintexts.
@@ -849,7 +814,7 @@ Services using DomainAuth MAY define additional validation rules beyond the core
 
 Service designers SHOULD document their validation rules comprehensively to ensure consistent implementation across different verifiers. These rules SHOULD be designed to maintain the security properties of the DomainAuth protocol whilst addressing service-specific requirements.
 
-## User Interface Guidelines
+# User Interface Guidelines
 
 1. **Signature Type Indication:** User interfaces SHOULD clearly indicate whether a signature is a member signature or an organisation signature with member attribution. Different visual indicators (icons, colors, labels) SHOULD be used to distinguish between the two signature types.
 2. **Attribution Presentation:** For organisation signatures, interfaces SHOULD clearly indicate that the member attribution is a claim made by the organisation, not cryptographic proof. Example phrasing: `Signed by example.com on behalf of alice` rather than `Signed by alice of example.com`.
@@ -859,14 +824,6 @@ Service designers SHOULD document their validation rules comprehensively to ensu
 Signatures from bots MUST be attributed to the organisation and the member name MUST be absent (not an empty string or at sign).
 
 User interfaces MUST NOT truncate user names or domain names, and they MUST visually distinguish the domain portion of identifiers.
-
-# OID Registry
-
-The following Object Identifiers (OIDs) are defined for use in the DomainAuth protocol, under the `1.3.6.1.4.1.58708.1` (iso.org.dod.internet.private.enterprise.relaycorp.domainauth) arc:
-
-- `1.3.6.1.4.1.58708.1.0`: Signature Metadata Attribute.
-- `1.3.6.1.4.1.58708.1.1`: Test Service.
-- `1.3.6.1.4.1.58708.1.2`: Member Attribution Attribute.
 
 # Acknowledgements
 {:numbered="false"}

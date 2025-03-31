@@ -2134,18 +2134,10 @@ If present, the member attribution attribute <span class="bcp14">MUST</span> be 
             <p id="section-7.1-4.6.1"><strong>Produce verification output:</strong><a href="#section-7.1-4.6.1" class="pilcrow">¶</a></p>
 <ul class="normal">
 <li class="normal" id="section-7.1-4.6.2.1">
-                <p id="section-7.1-4.6.2.1.1">The organisation name without a trailing dot (e.g. <code>example.com</code>).<a href="#section-7.1-4.6.2.1.1" class="pilcrow">¶</a></p>
+                <p id="section-7.1-4.6.2.1.1">The organisation name without a trailing dot (e.g. <code>example.com</code>). This string <span class="bcp14">MUST</span> be represented using Unicode, coverting from Punycode if necessary.<a href="#section-7.1-4.6.2.1.1" class="pilcrow">¶</a></p>
 </li>
               <li class="normal" id="section-7.1-4.6.2.2">
-                <p id="section-7.1-4.6.2.2.1">The member name (for users only, not for bots):<a href="#section-7.1-4.6.2.2.1" class="pilcrow">¶</a></p>
-<ul class="normal">
-<li class="normal" id="section-7.1-4.6.2.2.2.1">
-                    <p id="section-7.1-4.6.2.2.2.1.1">For member signatures, from the signer certificate.<a href="#section-7.1-4.6.2.2.2.1.1" class="pilcrow">¶</a></p>
-</li>
-                  <li class="normal" id="section-7.1-4.6.2.2.2.2">
-                    <p id="section-7.1-4.6.2.2.2.2.1">For organisation signatures, from the member attribution.<a href="#section-7.1-4.6.2.2.2.2.1" class="pilcrow">¶</a></p>
-</li>
-                </ul>
+                <p id="section-7.1-4.6.2.2.1">If the signer is a user, their name <span class="bcp14">MUST</span> be a Unicode string. The name <span class="bcp14">MUST</span> be taken from the signer certificate in the case of member signatures, or from the member attribution in the case of organisation signatures. If the signer is a bot, no name <span class="bcp14">MUST</span> be produced (not even an empty string).<a href="#section-7.1-4.6.2.2.1" class="pilcrow">¶</a></p>
 </li>
               <li class="normal" id="section-7.1-4.6.2.3">
                 <p id="section-7.1-4.6.2.3.1">Whether the signature was produced by the member or the organisation.<a href="#section-7.1-4.6.2.3.1" class="pilcrow">¶</a></p>
@@ -2153,7 +2145,7 @@ If present, the member attribution attribute <span class="bcp14">MUST</span> be 
             </ul>
 </li>
         </ol>
-<p id="section-7.1-5">Alternatively, the verification <span class="bcp14">MAY</span> start with the SignedData structure and end with the DNSSEC chain as described below, as long as the validity periods across all components overlap for at least one second:<a href="#section-7.1-5" class="pilcrow">¶</a></p>
+<p id="section-7.1-5">Alternatively, the verification <span class="bcp14">MAY</span> start with the SignedData structure and end with the DNSSEC chain as described below, as long as the validity periods across all components still overlap for at least one second:<a href="#section-7.1-5" class="pilcrow">¶</a></p>
 <ol start="1" type="1" class="normal type-1" id="section-7.1-6">
 <li id="section-7.1-6.1">
             <p id="section-7.1-6.1.1">Establish the verification parameters.<a href="#section-7.1-6.1.1" class="pilcrow">¶</a></p>
@@ -2174,8 +2166,7 @@ If present, the member attribution attribute <span class="bcp14">MUST</span> be 
             <p id="section-7.1-6.6.1">Produce verification output.<a href="#section-7.1-6.6.1" class="pilcrow">¶</a></p>
 </li>
         </ol>
-<p id="section-7.1-7">If all these steps succeed, the signature is considered valid, and the content is confirmed to originate from the identified member of the specified organisation or from the organisation itself.<a href="#section-7.1-7" class="pilcrow">¶</a></p>
-<p id="section-7.1-8">The verification process <span class="bcp14">MUST</span> be performed in full, without skipping any steps, to ensure the security properties of the DomainAuth protocol.<a href="#section-7.1-8" class="pilcrow">¶</a></p>
+<p id="section-7.1-7">The verification process <span class="bcp14">MUST</span> be performed in full, without skipping any steps.<a href="#section-7.1-7" class="pilcrow">¶</a></p>
 </section>
 </div>
 </section>
@@ -2412,7 +2403,10 @@ If present, the member attribution attribute <span class="bcp14">MUST</span> be 
           </ul>
 </li>
         <li class="normal" id="section-13-5.5">
-          <p id="section-13-5.5.1">VeraId only disallows at-signs (<code>@</code>), tabs, and new lines in user names. Otherwise, user names are case-sensitive and may contain spaces in VeraId.<a href="#section-13-5.5.1" class="pilcrow">¶</a></p>
+          <p id="section-13-5.5.1">VeraId does not require conversion of domain names from Punycode to Unicode.<a href="#section-13-5.5.1" class="pilcrow">¶</a></p>
+</li>
+        <li class="normal" id="section-13-5.6">
+          <p id="section-13-5.6.1">VeraId only disallows at-signs (<code>@</code>), tabs, and new lines in user names. Otherwise, user names are case-sensitive and may contain spaces in VeraId.<a href="#section-13-5.6.1" class="pilcrow">¶</a></p>
 </li>
       </ul>
 <p id="section-13-6">VeraId is led by the author of this document, who intends to deprecate the VeraId specification in favour of DomainAuth and update the reference implementations to fully comply with this specification.<a href="#section-13-6" class="pilcrow">¶</a></p>

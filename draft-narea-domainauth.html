@@ -1053,7 +1053,7 @@ svg :is([fill="white"], [fill^="#fff"]) {
 </tr></thead>
 <tfoot><tr>
 <td class="left">Narea</td>
-<td class="center">Expires 29 September 2025</td>
+<td class="center">Expires 2 October 2025</td>
 <td class="right">[Page]</td>
 </tr></tfoot>
 </table>
@@ -1066,12 +1066,12 @@ svg :is([fill="white"], [fill^="#fff"]) {
 <dd class="internet-draft">draft-narea-domainauth-latest</dd>
 <dt class="label-published">Published:</dt>
 <dd class="published">
-<time datetime="2025-03-28" class="published">28 March 2025</time>
+<time datetime="2025-03-31" class="published">31 March 2025</time>
     </dd>
 <dt class="label-intended-status">Intended Status:</dt>
 <dd class="intended-status">Standards Track</dd>
 <dt class="label-expires">Expires:</dt>
-<dd class="expires"><time datetime="2025-09-29">29 September 2025</time></dd>
+<dd class="expires"><time datetime="2025-10-02">2 October 2025</time></dd>
 <dt class="label-authors">Author:</dt>
 <dd class="authors">
 <div class="author">
@@ -1118,7 +1118,7 @@ svg :is([fill="white"], [fill^="#fff"]) {
         time. It is inappropriate to use Internet-Drafts as reference
         material or to cite them other than as "work in progress."<a href="#section-boilerplate.1-3" class="pilcrow">¶</a></p>
 <p id="section-boilerplate.1-4">
-        This Internet-Draft will expire on 29 September 2025.<a href="#section-boilerplate.1-4" class="pilcrow">¶</a></p>
+        This Internet-Draft will expire on 2 October 2025.<a href="#section-boilerplate.1-4" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="copyright">
@@ -1255,11 +1255,6 @@ svg :is([fill="white"], [fill^="#fff"]) {
 <ul class="compact toc ulBare ulEmpty">
 <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.8.2.1">
                 <p id="section-toc.1-1.8.2.1.1"><a href="#section-8.1" class="auto internal xref">8.1</a>.  <a href="#name-digital-signature-algorithm" class="internal xref">Digital Signature Algorithms</a></p>
-<ul class="compact toc ulBare ulEmpty">
-<li class="compact toc ulBare ulEmpty" id="section-toc.1-1.8.2.1.2.1">
-                    <p id="section-toc.1-1.8.2.1.2.1.1"><a href="#section-8.1.1" class="auto internal xref">8.1.1</a>.  <a href="#name-rsa-pss" class="internal xref">RSA-PSS</a></p>
-</li>
-                </ul>
 </li>
               <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.8.2.2">
                 <p id="section-toc.1-1.8.2.2.1"><a href="#section-8.2" class="auto internal xref">8.2</a>.  <a href="#name-hash-functions" class="internal xref">Hash Functions</a></p>
@@ -1331,6 +1326,14 @@ svg :is([fill="white"], [fill^="#fff"]) {
 </li>
           <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.15">
             <p id="section-toc.1-1.15.1"><a href="#section-15" class="auto internal xref">15</a>. <a href="#name-iana-considerations" class="internal xref">IANA Considerations</a></p>
+<ul class="compact toc ulBare ulEmpty">
+<li class="compact toc ulBare ulEmpty" id="section-toc.1-1.15.2.1">
+                <p id="section-toc.1-1.15.2.1.1"><a href="#section-15.1" class="auto internal xref">15.1</a>.  <a href="#name-domainauth-signature-algori" class="internal xref">DomainAuth Signature Algorithm Registry</a></p>
+</li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.15.2.2">
+                <p id="section-toc.1-1.15.2.2.1"><a href="#section-15.2" class="auto internal xref">15.2</a>.  <a href="#name-domainauth-hash-function-re" class="internal xref">DomainAuth Hash Function Registry</a></p>
+</li>
+            </ul>
 </li>
           <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.16">
             <p id="section-toc.1-1.16.1"><a href="#section-16" class="auto internal xref">16</a>. <a href="#name-references" class="internal xref">References</a></p>
@@ -2182,44 +2185,17 @@ If present, the member attribution attribute <span class="bcp14">MUST</span> be 
       <h2 id="name-cryptographic-algorithms">
 <a href="#section-8" class="section-number selfRef">8. </a><a href="#name-cryptographic-algorithms" class="section-name selfRef">Cryptographic Algorithms</a>
       </h2>
-<p id="section-8-1">This section describes the cryptographic algorithms used in the DomainAuth protocol. It applies to the X.509 certificates and CMS SignedData structures, but not to the DNSSEC chain.<a href="#section-8-1" class="pilcrow">¶</a></p>
+<p id="section-8-1">This section describes the cryptographic algorithms used in the X.509 certificates and CMS SignedData structures, but not to the DNSSEC chain.<a href="#section-8-1" class="pilcrow">¶</a></p>
+<p id="section-8-2">Algorithms not explicitly allowed by this specification <span class="bcp14">MUST</span> be rejected.<a href="#section-8-2" class="pilcrow">¶</a></p>
+<p id="section-8-3">Services <span class="bcp14">MAY</span> recommend specific algorithms within the set of algorithms allowed by this specification.<a href="#section-8-3" class="pilcrow">¶</a></p>
 <div id="digital-signature-algorithms">
 <section id="section-8.1">
         <h3 id="name-digital-signature-algorithm">
 <a href="#section-8.1" class="section-number selfRef">8.1. </a><a href="#name-digital-signature-algorithm" class="section-name selfRef">Digital Signature Algorithms</a>
         </h3>
-<div id="rsa-pss">
-<section id="section-8.1.1">
-          <h4 id="name-rsa-pss">
-<a href="#section-8.1.1" class="section-number selfRef">8.1.1. </a><a href="#name-rsa-pss" class="section-name selfRef">RSA-PSS</a>
-          </h4>
-<p id="section-8.1.1-1">DomainAuth uses RSA-PSS (Probabilistic Signature Scheme) as the digital signature algorithm with the following parameters:<a href="#section-8.1.1-1" class="pilcrow">¶</a></p>
-<ul class="normal">
-<li class="normal" id="section-8.1.1-2.1">
-              <p id="section-8.1.1-2.1.1">RSA-PSS with modulus 2048 bits: Minimum acceptable security level.<a href="#section-8.1.1-2.1.1" class="pilcrow">¶</a></p>
-</li>
-            <li class="normal" id="section-8.1.1-2.2">
-              <p id="section-8.1.1-2.2.1">RSA-PSS with modulus 3072 bits: Recommended for general use.<a href="#section-8.1.1-2.2.1" class="pilcrow">¶</a></p>
-</li>
-            <li class="normal" id="section-8.1.1-2.3">
-              <p id="section-8.1.1-2.3.1">RSA-PSS with modulus 4096 bits: Recommended for high-security applications.<a href="#section-8.1.1-2.3.1" class="pilcrow">¶</a></p>
-</li>
-          </ul>
-<p id="section-8.1.1-3">For RSA-PSS signatures:<a href="#section-8.1.1-3" class="pilcrow">¶</a></p>
-<ul class="normal">
-<li class="normal" id="section-8.1.1-4.1">
-              <p id="section-8.1.1-4.1.1">RSA-2048 <span class="bcp14">MUST</span> use SHA-256 for both key identification and signature operations.<a href="#section-8.1.1-4.1.1" class="pilcrow">¶</a></p>
-</li>
-            <li class="normal" id="section-8.1.1-4.2">
-              <p id="section-8.1.1-4.2.1">RSA-3072 <span class="bcp14">MUST</span> use SHA-384 for both key identification and signature operations.<a href="#section-8.1.1-4.2.1" class="pilcrow">¶</a></p>
-</li>
-            <li class="normal" id="section-8.1.1-4.3">
-              <p id="section-8.1.1-4.3.1">RSA-4096 <span class="bcp14">MUST</span> use SHA-512 for both key identification and signature operations.<a href="#section-8.1.1-4.3.1" class="pilcrow">¶</a></p>
-</li>
-          </ul>
-<p id="section-8.1.1-5">The minimum modulus size for RSA keys is 2048 bits. RSA key generation <span class="bcp14">MUST</span> follow industry best practices for prime generation and testing and <span class="bcp14">MUST</span> use a cryptographically secure random number generator.<a href="#section-8.1.1-5" class="pilcrow">¶</a></p>
-</section>
-</div>
+<p id="section-8.1-1">For ease of adoption and interoperability reasons, this specification only requires support for RSA Signature Scheme with Appendix - Probabilistic Signature Scheme (RSA-PSS), as defined in <span><a href="https://rfc-editor.org/rfc/rfc8017#section-8.1" class="relref">Section 8.1</a> of [<a href="#RFC8017" class="cite xref">RFC8017</a>]</span>. The DomainAuth Signature Algorithm Registry, as defined in <a href="#domainauth-signature-algorithm-registry" class="auto internal xref">Section 15.1</a>, <span class="bcp14">MAY</span> introduce support for additional signature algorithms and restrict the use of RSA-PSS (including its deprecation).<a href="#section-8.1-1" class="pilcrow">¶</a></p>
+<p id="section-8.1-2">Implementations <span class="bcp14">MUST</span> support RSA-PSS in X.509 certificates as defined in <span>[<a href="#RFC4055" class="cite xref">RFC4055</a>]</span> and CMS SignedData structures as defined in <span>[<a href="#RFC4056" class="cite xref">RFC4056</a>]</span>.<a href="#section-8.1-2" class="pilcrow">¶</a></p>
+<p id="section-8.1-3">RSA keys with moduli less than 2048 bits <span class="bcp14">MUST</span> be rejected. RSA keys with modulus size of 2048 <span class="bcp14">MUST</span> be supported, and greater sizes <span class="bcp14">SHOULD</span> be supported.<a href="#section-8.1-3" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="hash-functions">
@@ -2227,20 +2203,8 @@ If present, the member attribution attribute <span class="bcp14">MUST</span> be 
         <h3 id="name-hash-functions">
 <a href="#section-8.2" class="section-number selfRef">8.2. </a><a href="#name-hash-functions" class="section-name selfRef">Hash Functions</a>
         </h3>
-<p id="section-8.2-1">DomainAuth uses the following hash functions:<a href="#section-8.2-1" class="pilcrow">¶</a></p>
-<ul class="normal">
-<li class="normal" id="section-8.2-2.1">
-            <p id="section-8.2-2.1.1">SHA-256: Recommended for general use.<a href="#section-8.2-2.1.1" class="pilcrow">¶</a></p>
-</li>
-          <li class="normal" id="section-8.2-2.2">
-            <p id="section-8.2-2.2.1">SHA-384: Recommended for higher security applications.<a href="#section-8.2-2.2.1" class="pilcrow">¶</a></p>
-</li>
-          <li class="normal" id="section-8.2-2.3">
-            <p id="section-8.2-2.3.1">SHA-512: Recommended for highest security applications.<a href="#section-8.2-2.3.1" class="pilcrow">¶</a></p>
-</li>
-        </ul>
-<p id="section-8.2-3">All compliant implementations <span class="bcp14">MUST</span> support these algorithms. The choice of algorithm strength should be appropriate for the security requirements of the application.<a href="#section-8.2-3" class="pilcrow">¶</a></p>
-<p id="section-8.2-4">Future versions of the protocol <span class="bcp14">MAY</span> introduce additional algorithms, but this V1 specification intentionally limits the supported algorithms to those with well-established security properties and widespread implementation support.<a href="#section-8.2-4" class="pilcrow">¶</a></p>
+<p id="section-8.2-1">For ease of adoption and interoperability reasons, this specification only requires support for SHA2 hash functions, as defined in <span>[<a href="#RFC6234" class="cite xref">RFC6234</a>]</span>, in digital signatures. The DomainAuth Hash Function Registry, as defined in <a href="#domainauth-hash-function-registry" class="auto internal xref">Section 15.2</a>, <span class="bcp14">MAY</span> introduce support for additional hash functions and restrict the use of SHA2 hash functions (including their deprecation).<a href="#section-8.2-1" class="pilcrow">¶</a></p>
+<p id="section-8.2-2">Implementations <span class="bcp14">MUST</span> support SHA-256, SHA-384, and SHA-512 hash functions. For the avoidance of doubt, SHA-1 and SHA-224 <span class="bcp14">MUST NOT</span> be supported.<a href="#section-8.2-2" class="pilcrow">¶</a></p>
 </section>
 </div>
 </section>
@@ -2450,6 +2414,17 @@ If present, the member attribution attribute <span class="bcp14">MUST</span> be 
 </li>
         <li class="normal" id="section-13-5.3">
           <p id="section-13-5.3.1">VeraId only allows ASN.1 DER serialisation.<a href="#section-13-5.3.1" class="pilcrow">¶</a></p>
+</li>
+        <li class="normal" id="section-13-5.4">
+          <p id="section-13-5.4.1">Cryptographic algorithms:<a href="#section-13-5.4.1" class="pilcrow">¶</a></p>
+<ul class="normal">
+<li class="normal" id="section-13-5.4.2.1">
+              <p id="section-13-5.4.2.1.1">Signature algorithms: VeraId only supports RSA-PSS with modulus sizes of 2048, 3072, and 4096 bits. Support for EdDSA signatures was considered, but not implemented due to lack of support in the target Hardware Security Modules (HSMs), as documented in https://issuetracker.google.com/issues/232422224.<a href="#section-13-5.4.2.1.1" class="pilcrow">¶</a></p>
+</li>
+            <li class="normal" id="section-13-5.4.2.2">
+              <p id="section-13-5.4.2.2.1">Hash functions: VeraId only supports SHA-256, SHA-384, and SHA-512.<a href="#section-13-5.4.2.2.1" class="pilcrow">¶</a></p>
+</li>
+          </ul>
 </li>
       </ul>
 <p id="section-13-6">VeraId is led by the author of this document, who intends to deprecate the VeraId specification in favour of DomainAuth and update the reference implementations to fully comply with this specification.<a href="#section-13-6" class="pilcrow">¶</a></p>
@@ -3036,7 +3011,20 @@ If present, the member attribution attribute <span class="bcp14">MUST</span> be 
       <h2 id="name-iana-considerations">
 <a href="#section-15" class="section-number selfRef">15. </a><a href="#name-iana-considerations" class="section-name selfRef">IANA Considerations</a>
       </h2>
-<p id="section-15-1">This document has no IANA actions.<a href="#section-15-1" class="pilcrow">¶</a></p>
+<div id="domainauth-signature-algorithm-registry">
+<section id="section-15.1">
+        <h3 id="name-domainauth-signature-algori">
+<a href="#section-15.1" class="section-number selfRef">15.1. </a><a href="#name-domainauth-signature-algori" class="section-name selfRef">DomainAuth Signature Algorithm Registry</a>
+      </h3>
+</section>
+</div>
+<div id="domainauth-hash-function-registry">
+<section id="section-15.2">
+        <h3 id="name-domainauth-hash-function-re">
+<a href="#section-15.2" class="section-number selfRef">15.2. </a><a href="#name-domainauth-hash-function-re" class="section-name selfRef">DomainAuth Hash Function Registry</a>
+      </h3>
+</section>
+</div>
 </section>
 </div>
 <div id="sec-combined-references">
@@ -3070,9 +3058,25 @@ If present, the member attribution attribute <span class="bcp14">MUST</span> be 
         <dd>
 <span class="refAuthor">Bradner, S.</span>, <span class="refTitle">"Key words for use in RFCs to Indicate Requirement Levels"</span>, <span class="seriesInfo">BCP 14</span>, <span class="seriesInfo">RFC 2119</span>, <span class="seriesInfo">DOI 10.17487/RFC2119</span>, <time datetime="1997-03" class="refDate">March 1997</time>, <span>&lt;<a href="https://www.rfc-editor.org/rfc/rfc2119">https://www.rfc-editor.org/rfc/rfc2119</a>&gt;</span>. </dd>
 <dd class="break"></dd>
+<dt id="RFC4055">[RFC4055]</dt>
+        <dd>
+<span class="refAuthor">Schaad, J.</span>, <span class="refAuthor">Kaliski, B.</span>, and <span class="refAuthor">R. Housley</span>, <span class="refTitle">"Additional Algorithms and Identifiers for RSA Cryptography for use in the Internet X.509 Public Key Infrastructure Certificate and Certificate Revocation List (CRL) Profile"</span>, <span class="seriesInfo">RFC 4055</span>, <span class="seriesInfo">DOI 10.17487/RFC4055</span>, <time datetime="2005-06" class="refDate">June 2005</time>, <span>&lt;<a href="https://www.rfc-editor.org/rfc/rfc4055">https://www.rfc-editor.org/rfc/rfc4055</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="RFC4056">[RFC4056]</dt>
+        <dd>
+<span class="refAuthor">Schaad, J.</span>, <span class="refTitle">"Use of the RSASSA-PSS Signature Algorithm in Cryptographic Message Syntax (CMS)"</span>, <span class="seriesInfo">RFC 4056</span>, <span class="seriesInfo">DOI 10.17487/RFC4056</span>, <time datetime="2005-06" class="refDate">June 2005</time>, <span>&lt;<a href="https://www.rfc-editor.org/rfc/rfc4056">https://www.rfc-editor.org/rfc/rfc4056</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="RFC6234">[RFC6234]</dt>
+        <dd>
+<span class="refAuthor">Eastlake 3rd, D.</span> and <span class="refAuthor">T. Hansen</span>, <span class="refTitle">"US Secure Hash Algorithms (SHA and SHA-based HMAC and HKDF)"</span>, <span class="seriesInfo">RFC 6234</span>, <span class="seriesInfo">DOI 10.17487/RFC6234</span>, <time datetime="2011-05" class="refDate">May 2011</time>, <span>&lt;<a href="https://www.rfc-editor.org/rfc/rfc6234">https://www.rfc-editor.org/rfc/rfc6234</a>&gt;</span>. </dd>
+<dd class="break"></dd>
 <dt id="RFC7942">[RFC7942]</dt>
         <dd>
 <span class="refAuthor">Sheffer, Y.</span> and <span class="refAuthor">A. Farrel</span>, <span class="refTitle">"Improving Awareness of Running Code: The Implementation Status Section"</span>, <span class="seriesInfo">BCP 205</span>, <span class="seriesInfo">RFC 7942</span>, <span class="seriesInfo">DOI 10.17487/RFC7942</span>, <time datetime="2016-07" class="refDate">July 2016</time>, <span>&lt;<a href="https://www.rfc-editor.org/rfc/rfc7942">https://www.rfc-editor.org/rfc/rfc7942</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="RFC8017">[RFC8017]</dt>
+        <dd>
+<span class="refAuthor">Moriarty, K., Ed.</span>, <span class="refAuthor">Kaliski, B.</span>, <span class="refAuthor">Jonsson, J.</span>, and <span class="refAuthor">A. Rusch</span>, <span class="refTitle">"PKCS #1: RSA Cryptography Specifications Version 2.2"</span>, <span class="seriesInfo">RFC 8017</span>, <span class="seriesInfo">DOI 10.17487/RFC8017</span>, <time datetime="2016-11" class="refDate">November 2016</time>, <span>&lt;<a href="https://www.rfc-editor.org/rfc/rfc8017">https://www.rfc-editor.org/rfc/rfc8017</a>&gt;</span>. </dd>
 <dd class="break"></dd>
 <dt id="RFC8174">[RFC8174]</dt>
         <dd>

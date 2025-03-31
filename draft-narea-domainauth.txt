@@ -4,8 +4,8 @@
 
 Network Working Group                                           G. Narea
 Internet-Draft                                                 Relaycorp
-Intended status: Standards Track                           28 March 2025
-Expires: 29 September 2025
+Intended status: Standards Track                           31 March 2025
+Expires: 2 October 2025
 
 
                           DomainAuth Version 1
@@ -54,7 +54,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 29 September 2025.
+   This Internet-Draft will expire on 2 October 2025.
 
 Copyright Notice
 
@@ -103,7 +103,6 @@ Table of Contents
      7.1.  Verification Procedure
    8.  Cryptographic Algorithms
      8.1.  Digital Signature Algorithms
-       8.1.1.  RSA-PSS
      8.2.  Hash Functions
    9.  Maximum Validity Period
    10. Naming Conventions and Restrictions
@@ -125,6 +124,8 @@ Table of Contents
      14.5.  Organisation Signatures and Member Attribution
      14.6.  Key Management
    15. IANA Considerations
+     15.1.  DomainAuth Signature Algorithm Registry
+     15.2.  DomainAuth Hash Function Registry
    16. References
      16.1.  Normative References
      16.2.  Informative References
@@ -1006,58 +1007,45 @@ _domainauth.example.com. IN TXT "0 1 3 dGhpcyBpcyBub3QgYSByZWFsIGtleSBkaWdlc3Q 8
 
 8.  Cryptographic Algorithms
 
-   This section describes the cryptographic algorithms used in the
-   DomainAuth protocol.  It applies to the X.509 certificates and CMS
-   SignedData structures, but not to the DNSSEC chain.
+   This section describes the cryptographic algorithms used in the X.509
+   certificates and CMS SignedData structures, but not to the DNSSEC
+   chain.
+
+   Algorithms not explicitly allowed by this specification MUST be
+   rejected.
+
+   Services MAY recommend specific algorithms within the set of
+   algorithms allowed by this specification.
 
 8.1.  Digital Signature Algorithms
 
-8.1.1.  RSA-PSS
+   For ease of adoption and interoperability reasons, this specification
+   only requires support for RSA Signature Scheme with Appendix -
+   Probabilistic Signature Scheme (RSA-PSS), as defined in Section 8.1
+   of [RFC8017].  The DomainAuth Signature Algorithm Registry, as
+   defined in Section 15.1, MAY introduce support for additional
+   signature algorithms and restrict the use of RSA-PSS (including its
+   deprecation).
 
-   DomainAuth uses RSA-PSS (Probabilistic Signature Scheme) as the
-   digital signature algorithm with the following parameters:
+   Implementations MUST support RSA-PSS in X.509 certificates as defined
+   in [RFC4055] and CMS SignedData structures as defined in [RFC4056].
 
-   *  RSA-PSS with modulus 2048 bits: Minimum acceptable security level.
-
-   *  RSA-PSS with modulus 3072 bits: Recommended for general use.
-
-   *  RSA-PSS with modulus 4096 bits: Recommended for high-security
-      applications.
-
-   For RSA-PSS signatures:
-
-   *  RSA-2048 MUST use SHA-256 for both key identification and
-      signature operations.
-
-   *  RSA-3072 MUST use SHA-384 for both key identification and
-      signature operations.
-
-   *  RSA-4096 MUST use SHA-512 for both key identification and
-      signature operations.
-
-   The minimum modulus size for RSA keys is 2048 bits.  RSA key
-   generation MUST follow industry best practices for prime generation
-   and testing and MUST use a cryptographically secure random number
-   generator.
+   RSA keys with moduli less than 2048 bits MUST be rejected.  RSA keys
+   with modulus size of 2048 MUST be supported, and greater sizes SHOULD
+   be supported.
 
 8.2.  Hash Functions
 
-   DomainAuth uses the following hash functions:
+   For ease of adoption and interoperability reasons, this specification
+   only requires support for SHA2 hash functions, as defined in
+   [RFC6234], in digital signatures.  The DomainAuth Hash Function
+   Registry, as defined in Section 15.2, MAY introduce support for
+   additional hash functions and restrict the use of SHA2 hash functions
+   (including their deprecation).
 
-   *  SHA-256: Recommended for general use.
-
-   *  SHA-384: Recommended for higher security applications.
-
-   *  SHA-512: Recommended for highest security applications.
-
-   All compliant implementations MUST support these algorithms.  The
-   choice of algorithm strength should be appropriate for the security
-   requirements of the application.
-
-   Future versions of the protocol MAY introduce additional algorithms,
-   but this V1 specification intentionally limits the supported
-   algorithms to those with well-established security properties and
-   widespread implementation support.
+   Implementations MUST support SHA-256, SHA-384, and SHA-512 hash
+   functions.  For the avoidance of doubt, SHA-1 and SHA-224 MUST NOT be
+   supported.
 
 9.  Maximum Validity Period
 
@@ -1265,6 +1253,17 @@ _domainauth.example.com. IN TXT "0 1 3 dGhpcyBpcyBub3QgYSByZWFsIGtleSBkaWdlc3Q 8
       present in VeraId.
 
    *  VeraId only allows ASN.1 DER serialisation.
+
+   *  Cryptographic algorithms:
+
+      -  Signature algorithms: VeraId only supports RSA-PSS with modulus
+         sizes of 2048, 3072, and 4096 bits.  Support for EdDSA
+         signatures was considered, but not implemented due to lack of
+         support in the target Hardware Security Modules (HSMs), as
+         documented in https://issuetracker.google.com/issues/232422224.
+
+      -  Hash functions: VeraId only supports SHA-256, SHA-384, and SHA-
+         512.
 
    VeraId is led by the author of this document, who intends to
    deprecate the VeraId specification in favour of DomainAuth and update
@@ -1730,7 +1729,9 @@ _domainauth.example.com. IN TXT "0 1 3 dGhpcyBpcyBub3QgYSByZWFsIGtleSBkaWdlc3Q 8
 
 15.  IANA Considerations
 
-   This document has no IANA actions.
+15.1.  DomainAuth Signature Algorithm Registry
+
+15.2.  DomainAuth Hash Function Registry
 
 16.  References
 
@@ -1759,10 +1760,32 @@ _domainauth.example.com. IN TXT "0 1 3 dGhpcyBpcyBub3QgYSByZWFsIGtleSBkaWdlc3Q 8
               DOI 10.17487/RFC2119, March 1997,
               <https://www.rfc-editor.org/rfc/rfc2119>.
 
+   [RFC4055]  Schaad, J., Kaliski, B., and R. Housley, "Additional
+              Algorithms and Identifiers for RSA Cryptography for use in
+              the Internet X.509 Public Key Infrastructure Certificate
+              and Certificate Revocation List (CRL) Profile", RFC 4055,
+              DOI 10.17487/RFC4055, June 2005,
+              <https://www.rfc-editor.org/rfc/rfc4055>.
+
+   [RFC4056]  Schaad, J., "Use of the RSASSA-PSS Signature Algorithm in
+              Cryptographic Message Syntax (CMS)", RFC 4056,
+              DOI 10.17487/RFC4056, June 2005,
+              <https://www.rfc-editor.org/rfc/rfc4056>.
+
+   [RFC6234]  Eastlake 3rd, D. and T. Hansen, "US Secure Hash Algorithms
+              (SHA and SHA-based HMAC and HKDF)", RFC 6234,
+              DOI 10.17487/RFC6234, May 2011,
+              <https://www.rfc-editor.org/rfc/rfc6234>.
+
    [RFC7942]  Sheffer, Y. and A. Farrel, "Improving Awareness of Running
               Code: The Implementation Status Section", BCP 205,
               RFC 7942, DOI 10.17487/RFC7942, July 2016,
               <https://www.rfc-editor.org/rfc/rfc7942>.
+
+   [RFC8017]  Moriarty, K., Ed., Kaliski, B., Jonsson, J., and A. Rusch,
+              "PKCS #1: RSA Cryptography Specifications Version 2.2",
+              RFC 8017, DOI 10.17487/RFC8017, November 2016,
+              <https://www.rfc-editor.org/rfc/rfc8017>.
 
    [RFC8174]  Leiba, B., "Ambiguity of Uppercase vs Lowercase in RFC
               2119 Key Words", BCP 14, RFC 8174, DOI 10.17487/RFC8174,

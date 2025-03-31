@@ -774,33 +774,10 @@ All DomainAuth data structures MUST be encoded using ASN.1 as specified in {{dat
 
 The ASN.1 structures reference standard types from other specifications:
 
-- Certificate is defined in X.509 (RFC 5280).
-- ContentInfo is defined in CMS (RFC 5652).
+- Certificate is defined in {{X.509}}.
+- ContentInfo is defined in {{CMS}}.
 
-All implementations MUST strictly adhere to these schemas. Any deviation in structure or encoding may result in verification failures.
-
-# OID Registry
-
-The following Object Identifiers (OIDs) are defined for use in the DomainAuth protocol:
-
-1. **DomainAuth Base OID:**
-   - `1.3.6.1.4.1.58708.1` (iso.org.dod.internet.private.enterprise.relaycorp.domainauth).
-2. **Protocol OIDs:**
-   - `1.3.6.1.4.1.58708.1.0`: Signature Metadata Attribute.
-   - `1.3.6.1.4.1.58708.1.2`: Member Attribution Attribute.
-3. **Service OIDs:**
-   - `1.3.6.1.4.1.58708.1.1`: Test Service.
-
-Third-party services implementing DomainAuth MUST register and use their own OIDs under their own arcs. The DomainAuth OID arc (`1.3.6.1.4.1.58708.1`) is reserved exclusively for official services and protocol components under the DomainAuth project umbrella.
-
-OID registration procedures:
-
-1. OIDs under the DomainAuth base OID are managed by the DomainAuth maintainers and reserved for official DomainAuth project purposes.
-2. Third parties MUST NOT use OIDs under the DomainAuth arc for their services.
-3. Third parties without their own OID arc SHOULD obtain one from their national registration authority or through IANA's Private Enterprise Number (PEN) registry.
-4. Once allocated, OIDs are never reassigned to different services.
-
-Services SHOULD use versioning in their OID structure to manage protocol evolution. Major, incompatible changes SHOULD use a new OID, whilst minor, backward-compatible changes MAY use the same OID.
+All implementations MUST strictly adhere to these schemas.
 
 # Implementation Guidance
 
@@ -882,6 +859,14 @@ Service designers SHOULD document their validation rules comprehensively to ensu
 Signatures from bots MUST be attributed to the organisation and the member name MUST be absent (not an empty string or at sign).
 
 User interfaces MUST NOT truncate user names or domain names, and they MUST visually distinguish the domain portion of identifiers.
+
+# OID Registry
+
+The following Object Identifiers (OIDs) are defined for use in the DomainAuth protocol, under the `1.3.6.1.4.1.58708.1` (iso.org.dod.internet.private.enterprise.relaycorp.domainauth) arc:
+
+- `1.3.6.1.4.1.58708.1.0`: Signature Metadata Attribute.
+- `1.3.6.1.4.1.58708.1.1`: Test Service.
+- `1.3.6.1.4.1.58708.1.2`: Member Attribution Attribute.
 
 # Acknowledgements
 {:numbered="false"}

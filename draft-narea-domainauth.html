@@ -2573,7 +2573,7 @@ If present, the member attribution attribute <span class="bcp14">MUST</span> be 
       <h2 id="name-privacy-considerations">
 <a href="#section-14" class="section-number selfRef">14. </a><a href="#name-privacy-considerations" class="section-name selfRef">Privacy Considerations</a>
       </h2>
-<p id="section-14-1">DomainAuth is focused on authentication and integrity.  Confidentiality, a key property of privacy, is outside the scope of this protocol.  Services <span class="bcp14">MAY</span> use other complementary mechanisms such as encryption to provide confidentiality where required.<a href="#section-14-1" class="pilcrow">¶</a></p>
+<p id="section-14-1">DomainAuth is focused on authentication and integrity.  Confidentiality, a key property of privacy, is outside the scope of this protocol.<a href="#section-14-1" class="pilcrow">¶</a></p>
 <p id="section-14-2">The protocol's PKI design, where each organisation manages its own certificate hierarchy, helps avoid unnecessary information disclosure.  By allowing an organisation to serve as the certificate authority for its members, this approach minimises the data that would otherwise need to be shared with verifiers, thereby reducing the risk of user information leakage or enabling user enumeration attacks.<a href="#section-14-2" class="pilcrow">¶</a></p>
 <p id="section-14-3">Signature bundles do not contain sensitive personal data beyond what is necessary for identity verification, following the principle of data minimisation.  The protocol also supports the use of bot signatures that do not identify specific individuals.<a href="#section-14-3" class="pilcrow">¶</a></p>
 </section>

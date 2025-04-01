@@ -1416,8 +1416,7 @@ _domainauth.example.com. IN TXT "0 1 3 dGhpcyBpcyBub3QgYSByZWFsIGtleSBkaWdlc3Q 8
 
    DomainAuth is focused on authentication and integrity.
    Confidentiality, a key property of privacy, is outside the scope of
-   this protocol.  Services MAY use other complementary mechanisms such
-   as encryption to provide confidentiality where required.
+   this protocol.
 
    The protocol's PKI design, where each organisation manages its own
    certificate hierarchy, helps avoid unnecessary information

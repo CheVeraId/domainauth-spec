@@ -1049,11 +1049,11 @@ svg :is([fill="white"], [fill^="#fff"]) {
 <thead><tr>
 <td class="left">Internet-Draft</td>
 <td class="center">DomainAuthV1</td>
-<td class="right">March 2025</td>
+<td class="right">April 2025</td>
 </tr></thead>
 <tfoot><tr>
 <td class="left">Narea</td>
-<td class="center">Expires 2 October 2025</td>
+<td class="center">Expires 3 October 2025</td>
 <td class="right">[Page]</td>
 </tr></tfoot>
 </table>
@@ -1066,12 +1066,12 @@ svg :is([fill="white"], [fill^="#fff"]) {
 <dd class="internet-draft">draft-narea-domainauth-latest</dd>
 <dt class="label-published">Published:</dt>
 <dd class="published">
-<time datetime="2025-03-31" class="published">31 March 2025</time>
+<time datetime="2025-04-01" class="published">1 April 2025</time>
     </dd>
 <dt class="label-intended-status">Intended Status:</dt>
 <dd class="intended-status">Standards Track</dd>
 <dt class="label-expires">Expires:</dt>
-<dd class="expires"><time datetime="2025-10-02">2 October 2025</time></dd>
+<dd class="expires"><time datetime="2025-10-03">3 October 2025</time></dd>
 <dt class="label-authors">Author:</dt>
 <dd class="authors">
 <div class="author">
@@ -1118,7 +1118,7 @@ svg :is([fill="white"], [fill^="#fff"]) {
         time. It is inappropriate to use Internet-Drafts as reference
         material or to cite them other than as "work in progress."<a href="#section-boilerplate.1-3" class="pilcrow">¶</a></p>
 <p id="section-boilerplate.1-4">
-        This Internet-Draft will expire on 2 October 2025.<a href="#section-boilerplate.1-4" class="pilcrow">¶</a></p>
+        This Internet-Draft will expire on 3 October 2025.<a href="#section-boilerplate.1-4" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="copyright">
@@ -1297,10 +1297,13 @@ svg :is([fill="white"], [fill^="#fff"]) {
                 <p id="section-toc.1-1.13.2.4.1"><a href="#section-13.4" class="auto internal xref">13.4</a>.  <a href="#name-offline-verification-limita" class="internal xref">Offline Verification Limitations</a></p>
 </li>
               <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.13.2.5">
-                <p id="section-toc.1-1.13.2.5.1"><a href="#section-13.5" class="auto internal xref">13.5</a>.  <a href="#name-key-management" class="internal xref">Key Management</a></p>
+                <p id="section-toc.1-1.13.2.5.1"><a href="#section-13.5" class="auto internal xref">13.5</a>.  <a href="#name-denial-of-service" class="internal xref">Denial of Service</a></p>
 </li>
               <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.13.2.6">
-                <p id="section-toc.1-1.13.2.6.1"><a href="#section-13.6" class="auto internal xref">13.6</a>.  <a href="#name-audit-trails" class="internal xref">Audit Trails</a></p>
+                <p id="section-toc.1-1.13.2.6.1"><a href="#section-13.6" class="auto internal xref">13.6</a>.  <a href="#name-key-management" class="internal xref">Key Management</a></p>
+</li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.13.2.7">
+                <p id="section-toc.1-1.13.2.7.1"><a href="#section-13.7" class="auto internal xref">13.7</a>.  <a href="#name-audit-trails" class="internal xref">Audit Trails</a></p>
 </li>
             </ul>
 </li>
@@ -1348,6 +1351,14 @@ svg :is([fill="white"], [fill^="#fff"]) {
 </li>
           <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.20">
             <p id="section-toc.1-1.20.1"><a href="#appendix-E" class="auto internal xref">Appendix E</a>.  <a href="#name-organisation-operation-guid" class="internal xref">Organisation Operation Guidance</a></p>
+<ul class="compact toc ulBare ulEmpty">
+<li class="compact toc ulBare ulEmpty" id="section-toc.1-1.20.2.1">
+                <p id="section-toc.1-1.20.2.1.1"><a href="#appendix-E.1" class="auto internal xref">E.1</a>.  <a href="#name-tld-dnssec-considerations" class="internal xref">TLD DNSSEC Considerations</a></p>
+</li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.20.2.2">
+                <p id="section-toc.1-1.20.2.2.1"><a href="#appendix-E.2" class="auto internal xref">E.2</a>.  <a href="#name-organisation-key-management" class="internal xref">Organisation Key Management</a></p>
+</li>
+            </ul>
 </li>
           <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.21">
             <p id="section-toc.1-1.21.1"><a href="#appendix-F" class="auto internal xref">Appendix F</a>.  <a href="#name-acknowledgements" class="internal xref">Acknowledgements</a></p>
@@ -2231,7 +2242,7 @@ If present, the member attribution attribute <span class="bcp14">MUST</span> be 
             </ul>
 </li>
           <li class="normal" id="section-12.1-2.5">
-            <p id="section-12.1-2.5.1">VeraId does not require conversion of domain names from Punycode to Unicode.<a href="#section-12.1-2.5.1" class="pilcrow">¶</a></p>
+            <p id="section-12.1-2.5.1">VeraId does not offer protection against IDN homograph attacks (see <a href="#phishing-attacks" class="auto internal xref">Section 13.2</a>).<a href="#section-12.1-2.5.1" class="pilcrow">¶</a></p>
 </li>
           <li class="normal" id="section-12.1-2.6">
             <p id="section-12.1-2.6.1">VeraId only disallows at-signs (<code>@</code>), tabs, and new lines in user names. Otherwise, user names are case-sensitive and may contain spaces in VeraId.<a href="#section-12.1-2.6.1" class="pilcrow">¶</a></p>
@@ -2434,96 +2445,115 @@ If present, the member attribution attribute <span class="bcp14">MUST</span> be 
         </ul>
 </section>
 </div>
-<div id="key-management">
+<div id="denial-of-service">
 <section id="section-13.5">
-        <h3 id="name-key-management">
-<a href="#section-13.5" class="section-number selfRef">13.5. </a><a href="#name-key-management" class="section-name selfRef">Key Management</a>
+        <h3 id="name-denial-of-service">
+<a href="#section-13.5" class="section-number selfRef">13.5. </a><a href="#name-denial-of-service" class="section-name selfRef">Denial of Service</a>
         </h3>
-<p id="section-13.5-1">Proper key management is essential for the security of the DomainAuth protocol. The following requirements and recommendations apply:<a href="#section-13.5-1" class="pilcrow">¶</a></p>
+<p id="section-13.5-1">Several aspects of the protocol present potential denial of service vectors:<a href="#section-13.5-1" class="pilcrow">¶</a></p>
+<ol start="1" type="1" class="normal type-1" id="section-13.5-2">
+<li id="section-13.5-2.1">
+            <p id="section-13.5-2.1.1"><strong>Resource-exhaustion attacks</strong>: Attackers could submit malformed or excessively complex signature bundles requiring significant resources to parse and validate, particularly during DNSSEC chain and certificate validation.<a href="#section-13.5-2.1.1" class="pilcrow">¶</a></p>
+</li>
+          <li id="section-13.5-2.2">
+            <p id="section-13.5-2.2.1"><strong>Large bundles</strong>: The protocol doesn't inherently limit signature bundle size. Services <span class="bcp14">SHOULD</span> enforce maximum bundle sizes appropriate to their use case to prevent resource exhaustion.<a href="#section-13.5-2.2.1" class="pilcrow">¶</a></p>
+</li>
+          <li id="section-13.5-2.3">
+            <p id="section-13.5-2.3.1"><strong>Certificate chain complexity</strong>: Bundles with extremely long certificate chains may cause excessive processing time or memory consumption during validation.<a href="#section-13.5-2.3.1" class="pilcrow">¶</a></p>
+</li>
+        </ol>
+</section>
+</div>
+<div id="key-management">
+<section id="section-13.6">
+        <h3 id="name-key-management">
+<a href="#section-13.6" class="section-number selfRef">13.6. </a><a href="#name-key-management" class="section-name selfRef">Key Management</a>
+        </h3>
+<p id="section-13.6-1">Proper key management is essential for the security of the DomainAuth protocol. The following requirements and recommendations apply:<a href="#section-13.6-1" class="pilcrow">¶</a></p>
 <ul class="normal">
-<li class="normal" id="section-13.5-2.1">
-            <p id="section-13.5-2.1.1"><strong>Key Generation.</strong> DomainAuth REQUIRES a Cryptographically-Secure Pseudorandom Number Generator (CSPRNG) compliant with <span>[<a href="#RFC4086" class="cite xref">RFC4086</a>]</span>. Implementations <span class="bcp14">SHOULD</span> integrate an existing CSPRNG implementation instead of creating their own.<a href="#section-13.5-2.1.1" class="pilcrow">¶</a></p>
+<li class="normal" id="section-13.6-2.1">
+            <p id="section-13.6-2.1.1"><strong>Key Generation.</strong> DomainAuth REQUIRES a Cryptographically-Secure Pseudorandom Number Generator (CSPRNG) compliant with <span>[<a href="#RFC4086" class="cite xref">RFC4086</a>]</span>. Implementations <span class="bcp14">SHOULD</span> integrate an existing CSPRNG instead of creating their own.<a href="#section-13.6-2.1.1" class="pilcrow">¶</a></p>
 </li>
-          <li class="normal" id="section-13.5-2.2">
-            <p id="section-13.5-2.2.1"><strong>Key Storage.</strong> Private keys <span class="bcp14">MUST</span> be protected from unauthorised access. Organisation private keys <span class="bcp14">SHOULD</span> be stored with the highest level of protection available, preferably in Hardware Security Modules (HSMs). Member private keys <span class="bcp14">SHOULD</span> be protected with appropriate measures, such as operating system security mechanisms or hardware tokens.<a href="#section-13.5-2.2.1" class="pilcrow">¶</a></p>
+          <li class="normal" id="section-13.6-2.2">
+            <p id="section-13.6-2.2.1"><strong>Key Storage.</strong> Private keys <span class="bcp14">MUST</span> be protected from unauthorised access. Organisation private keys <span class="bcp14">SHOULD</span> be stored with the highest level of protection available, preferably in Hardware Security Modules (HSMs). Member private keys <span class="bcp14">SHOULD</span> be protected with appropriate measures, such as operating system security mechanisms or hardware tokens.<a href="#section-13.6-2.2.1" class="pilcrow">¶</a></p>
 </li>
-          <li class="normal" id="section-13.5-2.3">
-            <p id="section-13.5-2.3.1"><strong>Key Rotation.</strong> Organisations <span class="bcp14">SHOULD</span> establish a regular schedule for rotating their keys. Given the nature of the protocol, DomainAuth TXT records for old keys <span class="bcp14">MAY</span> be removed as soon as the new key is deployed without affecting signatures produced with the old key.<a href="#section-13.5-2.3.1" class="pilcrow">¶</a></p>
+          <li class="normal" id="section-13.6-2.3">
+            <p id="section-13.6-2.3.1"><strong>Key Rotation.</strong> Organisations <span class="bcp14">SHOULD</span> establish a regular schedule for rotating their keys. Given the nature of the protocol, DomainAuth TXT records for old keys <span class="bcp14">MAY</span> be removed as soon as the new key is deployed without affecting signatures produced with the old key.<a href="#section-13.6-2.3.1" class="pilcrow">¶</a></p>
 </li>
-          <li class="normal" id="section-13.5-2.4">
-            <p id="section-13.5-2.4.1"><strong>Key Compromise.</strong> In the event of a key compromise, immediate rotation is <span class="bcp14">REQUIRED</span> and the compromised key's TXT record <span class="bcp14">MUST</span> be removed as soon as possible.<a href="#section-13.5-2.4.1" class="pilcrow">¶</a></p>
+          <li class="normal" id="section-13.6-2.4">
+            <p id="section-13.6-2.4.1"><strong>Key Compromise.</strong> In the event of a key compromise, immediate rotation is <span class="bcp14">REQUIRED</span> and the compromised key's TXT record <span class="bcp14">MUST</span> be removed as soon as possible.<a href="#section-13.6-2.4.1" class="pilcrow">¶</a></p>
 </li>
         </ul>
 </section>
 </div>
 <div id="audit-trails">
-<section id="section-13.6">
+<section id="section-13.7">
         <h3 id="name-audit-trails">
-<a href="#section-13.6" class="section-number selfRef">13.6. </a><a href="#name-audit-trails" class="section-name selfRef">Audit Trails</a>
+<a href="#section-13.7" class="section-number selfRef">13.7. </a><a href="#name-audit-trails" class="section-name selfRef">Audit Trails</a>
         </h3>
-<p id="section-13.6-1">Organisations implementing DomainAuth <span class="bcp14">SHOULD</span> maintain comprehensive audit logs of key management operations and certificate lifecycle events to support security incident investigation and facilitate non-repudiation.<a href="#section-13.6-1" class="pilcrow">¶</a></p>
+<p id="section-13.7-1">Organisations implementing DomainAuth <span class="bcp14">SHOULD</span> maintain comprehensive audit logs of key management operations and certificate lifecycle events to support security incident investigation and facilitate non-repudiation.<a href="#section-13.7-1" class="pilcrow">¶</a></p>
 <ul class="normal">
-<li class="normal" id="section-13.6-2.1">
-            <p id="section-13.6-2.1.1"><strong>Key Event Logging:</strong><a href="#section-13.6-2.1.1" class="pilcrow">¶</a></p>
+<li class="normal" id="section-13.7-2.1">
+            <p id="section-13.7-2.1.1"><strong>Key Event Logging:</strong><a href="#section-13.7-2.1.1" class="pilcrow">¶</a></p>
 <ul class="normal">
-<li class="normal" id="section-13.6-2.1.2.1">
-                <p id="section-13.6-2.1.2.1.1">Organisations <span class="bcp14">MUST</span> log key generation, rotation, and retirement events.<a href="#section-13.6-2.1.2.1.1" class="pilcrow">¶</a></p>
+<li class="normal" id="section-13.7-2.1.2.1">
+                <p id="section-13.7-2.1.2.1.1">Organisations <span class="bcp14">MUST</span> log key generation, rotation, and retirement events.<a href="#section-13.7-2.1.2.1.1" class="pilcrow">¶</a></p>
 </li>
-              <li class="normal" id="section-13.6-2.1.2.2">
-                <p id="section-13.6-2.1.2.2.1">Each log entry <span class="bcp14">SHOULD</span> include the key identifier, timestamp, operation type, and authorised operator identity.<a href="#section-13.6-2.1.2.2.1" class="pilcrow">¶</a></p>
+              <li class="normal" id="section-13.7-2.1.2.2">
+                <p id="section-13.7-2.1.2.2.1">Each log entry <span class="bcp14">SHOULD</span> include the key identifier, timestamp, operation type, and authorised operator identity.<a href="#section-13.7-2.1.2.2.1" class="pilcrow">¶</a></p>
 </li>
-              <li class="normal" id="section-13.6-2.1.2.3">
-                <p id="section-13.6-2.1.2.3.1">Key material itself <span class="bcp14">MUST NOT</span> be included in logs.<a href="#section-13.6-2.1.2.3.1" class="pilcrow">¶</a></p>
+              <li class="normal" id="section-13.7-2.1.2.3">
+                <p id="section-13.7-2.1.2.3.1">Key material itself <span class="bcp14">MUST NOT</span> be included in logs.<a href="#section-13.7-2.1.2.3.1" class="pilcrow">¶</a></p>
 </li>
             </ul>
 </li>
-          <li class="normal" id="section-13.6-2.2">
-            <p id="section-13.6-2.2.1"><strong>Certificate Operations:</strong><a href="#section-13.6-2.2.1" class="pilcrow">¶</a></p>
+          <li class="normal" id="section-13.7-2.2">
+            <p id="section-13.7-2.2.1"><strong>Certificate Operations:</strong><a href="#section-13.7-2.2.1" class="pilcrow">¶</a></p>
 <ul class="normal">
-<li class="normal" id="section-13.6-2.2.2.1">
-                <p id="section-13.6-2.2.2.1.1">Certificate issuance and renewal events <span class="bcp14">MUST</span> be logged.<a href="#section-13.6-2.2.2.1.1" class="pilcrow">¶</a></p>
+<li class="normal" id="section-13.7-2.2.2.1">
+                <p id="section-13.7-2.2.2.1.1">Certificate issuance and renewal events <span class="bcp14">MUST</span> be logged.<a href="#section-13.7-2.2.2.1.1" class="pilcrow">¶</a></p>
 </li>
-              <li class="normal" id="section-13.6-2.2.2.2">
-                <p id="section-13.6-2.2.2.2.1">Logs <span class="bcp14">SHOULD</span> include certificate subject, issuer, serial number, validity period, and authorising entity.<a href="#section-13.6-2.2.2.2.1" class="pilcrow">¶</a></p>
+              <li class="normal" id="section-13.7-2.2.2.2">
+                <p id="section-13.7-2.2.2.2.1">Logs <span class="bcp14">SHOULD</span> include certificate subject, issuer, serial number, validity period, and authorising entity.<a href="#section-13.7-2.2.2.2.1" class="pilcrow">¶</a></p>
 </li>
             </ul>
 </li>
-          <li class="normal" id="section-13.6-2.3">
-            <p id="section-13.6-2.3.1"><strong>Member Management:</strong><a href="#section-13.6-2.3.1" class="pilcrow">¶</a></p>
+          <li class="normal" id="section-13.7-2.3">
+            <p id="section-13.7-2.3.1"><strong>Member Management:</strong><a href="#section-13.7-2.3.1" class="pilcrow">¶</a></p>
 <ul class="normal">
-<li class="normal" id="section-13.6-2.3.2.1">
-                <p id="section-13.6-2.3.2.1.1">Member registration, name changes, and removal operations <span class="bcp14">MUST</span> be logged.<a href="#section-13.6-2.3.2.1.1" class="pilcrow">¶</a></p>
+<li class="normal" id="section-13.7-2.3.2.1">
+                <p id="section-13.7-2.3.2.1.1">Member registration, name changes, and removal operations <span class="bcp14">MUST</span> be logged.<a href="#section-13.7-2.3.2.1.1" class="pilcrow">¶</a></p>
 </li>
-              <li class="normal" id="section-13.6-2.3.2.2">
-                <p id="section-13.6-2.3.2.2.1">Logs <span class="bcp14">SHOULD</span> include the affected member identifier and the authorising entity.<a href="#section-13.6-2.3.2.2.1" class="pilcrow">¶</a></p>
+              <li class="normal" id="section-13.7-2.3.2.2">
+                <p id="section-13.7-2.3.2.2.1">Logs <span class="bcp14">SHOULD</span> include the affected member identifier and the authorising entity.<a href="#section-13.7-2.3.2.2.1" class="pilcrow">¶</a></p>
 </li>
             </ul>
 </li>
-          <li class="normal" id="section-13.6-2.4">
-            <p id="section-13.6-2.4.1"><strong>Signature Operations:</strong><a href="#section-13.6-2.4.1" class="pilcrow">¶</a></p>
+          <li class="normal" id="section-13.7-2.4">
+            <p id="section-13.7-2.4.1"><strong>Signature Operations:</strong><a href="#section-13.7-2.4.1" class="pilcrow">¶</a></p>
 <ul class="normal">
-<li class="normal" id="section-13.6-2.4.2.1">
-                <p id="section-13.6-2.4.2.1.1">Organisations <span class="bcp14">SHOULD</span> log signature creation events for organisation signatures.<a href="#section-13.6-2.4.2.1.1" class="pilcrow">¶</a></p>
+<li class="normal" id="section-13.7-2.4.2.1">
+                <p id="section-13.7-2.4.2.1.1">Organisations <span class="bcp14">SHOULD</span> log signature creation events for organisation signatures.<a href="#section-13.7-2.4.2.1.1" class="pilcrow">¶</a></p>
 </li>
-              <li class="normal" id="section-13.6-2.4.2.2">
-                <p id="section-13.6-2.4.2.2.1">Member signatures <span class="bcp14">MAY</span> be logged depending on service requirements.<a href="#section-13.6-2.4.2.2.1" class="pilcrow">¶</a></p>
+              <li class="normal" id="section-13.7-2.4.2.2">
+                <p id="section-13.7-2.4.2.2.1">Member signatures <span class="bcp14">MAY</span> be logged depending on service requirements.<a href="#section-13.7-2.4.2.2.1" class="pilcrow">¶</a></p>
 </li>
-              <li class="normal" id="section-13.6-2.4.2.3">
-                <p id="section-13.6-2.4.2.3.1">Logs <span class="bcp14">SHOULD</span> include signer identifier, signature validity period, service OID, and a content reference or hash.<a href="#section-13.6-2.4.2.3.1" class="pilcrow">¶</a></p>
+              <li class="normal" id="section-13.7-2.4.2.3">
+                <p id="section-13.7-2.4.2.3.1">Logs <span class="bcp14">SHOULD</span> include signer identifier, signature validity period, service OID, and a content reference or hash.<a href="#section-13.7-2.4.2.3.1" class="pilcrow">¶</a></p>
 </li>
             </ul>
 </li>
-          <li class="normal" id="section-13.6-2.5">
-            <p id="section-13.6-2.5.1"><strong>Log Security:</strong><a href="#section-13.6-2.5.1" class="pilcrow">¶</a></p>
+          <li class="normal" id="section-13.7-2.5">
+            <p id="section-13.7-2.5.1"><strong>Log Security:</strong><a href="#section-13.7-2.5.1" class="pilcrow">¶</a></p>
 <ul class="normal">
-<li class="normal" id="section-13.6-2.5.2.1">
-                <p id="section-13.6-2.5.2.1.1">Audit logs <span class="bcp14">MUST</span> be protected against unauthorised modification and access.<a href="#section-13.6-2.5.2.1.1" class="pilcrow">¶</a></p>
+<li class="normal" id="section-13.7-2.5.2.1">
+                <p id="section-13.7-2.5.2.1.1">Audit logs <span class="bcp14">MUST</span> be protected against unauthorised modification and access.<a href="#section-13.7-2.5.2.1.1" class="pilcrow">¶</a></p>
 </li>
-              <li class="normal" id="section-13.6-2.5.2.2">
-                <p id="section-13.6-2.5.2.2.1">Logs <span class="bcp14">SHOULD</span> be stored with integrity protection mechanisms.<a href="#section-13.6-2.5.2.2.1" class="pilcrow">¶</a></p>
+              <li class="normal" id="section-13.7-2.5.2.2">
+                <p id="section-13.7-2.5.2.2.1">Logs <span class="bcp14">SHOULD</span> be stored with integrity protection mechanisms.<a href="#section-13.7-2.5.2.2.1" class="pilcrow">¶</a></p>
 </li>
-              <li class="normal" id="section-13.6-2.5.2.3">
-                <p id="section-13.6-2.5.2.3.1">In high-risk environments, organisations <span class="bcp14">SHOULD</span> implement tamper-evident logging.<a href="#section-13.6-2.5.2.3.1" class="pilcrow">¶</a></p>
+              <li class="normal" id="section-13.7-2.5.2.3">
+                <p id="section-13.7-2.5.2.3.1">In high-risk environments, organisations <span class="bcp14">SHOULD</span> implement tamper-evident logging.<a href="#section-13.7-2.5.2.3.1" class="pilcrow">¶</a></p>
 </li>
             </ul>
 </li>
@@ -2871,8 +2901,11 @@ MemberAttribution ::= UTF8String
           <li class="normal" id="appendix-C.1-4.2">
             <p id="appendix-C.1-4.2.1"><strong>Phishing attacks:</strong> Service logic built upon the verified identity ought to correctly handle the required Unicode representation of domain names, and the specific normalisation and character restrictions applicable to user names (<a href="#phishing-attacks" class="auto internal xref">Section 13.2</a>, <a href="#verification-procedure" class="auto internal xref">Section 7.1</a>). Adhering to guidelines like those in <span>[<a href="#UTR36" class="cite xref">UTR36</a>]</span> for displaying Internationalised Domain Names can help mitigate homograph attacks.<a href="#appendix-C.1-4.2.1" class="pilcrow">¶</a></p>
 </li>
+          <li class="normal" id="appendix-C.1-4.3">
+            <p id="appendix-C.1-4.3.1"><strong>Denial of service:</strong> Service designers should establish limits on signature bundle size to mitigate resource exhaustion attacks (<a href="#denial-of-service" class="auto internal xref">Section 13.5</a>).<a href="#appendix-C.1-4.3.1" class="pilcrow">¶</a></p>
+</li>
         </ul>
-<p id="appendix-C.1-5">Services may define their own requirements for logging signature events, which would complement the organisation-level audit trails recommended in <a href="#audit-trails" class="auto internal xref">Section 13.6</a>.<a href="#appendix-C.1-5" class="pilcrow">¶</a></p>
+<p id="appendix-C.1-5">Services may define their own requirements for logging signature events, which would complement the organisation-level audit trails recommended in <a href="#audit-trails" class="auto internal xref">Section 13.7</a>.<a href="#appendix-C.1-5" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="service-user-experience-considerations">
@@ -2930,9 +2963,55 @@ MemberAttribution ::= UTF8String
       </h2>
 <p id="appendix-E-1">This non-normative section provides guidance for organisations operating domains that participate in the DomainAuth protocol.<a href="#appendix-E-1" class="pilcrow">¶</a></p>
 <p id="appendix-E-2">Before implementation, organisations should ensure their domain has been under their control for at least the maximum validity period (<a href="#maximum-validity-period" class="auto internal xref">Section 9</a>) and consider TLD governance (<a href="#dnssec-dependency" class="auto internal xref">Section 13.1</a>). DNSSEC must be properly configured, with processes established for key rollovers.<a href="#appendix-E-2" class="pilcrow">¶</a></p>
-<p id="appendix-E-3">Key management practices should include secure generation (potentially using HSMs as suggested in <a href="#key-management" class="auto internal xref">Section 13.5</a>), protected storage, and scheduled rotation. Organisations may publish multiple TXT records for different keys, algorithms, or services, which facilitates smooth key rotation. The TTL override value in TXT records significantly affects verification windows and should be set appropriately for the service's offline requirements.<a href="#appendix-E-3" class="pilcrow">¶</a></p>
-<p id="appendix-E-4">The organisation certificate serves as the trust anchor for all members, making its protection particularly important. For member management, establish clear processes for certificate issuance, naming conventions that comply with normalisation requirements (<a href="#phishing-attacks" class="auto internal xref">Section 13.2</a>), secure distribution of Member Id Bundles, and handling departing members.<a href="#appendix-E-4" class="pilcrow">¶</a></p>
-<p id="appendix-E-5">Operational security measures should include regular verification of DomainAuth TXT records, comprehensive logging (<a href="#audit-trails" class="auto internal xref">Section 13.6</a>), certificate inventory maintenance, and monitoring for unauthorised DNS modifications. Incident response procedures should address key compromise, DNS hijacking, and trust recovery, noting that the limited validity period of signatures helps contain security incident impact.<a href="#appendix-E-5" class="pilcrow">¶</a></p>
+<div id="tld-dnssec-considerations">
+<section id="appendix-E.1">
+        <h3 id="name-tld-dnssec-considerations">
+<a href="#appendix-E.1" class="section-number selfRef">E.1. </a><a href="#name-tld-dnssec-considerations" class="section-name selfRef">TLD DNSSEC Considerations</a>
+        </h3>
+<p id="appendix-E.1-1">When selecting a domain for DomainAuth implementation, organisations should carefully assess the security practices of the TLD operator, as mentioned in <a href="#dnssec-dependency" class="auto internal xref">Section 13.1</a>. Factors to consider include:<a href="#appendix-E.1-1" class="pilcrow">¶</a></p>
+<ul class="normal">
+<li class="normal" id="appendix-E.1-2.1">
+            <p id="appendix-E.1-2.1.1">The TLD operator's jurisdiction and potential vulnerability to government influence.<a href="#appendix-E.1-2.1.1" class="pilcrow">¶</a></p>
+</li>
+          <li class="normal" id="appendix-E.1-2.2">
+            <p id="appendix-E.1-2.2.1">The cryptographic algorithms used for DNSSEC by the TLD.<a href="#appendix-E.1-2.2.1" class="pilcrow">¶</a></p>
+</li>
+          <li class="normal" id="appendix-E.1-2.3">
+            <p id="appendix-E.1-2.3.1">The TLD's DNSSEC Practice Statement.<a href="#appendix-E.1-2.3.1" class="pilcrow">¶</a></p>
+</li>
+          <li class="normal" id="appendix-E.1-2.4">
+            <p id="appendix-E.1-2.4.1">The TLD operator's history of security incidents or vulnerabilities.<a href="#appendix-E.1-2.4.1" class="pilcrow">¶</a></p>
+</li>
+        </ul>
+<p id="appendix-E.1-3">For security-critical applications, organisations may wish to select TLDs with strong security practices and jurisdictions with robust legal protections.<a href="#appendix-E.1-3" class="pilcrow">¶</a></p>
+<p id="appendix-E.1-4">Similar considerations apply to the DNS hosting provider used for the domain, as they represent another potential attack vector. The security practices, DNSSEC support, access controls, and jurisdictional factors of the entity responsible for hosting the domain's DNS records can significantly impact the overall security of a DomainAuth implementation.<a href="#appendix-E.1-4" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="organisation-key-management">
+<section id="appendix-E.2">
+        <h3 id="name-organisation-key-management">
+<a href="#appendix-E.2" class="section-number selfRef">E.2. </a><a href="#name-organisation-key-management" class="section-name selfRef">Organisation Key Management</a>
+        </h3>
+<p id="appendix-E.2-1">Key management practices should include secure generation (potentially using HSMs as suggested in <a href="#key-management" class="auto internal xref">Section 13.6</a>), protected storage, and scheduled rotation. Organisations may publish multiple TXT records for different keys, algorithms, or services, which facilitates smooth key rotation. The TTL override value in TXT records significantly affects verification windows and should be set appropriately for the service's offline requirements.<a href="#appendix-E.2-1" class="pilcrow">¶</a></p>
+<p id="appendix-E.2-2">The organisation certificate serves as the trust anchor for all members, making its protection particularly important. For member management, establish clear processes for certificate issuance, naming conventions that comply with normalisation requirements (<a href="#phishing-attacks" class="auto internal xref">Section 13.2</a>), secure distribution of Member Id Bundles, and handling departing members.<a href="#appendix-E.2-2" class="pilcrow">¶</a></p>
+<p id="appendix-E.2-3">Operational security measures should include regular verification of DomainAuth TXT records, comprehensive logging (<a href="#audit-trails" class="auto internal xref">Section 13.7</a>), certificate inventory maintenance, and monitoring for unauthorised DNS modifications. Incident response procedures should address key compromise, DNS hijacking, and trust recovery, noting that the limited validity period of signatures helps contain security incident impact.<a href="#appendix-E.2-3" class="pilcrow">¶</a></p>
+<p id="appendix-E.2-4">Due to the residual risks regarding offline verification (<a href="#offline-verification-limitations" class="auto internal xref">Section 13.4</a>), organisations should implement additional safeguards:<a href="#appendix-E.2-4" class="pilcrow">¶</a></p>
+<ul class="normal">
+<li class="normal" id="appendix-E.2-5.1">
+            <p id="appendix-E.2-5.1.1">Keep validity periods as short as operationally feasible.<a href="#appendix-E.2-5.1.1" class="pilcrow">¶</a></p>
+</li>
+          <li class="normal" id="appendix-E.2-5.2">
+            <p id="appendix-E.2-5.2.1">Implement robust monitoring for potential compromise indicators.<a href="#appendix-E.2-5.2.1" class="pilcrow">¶</a></p>
+</li>
+          <li class="normal" id="appendix-E.2-5.3">
+            <p id="appendix-E.2-5.3.1">Maintain secure backup procedures for cryptographic materials.<a href="#appendix-E.2-5.3.1" class="pilcrow">¶</a></p>
+</li>
+          <li class="normal" id="appendix-E.2-5.4">
+            <p id="appendix-E.2-5.4.1">Have emergency procedures in place to respond to security incidents, including communication plans to notify relying parties.<a href="#appendix-E.2-5.4.1" class="pilcrow">¶</a></p>
+</li>
+        </ul>
+</section>
+</div>
 </section>
 </div>
 <div id="acknowledgements">

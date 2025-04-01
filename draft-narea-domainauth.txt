@@ -4,8 +4,8 @@
 
 Network Working Group                                           G. Narea
 Internet-Draft                                                 Relaycorp
-Intended status: Standards Track                           31 March 2025
-Expires: 2 October 2025
+Intended status: Standards Track                            1 April 2025
+Expires: 3 October 2025
 
 
                           DomainAuth Version 1
@@ -54,7 +54,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 2 October 2025.
+   This Internet-Draft will expire on 3 October 2025.
 
 Copyright Notice
 
@@ -115,8 +115,9 @@ Table of Contents
      13.2.  Phishing Attacks
      13.3.  Domain Ownership Changes
      13.4.  Offline Verification Limitations
-     13.5.  Key Management
-     13.6.  Audit Trails
+     13.5.  Denial of Service
+     13.6.  Key Management
+     13.7.  Audit Trails
    14. IANA Considerations
      14.1.  DomainAuth Signature Algorithm Registry
      14.2.  DomainAuth Hash Function Registry
@@ -130,6 +131,8 @@ Table of Contents
      C.2.  Service User Experience Considerations
    Appendix D.  Implementation Guidance
    Appendix E.  Organisation Operation Guidance
+     E.1.  TLD DNSSEC Considerations
+     E.2.  Organisation Key Management
    Appendix F.  Acknowledgements
    Author's Address
 
@@ -1121,8 +1124,8 @@ _domainauth.example.com. IN TXT "0 1 3 dGhpcyBpcyBub3QgYSByZWFsIGtleSBkaWdlc3Q 8
       -  Hash functions: VeraId only supports SHA-256, SHA-384, and SHA-
          512.
 
-   *  VeraId does not require conversion of domain names from Punycode
-      to Unicode.
+   *  VeraId does not offer protection against IDN homograph attacks
+      (see Section 13.2).
 
    *  VeraId only disallows at-signs (@), tabs, and new lines in user
       names.  Otherwise, user names are case-sensitive and may contain
@@ -1290,15 +1293,33 @@ _domainauth.example.com. IN TXT "0 1 3 dGhpcyBpcyBub3QgYSByZWFsIGtleSBkaWdlc3Q 8
       time revocation status, and therefore the protocol relies on short
       validity periods rather than revocation checking.
 
-13.5.  Key Management
+13.5.  Denial of Service
+
+   Several aspects of the protocol present potential denial of service
+   vectors:
+
+   1.  *Resource-exhaustion attacks*: Attackers could submit malformed
+       or excessively complex signature bundles requiring significant
+       resources to parse and validate, particularly during DNSSEC chain
+       and certificate validation.
+
+   2.  *Large bundles*: The protocol doesn't inherently limit signature
+       bundle size.  Services SHOULD enforce maximum bundle sizes
+       appropriate to their use case to prevent resource exhaustion.
+
+   3.  *Certificate chain complexity*: Bundles with extremely long
+       certificate chains may cause excessive processing time or memory
+       consumption during validation.
+
+13.6.  Key Management
 
    Proper key management is essential for the security of the DomainAuth
    protocol.  The following requirements and recommendations apply:
 
    *  *Key Generation.* DomainAuth REQUIRES a Cryptographically-Secure
       Pseudorandom Number Generator (CSPRNG) compliant with [RFC4086].
-      Implementations SHOULD integrate an existing CSPRNG implementation
-      instead of creating their own.
+      Implementations SHOULD integrate an existing CSPRNG instead of
+      creating their own.
 
    *  *Key Storage.* Private keys MUST be protected from unauthorised
       access.  Organisation private keys SHOULD be stored with the
@@ -1317,7 +1338,7 @@ _domainauth.example.com. IN TXT "0 1 3 dGhpcyBpcyBub3QgYSByZWFsIGtleSBkaWdlc3Q 8
       rotation is REQUIRED and the compromised key's TXT record MUST be
       removed as soon as possible.
 
-13.6.  Audit Trails
+13.7.  Audit Trails
 
    Organisations implementing DomainAuth SHOULD maintain comprehensive
    audit logs of key management operations and certificate lifecycle
@@ -1709,9 +1730,13 @@ C.1.  Service Security Considerations
       Internationalised Domain Names can help mitigate homograph
       attacks.
 
+   *  *Denial of service:* Service designers should establish limits on
+      signature bundle size to mitigate resource exhaustion attacks
+      (Section 13.5).
+
    Services may define their own requirements for logging signature
    events, which would complement the organisation-level audit trails
-   recommended in Section 13.6.
+   recommended in Section 13.7.
 
 C.2.  Service User Experience Considerations
 
@@ -1799,8 +1824,37 @@ Appendix E.  Organisation Operation Guidance
    (Section 9) and consider TLD governance (Section 13.1).  DNSSEC must
    be properly configured, with processes established for key rollovers.
 
+E.1.  TLD DNSSEC Considerations
+
+   When selecting a domain for DomainAuth implementation, organisations
+   should carefully assess the security practices of the TLD operator,
+   as mentioned in Section 13.1.  Factors to consider include:
+
+   *  The TLD operator's jurisdiction and potential vulnerability to
+      government influence.
+
+   *  The cryptographic algorithms used for DNSSEC by the TLD.
+
+   *  The TLD's DNSSEC Practice Statement.
+
+   *  The TLD operator's history of security incidents or
+      vulnerabilities.
+
+   For security-critical applications, organisations may wish to select
+   TLDs with strong security practices and jurisdictions with robust
+   legal protections.
+
+   Similar considerations apply to the DNS hosting provider used for the
+   domain, as they represent another potential attack vector.  The
+   security practices, DNSSEC support, access controls, and
+   jurisdictional factors of the entity responsible for hosting the
+   domain's DNS records can significantly impact the overall security of
+   a DomainAuth implementation.
+
+E.2.  Organisation Key Management
+
    Key management practices should include secure generation
-   (potentially using HSMs as suggested in Section 13.5), protected
+   (potentially using HSMs as suggested in Section 13.6), protected
    storage, and scheduled rotation.  Organisations may publish multiple
    TXT records for different keys, algorithms, or services, which
    facilitates smooth key rotation.  The TTL override value in TXT
@@ -1815,12 +1869,25 @@ Appendix E.  Organisation Operation Guidance
    handling departing members.
 
    Operational security measures should include regular verification of
-   DomainAuth TXT records, comprehensive logging (Section 13.6),
+   DomainAuth TXT records, comprehensive logging (Section 13.7),
    certificate inventory maintenance, and monitoring for unauthorised
    DNS modifications.  Incident response procedures should address key
    compromise, DNS hijacking, and trust recovery, noting that the
    limited validity period of signatures helps contain security incident
    impact.
+
+   Due to the residual risks regarding offline verification
+   (Section 13.4), organisations should implement additional safeguards:
+
+   *  Keep validity periods as short as operationally feasible.
+
+   *  Implement robust monitoring for potential compromise indicators.
+
+   *  Maintain secure backup procedures for cryptographic materials.
+
+   *  Have emergency procedures in place to respond to security
+      incidents, including communication plans to notify relying
+      parties.
 
 Appendix F.  Acknowledgements
 

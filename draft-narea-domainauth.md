@@ -538,7 +538,7 @@ Services MAY require or recommend additional ASN.1 encoding rules.
 
 # Test Service
 
-Service-agnostic implementations SHOULD use the test service OID `1.3.6.1.4.1.58708.1.1` for testing purposes.
+Service-agnostic implementations SHOULD use the test service OID `1.3.6.1.4.1.58708.1.1` for testing purposes.  Service implementations MUST NOT use this service.
 
 This service is not subject to additional requirements or recommendations.
 

@@ -315,7 +315,7 @@ Whilst the organisation certificate is typically self-issued, it MAY be issued b
 
 ## Intermediate Certificate
 
-Organisations MAY issue intermediate certificates to delegate the responsibility of signing member certificates to other entities.
+Organisations MAY issue intermediate certificates to delegate the responsibility of issuing member certificates and organisation signatures to other entities.
 
 When an intermediate certificate is used, the Basic Constraints extension from {{Section 4.2.1.9 of X.509}} MUST be present and marked as critical.  Additionally, the CA flag MUST be enabled, and the Path Length Constraint SHOULD be set to the lowest possible value for the length of the intended certificate chains.
 

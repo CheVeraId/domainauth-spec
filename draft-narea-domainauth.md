@@ -376,7 +376,7 @@ The member's certificate MUST be included in the `SignedData.certificates` field
 
 ### Organisation Signatures
 
-Organisation signatures are produced using either the organisation's private key or a delegated signing key.  All organisation signatures include mandatory member attribution to indicate content authorship.  These signatures are suitable for scenarios where individual member certificate management is impractical or when the organisation takes direct responsibility for content.
+Organisation signatures are produced using the organisation's private key or a delegated signing key. These signatures involve attributing the signature to a member and are suitable when member certificate management is impractical.
 
 The SignerInfo structure MUST include the DomainAuth member attribution in its signed attributes, using the OID `1.3.6.1.4.1.58708.1.2` and the value defined in the ASN.1 structure below:
 

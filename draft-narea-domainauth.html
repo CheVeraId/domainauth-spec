@@ -1412,10 +1412,10 @@ svg :is([fill="white"], [fill^="#fff"]) {
 <p id="section-1.2-1">DomainAuth is designed with the following primary goals:<a href="#section-1.2-1" class="pilcrow">¶</a></p>
 <ol start="1" type="1" class="normal type-1" id="section-1.2-2">
 <li id="section-1.2-2.1">
-            <p id="section-1.2-2.1.1"><strong>Decentralisation:</strong> The protocol avoids the need for centralised authorities beyond the DNS hierarchy itself.  Each domain owner has exclusive control over their domain and its associated members.<a href="#section-1.2-2.1.1" class="pilcrow">¶</a></p>
+            <p id="section-1.2-2.1.1"><strong>Offline verification:</strong> All signature bundles contain sufficient information to be independently verified without requiring external network queries.<a href="#section-1.2-2.1.1" class="pilcrow">¶</a></p>
 </li>
           <li id="section-1.2-2.2">
-            <p id="section-1.2-2.2.1"><strong>Offline verification:</strong> All signature bundles contain sufficient information to be independently verified without requiring external network queries.<a href="#section-1.2-2.2.1" class="pilcrow">¶</a></p>
+            <p id="section-1.2-2.2.1"><strong>Decentralisation:</strong> The protocol avoids the need for centralised authorities beyond the DNS hierarchy itself.  Each domain owner has exclusive control over their domain and its associated members.<a href="#section-1.2-2.2.1" class="pilcrow">¶</a></p>
 </li>
           <li id="section-1.2-2.3">
             <p id="section-1.2-2.3.1"><strong>User-friendly identifiers:</strong> Identities are based on familiar, human-readable domain names and user names rather than cryptographically-derived values.<a href="#section-1.2-2.3.1" class="pilcrow">¶</a></p>
@@ -1577,7 +1577,7 @@ appear in all capitals, as shown here.<a href="#section-1.3-1" class="pilcrow">�
 <a href="#section-2.2.2" class="section-number selfRef">2.2.2. </a><a href="#name-certificate-issuance" class="section-name selfRef">Certificate Issuance</a>
           </h4>
 <p id="section-2.2.2-1">The organisation must obtain an X.509 certificate for its public key, or reuse an existing certificate valid during the intended validity period.<a href="#section-2.2.2-1" class="pilcrow">¶</a></p>
-<p id="section-2.2.2-2">When issuing a member certificate, the organisation must distribute it along with the organisation certificate.  This can be done with a Member Id Bundle as defined in <a href="#member-id-bundle" class="auto internal xref">Section 5</a>, which is desirable in services meant to be used offline as it also contains the DNSSEC chain.<a href="#section-2.2.2-2" class="pilcrow">¶</a></p>
+<p id="section-2.2.2-2">When issuing a member certificate, the organisation must distribute it along with the organisation certificate.  This can be done with a Member Id Bundle as specified in <a href="#member-id-bundle" class="auto internal xref">Section 5</a>, which is desirable in services meant to be used offline as it also contains the DNSSEC chain.<a href="#section-2.2.2-2" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="signature-bundle-production">
@@ -1724,8 +1724,8 @@ _domainauth.example.com. IN TXT "0 1 3 dGhpcyBpcyBub3QgYSByZWFsIGtleSBkaWdlc3Q 8
         </h3>
 <p id="section-3.3-1">The TTL override field in the DomainAuth TXT record enables verification of DNS records and DNSSEC signatures for longer periods than their respective specifications would allow, which is essential for delay-tolerant use cases where users may be offline for extended periods.<a href="#section-3.3-1" class="pilcrow">¶</a></p>
 <p id="section-3.3-2">DNS records and DNSSEC signatures typically have TTL values that may be as short as a few minutes or hours.  The TTL override mechanism allows the DNSSEC chain to remain verifiable for a significantly longer period, regardless of the TTL in such records.  Refer to <a href="#maximum-validity-period" class="auto internal xref">Section 9</a> for the maximum validity period.<a href="#section-3.3-2" class="pilcrow">¶</a></p>
-<p id="section-3.3-3">During verification, the TTL override creates a restricted time window that extends backwards from the end of the requested verification period by the specified number of seconds.  Verification will succeed if the DNSSEC records were valid at any point during this window, even if the standard DNS TTLs would have expired.<a href="#section-3.3-3" class="pilcrow">¶</a></p>
-<p id="section-3.3-4">For example, if a DNS record has a standard TTL of 3600 seconds (1 hour) but the DomainAuth TXT record specifies a TTL override of 604,800 seconds (7 days), a signature can still be verified up to 7 days after creation, even when offline.  If a verifier attempts to verify a signature 5 days after it was created, the verification would succeed with the TTL override, whereas it would fail with only the standard 1-hour TTL.<a href="#section-3.3-4" class="pilcrow">¶</a></p>
+<p id="section-3.3-3">During verification, the TTL override creates a restricted time window that extends backwards from the end of the requested verification period by the specified number of seconds.  Verification will succeed if the DNSSEC signatures (RRSIGs) were valid at any point during this window, even if they would have expired according to their original validity periods.<a href="#section-3.3-3" class="pilcrow">¶</a></p>
+<p id="section-3.3-4">For example, if a DNSSEC signature has a standard validity period of 3600 seconds (1 hour) but the DomainAuth TXT record specifies a TTL override of 604,800 seconds (7 days), a signature bundle can still be verified up to 7 days after creation, even when offline.  If a verifier attempts to verify a signature bundle 5 days after it was created, the verification would succeed with the TTL override, whereas it would fail with only the 1-hour DNSSEC signature validity period.<a href="#section-3.3-4" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="dnssec-chain-serialisation">
@@ -1733,7 +1733,7 @@ _domainauth.example.com. IN TXT "0 1 3 dGhpcyBpcyBub3QgYSByZWFsIGtleSBkaWdlc3Q 8
         <h3 id="name-dnssec-chain-serialisation">
 <a href="#section-3.4" class="section-number selfRef">3.4. </a><a href="#name-dnssec-chain-serialisation" class="section-name selfRef">DNSSEC Chain Serialisation</a>
         </h3>
-<p id="section-3.4-1">The serialised chain <span class="bcp14">MUST</span> be encoded as the ASN.1 <code>DnssecChain</code> structure below, where each <code>OCTET STRING</code> contains a complete DNS message as defined in <span>[<a href="#DNS" class="cite xref">DNS</a>]</span>:<a href="#section-3.4-1" class="pilcrow">¶</a></p>
+<p id="section-3.4-1">The serialised chain <span class="bcp14">MUST</span> be encoded as the ASN.1 <code>DnssecChain</code> structure below, where each <code>OCTET STRING</code> contains a complete DNS message as detailed in <span>[<a href="#DNS" class="cite xref">DNS</a>]</span>:<a href="#section-3.4-1" class="pilcrow">¶</a></p>
 <div class="alignLeft art-text artwork" id="section-3.4-2">
 <pre>
 DnssecChain ::= SET OF OCTET STRING
@@ -1800,7 +1800,7 @@ DnssecChain ::= SET OF OCTET STRING
         <h3 id="name-intermediate-certificate">
 <a href="#section-4.3" class="section-number selfRef">4.3. </a><a href="#name-intermediate-certificate" class="section-name selfRef">Intermediate Certificate</a>
         </h3>
-<p id="section-4.3-1">Organisations <span class="bcp14">MAY</span> issue intermediate certificates to delegate the responsibility of signing member certificates to other entities.<a href="#section-4.3-1" class="pilcrow">¶</a></p>
+<p id="section-4.3-1">Organisations <span class="bcp14">MAY</span> issue intermediate certificates to delegate the responsibility of issuing member certificates and organisation signatures to other entities.<a href="#section-4.3-1" class="pilcrow">¶</a></p>
 <p id="section-4.3-2">When an intermediate certificate is used, the Basic Constraints extension from <span><a href="https://rfc-editor.org/rfc/rfc5280#section-4.2.1.9" class="relref">Section 4.2.1.9</a> of [<a href="#X.509" class="cite xref">X.509</a>]</span> <span class="bcp14">MUST</span> be present and marked as critical.  Additionally, the CA flag <span class="bcp14">MUST</span> be enabled, and the Path Length Constraint <span class="bcp14">SHOULD</span> be set to the lowest possible value for the length of the intended certificate chains.<a href="#section-4.3-2" class="pilcrow">¶</a></p>
 <p id="section-4.3-3">Note that if an intermediate certificate is assigned a Common Name, it could also be used as a member certificate and it could therefore produce member signatures.<a href="#section-4.3-3" class="pilcrow">¶</a></p>
 </section>
@@ -1851,7 +1851,7 @@ MemberIdBundle ::= SEQUENCE {
       <h2 id="name-cms-signeddata-structure">
 <a href="#section-6" class="section-number selfRef">6. </a><a href="#name-cms-signeddata-structure" class="section-name selfRef">CMS SignedData Structure</a>
       </h2>
-<p id="section-6-1">DomainAuth signatures use CMS SignedData structures as defined in <span><a href="https://rfc-editor.org/rfc/rfc5652#section-5" class="relref">Section 5</a> of [<a href="#CMS" class="cite xref">CMS</a>]</span>, with additional requirements and recommendations:<a href="#section-6-1" class="pilcrow">¶</a></p>
+<p id="section-6-1">DomainAuth signatures use CMS SignedData structures as specified in <span><a href="https://rfc-editor.org/rfc/rfc5652#section-5" class="relref">Section 5</a> of [<a href="#CMS" class="cite xref">CMS</a>]</span>, with additional requirements and recommendations:<a href="#section-6-1" class="pilcrow">¶</a></p>
 <ul class="normal">
 <li class="normal" id="section-6-2.1">
           <p id="section-6-2.1.1"><code>signerInfos</code> field:<a href="#section-6-2.1.1" class="pilcrow">¶</a></p>
@@ -1866,18 +1866,18 @@ MemberIdBundle ::= SEQUENCE {
               <p id="section-6-2.1.2.3.1">The following signed attributes <span class="bcp14">MUST</span> be included:<a href="#section-6-2.1.2.3.1" class="pilcrow">¶</a></p>
 <ul class="normal">
 <li class="normal" id="section-6-2.1.2.3.2.1">
-                  <p id="section-6-2.1.2.3.2.1.1">Content Type attribute as defined in <span><a href="https://rfc-editor.org/rfc/rfc5652#section-11.1" class="relref">Section 11.1</a> of [<a href="#CMS" class="cite xref">CMS</a>]</span>.<a href="#section-6-2.1.2.3.2.1.1" class="pilcrow">¶</a></p>
+                  <p id="section-6-2.1.2.3.2.1.1">Content Type attribute described in <span><a href="https://rfc-editor.org/rfc/rfc5652#section-11.1" class="relref">Section 11.1</a> of [<a href="#CMS" class="cite xref">CMS</a>]</span>.<a href="#section-6-2.1.2.3.2.1.1" class="pilcrow">¶</a></p>
 </li>
                 <li class="normal" id="section-6-2.1.2.3.2.2">
-                  <p id="section-6-2.1.2.3.2.2.1">Message Digest attribute as defined in <span><a href="https://rfc-editor.org/rfc/rfc5652#section-11.2" class="relref">Section 11.2</a> of [<a href="#CMS" class="cite xref">CMS</a>]</span>.<a href="#section-6-2.1.2.3.2.2.1" class="pilcrow">¶</a></p>
+                  <p id="section-6-2.1.2.3.2.2.1">Message Digest attribute described in <span><a href="https://rfc-editor.org/rfc/rfc5652#section-11.2" class="relref">Section 11.2</a> of [<a href="#CMS" class="cite xref">CMS</a>]</span>.<a href="#section-6-2.1.2.3.2.2.1" class="pilcrow">¶</a></p>
 </li>
                 <li class="normal" id="section-6-2.1.2.3.2.3">
-                  <p id="section-6-2.1.2.3.2.3.1">DomainAuth signature metadata attribute as defined in <a href="#signature-metadata" class="auto internal xref">Section 6.2</a>.<a href="#section-6-2.1.2.3.2.3.1" class="pilcrow">¶</a></p>
+                  <p id="section-6-2.1.2.3.2.3.1">DomainAuth signature metadata attribute as outlined in <a href="#signature-metadata" class="auto internal xref">Section 6.2</a>.<a href="#section-6-2.1.2.3.2.3.1" class="pilcrow">¶</a></p>
 </li>
               </ul>
 </li>
             <li class="normal" id="section-6-2.1.2.4">
-              <p id="section-6-2.1.2.4.1">The <code>SignerInfo.sid</code> field <span class="bcp14">MUST</span> use the <code>issuerAndSerialNumber</code> choice as defined in <span><a href="https://rfc-editor.org/rfc/rfc5652#section-5.3" class="relref">Section 5.3</a> of [<a href="#CMS" class="cite xref">CMS</a>]</span>.<a href="#section-6-2.1.2.4.1" class="pilcrow">¶</a></p>
+              <p id="section-6-2.1.2.4.1">The <code>SignerInfo.sid</code> field <span class="bcp14">MUST</span> use the <code>issuerAndSerialNumber</code> choice specified in <span><a href="https://rfc-editor.org/rfc/rfc5652#section-5.3" class="relref">Section 5.3</a> of [<a href="#CMS" class="cite xref">CMS</a>]</span>.<a href="#section-6-2.1.2.4.1" class="pilcrow">¶</a></p>
 </li>
           </ul>
 </li>
@@ -1916,7 +1916,7 @@ MemberIdBundle ::= SEQUENCE {
           <h4 id="name-organisation-signatures">
 <a href="#section-6.1.2" class="section-number selfRef">6.1.2. </a><a href="#name-organisation-signatures" class="section-name selfRef">Organisation Signatures</a>
           </h4>
-<p id="section-6.1.2-1">Organisation signatures are produced using either the organisation's private key or a delegated signing key.  All organisation signatures include mandatory member attribution to indicate content authorship.  These signatures are suitable for scenarios where individual member certificate management is impractical or when the organisation takes direct responsibility for content.<a href="#section-6.1.2-1" class="pilcrow">¶</a></p>
+<p id="section-6.1.2-1">Organisation signatures are produced using the organisation's private key or a delegated signing key. These signatures involve attributing the signature to a member and are suitable when member certificate management is impractical.<a href="#section-6.1.2-1" class="pilcrow">¶</a></p>
 <p id="section-6.1.2-2">The SignerInfo structure <span class="bcp14">MUST</span> include the DomainAuth member attribution in its signed attributes, using the OID <code>1.3.6.1.4.1.58708.1.2</code> and the value defined in the ASN.1 structure below:<a href="#section-6.1.2-2" class="pilcrow">¶</a></p>
 <div class="alignLeft art-text artwork" id="section-6.1.2-3">
 <pre>
@@ -2135,8 +2135,8 @@ If present, the member attribution attribute <span class="bcp14">MUST</span> be 
         <h3 id="name-digital-signature-algorithm">
 <a href="#section-8.1" class="section-number selfRef">8.1. </a><a href="#name-digital-signature-algorithm" class="section-name selfRef">Digital Signature Algorithms</a>
         </h3>
-<p id="section-8.1-1">For ease of adoption and interoperability reasons, this specification only requires support for RSA Signature Scheme with Appendix - Probabilistic Signature Scheme (RSA-PSS), as defined in <span><a href="https://rfc-editor.org/rfc/rfc8017#section-8.1" class="relref">Section 8.1</a> of [<a href="#RFC8017" class="cite xref">RFC8017</a>]</span>.  The DomainAuth Signature Algorithm Registry, as defined in <a href="#domainauth-signature-algorithm-registry" class="auto internal xref">Section 15.1</a>, <span class="bcp14">MAY</span> introduce support for additional signature algorithms and restrict the use of RSA-PSS (including its deprecation).<a href="#section-8.1-1" class="pilcrow">¶</a></p>
-<p id="section-8.1-2">Implementations <span class="bcp14">MUST</span> support RSA-PSS in X.509 certificates as defined in <span>[<a href="#RFC4055" class="cite xref">RFC4055</a>]</span> and CMS SignedData structures as defined in <span>[<a href="#RFC4056" class="cite xref">RFC4056</a>]</span>.<a href="#section-8.1-2" class="pilcrow">¶</a></p>
+<p id="section-8.1-1">For ease of adoption and interoperability reasons, this specification only requires support for RSA Signature Scheme with Appendix - Probabilistic Signature Scheme (RSA-PSS), as detailed in <span><a href="https://rfc-editor.org/rfc/rfc8017#section-8.1" class="relref">Section 8.1</a> of [<a href="#RFC8017" class="cite xref">RFC8017</a>]</span>.  The DomainAuth Signature Algorithm Registry, as specified in <a href="#domainauth-signature-algorithm-registry" class="auto internal xref">Section 15.1</a>, <span class="bcp14">MAY</span> introduce support for additional signature algorithms and restrict the use of RSA-PSS (including its deprecation).<a href="#section-8.1-1" class="pilcrow">¶</a></p>
+<p id="section-8.1-2">Implementations <span class="bcp14">MUST</span> support RSA-PSS in X.509 certificates as specified in <span>[<a href="#RFC4055" class="cite xref">RFC4055</a>]</span> and CMS SignedData structures according to <span>[<a href="#RFC4056" class="cite xref">RFC4056</a>]</span>.<a href="#section-8.1-2" class="pilcrow">¶</a></p>
 <p id="section-8.1-3">RSA keys with moduli less than 2048 bits <span class="bcp14">MUST</span> be rejected.  RSA keys with modulus size of 2048 <span class="bcp14">MUST</span> be supported, and greater sizes <span class="bcp14">SHOULD</span> be supported.<a href="#section-8.1-3" class="pilcrow">¶</a></p>
 <p id="section-8.1-4">Due to the size of RSA public keys, they <span class="bcp14">MUST</span> be identified in TXT records using a digest. The process for creating this identifier involves:<a href="#section-8.1-4" class="pilcrow">¶</a></p>
 <ol start="1" type="1" class="normal type-1" id="section-8.1-5">
@@ -2159,8 +2159,8 @@ If present, the member attribution attribute <span class="bcp14">MUST</span> be 
 <a href="#section-8.2" class="section-number selfRef">8.2. </a><a href="#name-hash-functions" class="section-name selfRef">Hash Functions</a>
         </h3>
 <p id="section-8.2-1">This section pertains specifically to the hash functions used within digital signatures themselves (e.g., X.509 certificates, CMS SignedData structures), distinct from their use in key identification.<a href="#section-8.2-1" class="pilcrow">¶</a></p>
-<p id="section-8.2-2">For ease of adoption and interoperability reasons, implementations <span class="bcp14">MUST</span> support SHA-256, SHA-384, and SHA-512 as defined in <span>[<a href="#NIST.FIPS.180-4" class="cite xref">NIST.FIPS.180-4</a>]</span>.<a href="#section-8.2-2" class="pilcrow">¶</a></p>
-<p id="section-8.2-3">The DomainAuth Key Digest Type Registry, as defined in <a href="#domainauth-key-digest-type-registry" class="auto internal xref">Section 15.2</a>, separately governs the use of hash functions for key identification.<a href="#section-8.2-3" class="pilcrow">¶</a></p>
+<p id="section-8.2-2">For ease of adoption and interoperability reasons, implementations <span class="bcp14">MUST</span> support SHA-256, SHA-384, and SHA-512 as established in <span>[<a href="#NIST.FIPS.180-4" class="cite xref">NIST.FIPS.180-4</a>]</span>.<a href="#section-8.2-2" class="pilcrow">¶</a></p>
+<p id="section-8.2-3">The DomainAuth Key Digest Type Registry, as described in <a href="#domainauth-key-digest-type-registry" class="auto internal xref">Section 15.2</a>, separately governs the use of hash functions for key identification.<a href="#section-8.2-3" class="pilcrow">¶</a></p>
 </section>
 </div>
 </section>
@@ -2182,8 +2182,8 @@ If present, the member attribution attribute <span class="bcp14">MUST</span> be 
 <a href="#section-10" class="section-number selfRef">10. </a><a href="#name-data-serialisation" class="section-name selfRef">Data Serialisation</a>
       </h2>
 <p id="section-10-1">All data structures in the DomainAuth protocol are defined using Abstract Syntax Notation One (ASN.1), as referenced in <span>[<a href="#ASN.1" class="cite xref">ASN.1</a>]</span>.<a href="#section-10-1" class="pilcrow">¶</a></p>
-<p id="section-10-2">Implementations <span class="bcp14">MUST</span> support Distinguished Encoding Rules (DER) as defined in <span>[<a href="#ASN.1" class="cite xref">ASN.1</a>]</span>.<a href="#section-10-2" class="pilcrow">¶</a></p>
-<p id="section-10-3">Services <span class="bcp14">MAY</span> require or recommend additional ASN.1 encoding rules.  In such cases, service implementations <span class="bcp14">MUST</span> handle the conversion between DER and the alternative encoding rules, if the additional rules are not supported by the DomainAuth implementation.<a href="#section-10-3" class="pilcrow">¶</a></p>
+<p id="section-10-2">Implementations <span class="bcp14">MUST</span> support Distinguished Encoding Rules (DER) as presented in <span>[<a href="#ASN.1" class="cite xref">ASN.1</a>]</span>.<a href="#section-10-2" class="pilcrow">¶</a></p>
+<p id="section-10-3">Services <span class="bcp14">MAY</span> require or recommend additional ASN.1 encoding rules.<a href="#section-10-3" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="test-service">
@@ -2191,7 +2191,7 @@ If present, the member attribution attribute <span class="bcp14">MUST</span> be 
       <h2 id="name-test-service">
 <a href="#section-11" class="section-number selfRef">11. </a><a href="#name-test-service" class="section-name selfRef">Test Service</a>
       </h2>
-<p id="section-11-1">Service-agnostic implementations <span class="bcp14">SHOULD</span> use the test service OID <code>1.3.6.1.4.1.58708.1.1</code> for testing purposes.<a href="#section-11-1" class="pilcrow">¶</a></p>
+<p id="section-11-1">Service-agnostic implementations <span class="bcp14">SHOULD</span> use the test service OID <code>1.3.6.1.4.1.58708.1.1</code> for testing purposes.  Service implementations <span class="bcp14">MUST NOT</span> use this service.<a href="#section-11-1" class="pilcrow">¶</a></p>
 <p id="section-11-2">This service is not subject to additional requirements or recommendations.<a href="#section-11-2" class="pilcrow">¶</a></p>
 </section>
 </div>
@@ -2208,7 +2208,7 @@ If present, the member attribution attribute <span class="bcp14">MUST</span> be 
         <h3 id="name-veraid">
 <a href="#section-12.1" class="section-number selfRef">12.1. </a><a href="#name-veraid" class="section-name selfRef">VeraId</a>
         </h3>
-<p id="section-12.1-1">DomainAuth is the successor to the VeraId protocol as defined in <span>[<a href="#VERAID" class="cite xref">VERAID</a>]</span>. DomainAuth and VeraId are functionally identical, except for the following differences:<a href="#section-12.1-1" class="pilcrow">¶</a></p>
+<p id="section-12.1-1">DomainAuth is the successor to the VeraId protocol described in <span>[<a href="#VERAID" class="cite xref">VERAID</a>]</span>. DomainAuth and VeraId are functionally identical, except for the following differences:<a href="#section-12.1-1" class="pilcrow">¶</a></p>
 <ul class="normal">
 <li class="normal" id="section-12.1-2.1">
             <p id="section-12.1-2.1.1">DNS TXT record:<a href="#section-12.1-2.1.1" class="pilcrow">¶</a></p>
@@ -2264,7 +2264,7 @@ If present, the member attribution attribute <span class="bcp14">MUST</span> be 
                 <p id="section-12.1-5.1.2.2.1">Maturity: Used in production in the VeraId Authority application.<a href="#section-12.1-5.1.2.2.1" class="pilcrow">¶</a></p>
 </li>
               <li class="normal" id="section-12.1-5.1.2.3">
-                <p id="section-12.1-5.1.2.3.1">Coverage: The entire protocol as defined in <span>[<a href="#VERAID" class="cite xref">VERAID</a>]</span>.<a href="#section-12.1-5.1.2.3.1" class="pilcrow">¶</a></p>
+                <p id="section-12.1-5.1.2.3.1">Coverage: The entire protocol as outlined in <span>[<a href="#VERAID" class="cite xref">VERAID</a>]</span>.<a href="#section-12.1-5.1.2.3.1" class="pilcrow">¶</a></p>
 </li>
               <li class="normal" id="section-12.1-5.1.2.4">
                 <p id="section-12.1-5.1.2.4.1">Licensing: MIT licence.<a href="#section-12.1-5.1.2.4.1" class="pilcrow">¶</a></p>
@@ -2337,7 +2337,7 @@ If present, the member attribution attribute <span class="bcp14">MUST</span> be 
             <p id="section-12.2-2.3.1">Maturity: Experimental.<a href="#section-12.2-2.3.1" class="pilcrow">¶</a></p>
 </li>
           <li class="normal" id="section-12.2-2.4">
-            <p id="section-12.2-2.4.1">Coverage: The implementation exercises the entire protocol as defined in <span>[<a href="#VERAID" class="cite xref">VERAID</a>]</span>, except for organisation signatures and bot members.  It uses the VeraId JVM Library to issue member signatures on Android, and the VeraId Authority to issue Member Id Bundles under a variety of domain names operated by Relaycorp (e.g. <code>applepie.rocks</code>, <code>cuppa.fans</code>).<a href="#section-12.2-2.4.1" class="pilcrow">¶</a></p>
+            <p id="section-12.2-2.4.1">Coverage: The implementation exercises the entire protocol specified in <span>[<a href="#VERAID" class="cite xref">VERAID</a>]</span>, except for organisation signatures and bot members.  It uses the VeraId JVM Library to issue member signatures on Android, and the VeraId Authority to issue Member Id Bundles under a variety of domain names operated by Relaycorp (e.g. <code>applepie.rocks</code>, <code>cuppa.fans</code>).<a href="#section-12.2-2.4.1" class="pilcrow">¶</a></p>
 </li>
           <li class="normal" id="section-12.2-2.5">
             <p id="section-12.2-2.5.1">Licensing: Freely distributable with acknowledgement (GNU GPLv3 and GNU AGPLv3 licences).<a href="#section-12.2-2.5.1" class="pilcrow">¶</a></p>
@@ -2590,7 +2590,7 @@ If present, the member attribution attribute <span class="bcp14">MUST</span> be 
 <a href="#section-15.1" class="section-number selfRef">15.1. </a><a href="#name-domainauth-signature-algori" class="section-name selfRef">DomainAuth Signature Algorithm Registry</a>
         </h3>
 <p id="section-15.1-1">IANA is requested to create a new registry titled "DomainAuth Signature Algorithm Registry" under the "DomainAuth Protocol Parameters" registry group.<a href="#section-15.1-1" class="pilcrow">¶</a></p>
-<p id="section-15.1-2">The registry policy is Specification Required as defined in <span>[<a href="#RFC8126" class="cite xref">RFC8126</a>]</span>.<a href="#section-15.1-2" class="pilcrow">¶</a></p>
+<p id="section-15.1-2">The registry policy is Specification Required as set forth in <span>[<a href="#RFC8126" class="cite xref">RFC8126</a>]</span>.<a href="#section-15.1-2" class="pilcrow">¶</a></p>
 <p id="section-15.1-3">Each entry in this registry includes the following fields:<a href="#section-15.1-3" class="pilcrow">¶</a></p>
 <ul class="normal">
 <li class="normal" id="section-15.1-4.1">
@@ -2651,7 +2651,7 @@ If present, the member attribution attribute <span class="bcp14">MUST</span> be 
 <a href="#section-15.2" class="section-number selfRef">15.2. </a><a href="#name-domainauth-key-digest-type-" class="section-name selfRef">DomainAuth Key Digest Type Registry</a>
         </h3>
 <p id="section-15.2-1">IANA is requested to create a new registry titled "DomainAuth Key Digest Type Registry" under the "DomainAuth Protocol Parameters" registry group.<a href="#section-15.2-1" class="pilcrow">¶</a></p>
-<p id="section-15.2-2">The registry policy is Specification Required as defined in <span>[<a href="#RFC8126" class="cite xref">RFC8126</a>]</span>.<a href="#section-15.2-2" class="pilcrow">¶</a></p>
+<p id="section-15.2-2">The registry policy is Specification Required as set forth in <span>[<a href="#RFC8126" class="cite xref">RFC8126</a>]</span>.<a href="#section-15.2-2" class="pilcrow">¶</a></p>
 <p id="section-15.2-3">Each entry in this registry includes the following fields:<a href="#section-15.2-3" class="pilcrow">¶</a></p>
 <ul class="normal">
 <li class="normal" id="section-15.2-4.1">

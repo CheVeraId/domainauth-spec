@@ -678,6 +678,14 @@ Organisations implementing DomainAuth SHOULD maintain comprehensive audit logs o
    - Logs SHOULD be stored with integrity protection mechanisms.
    - In high-risk environments, organisations SHOULD implement tamper-evident logging.
 
+# Privacy Considerations
+
+DomainAuth is focused on authentication and integrity. Confidentiality, a key property of privacy, is outside the scope of this protocol. Services MAY use other complementary mechanisms such as encryption to provide confidentiality where required.
+
+The protocol's PKI design, where each organisation manages its own certificate hierarchy, helps avoid unnecessary information disclosure. By allowing an organisation to serve as the certificate authority for its members, this approach minimises the data that would otherwise need to be shared with verifiers, thereby reducing the risk of user information leakage or enabling user enumeration attacks.
+
+Signature bundles do not contain sensitive personal data beyond what is necessary for identity verification, following the principle of data minimisation. The protocol also supports the use of bot signatures that do not identify specific individuals.
+
 # IANA Considerations
 
 This document requests IANA to create a new registry group called "DomainAuth Protocol Parameters".

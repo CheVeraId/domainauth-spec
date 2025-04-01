@@ -138,9 +138,9 @@ DomainAuth is designed with the following primary goals:
 The following terms are used:
 
 - **Organisation:** A domain name that participates in the DomainAuth protocol by configuring DNSSEC and publishing the necessary DomainAuth TXT record(s).
-- **Member:** An entity that produces signatures on behalf of an organisation.  There are two types of members:
-  - **User:** A member identified by a unique user name within an organisation.
-  - **Bot:** A special type of member that acts on behalf of the organisation as a whole.  Bots do not have user names.
+- **Member:** An entity that produces signatures on behalf of an organisation. Members are either:
+  - **Users:** Identified by a unique user name within an organisation.
+  - **Bots:** Acting on behalf of the organisation as a whole.
 - **DomainAuth TXT Record:** A DNS TXT record at `_domainauth.<domain>` that contains the organisation's public key information.
 - **Organisation Certificate:** A self-signed X.509 certificate owned by an organisation that serves as the root of trust for all signatures produced on behalf of that organisation.
 - **Member Certificate:** An X.509 certificate issued by the organisation certificate to a member.
@@ -464,16 +464,16 @@ Implementations MUST verify every syntactically-valid signature bundle as follow
       - Start time: The maximum (later) of:
          - The start of the required verification period (as specified by the verifier).
          - The end time minus the TTL override value in seconds.
-3. **Verify the DNSSEC chain** from the root zone to the `_domainauth.<domain>/TXT` RRSet as described in {{DNSSEC}}, ensuring that the chain was valid for at least one second within the verification time window calculated in the previous step.
+3. **Verify the DNSSEC chain** from the root zone to the `_domainauth.<domain>/TXT` RRSet as described in {{DNSSEC}}. The chain is considered valid if all DNSSEC signatures in the chain were simultaneously valid (i.e., not expired and not in the future) for at least one second within the verification time window calculated in the previous step.
 4. **Verify the X.509 certificate chain** from the organisation certificate to the signer's certificate as specified in {{X.509}}, using any additional certificates in the `SignedData.certificates` field as potential intermediate certificates when constructing the chain.  Note that the chain will comprise a single certificate when the organisation itself is the signer.
 
-   The certificate chain MUST overlap with the verification time window and the DNSSEC chain for at least one second.
+   The certificate chain MUST overlap with the verification time window and the DNSSEC chain for at least one second, meaning there must be at least one second during which all certificates in the chain were simultaneously valid and this second falls within both the verification time window and the period when the DNSSEC chain was valid.
 5. **Verify the CMS SignedData structure** as described in {{Section 5.6 of CMS}}, using the signer's certificate from the `SignedData.certificates` field or the organisation certificate if the signer is the organisation itself.
 
    The signature metadata attribute MUST be present in the signed attributes of the SignerInfo structure.  Additionally:
 
    - The service OID MUST match that specified by the verifier.
-   - The validity period MUST overlap with the verification time window, the X.509 certificate chain and the DNSSEC chain for at least one second.
+   - The validity period MUST overlap with the verification time window, the X.509 certificate chain and the DNSSEC chain for at least one second, meaning there must be a minimum one-second period during which the signature was valid, all certificates were valid, and the DNSSEC chain was valid.
 
    If present, the member attribution attribute MUST be in the signed attributes of the SignerInfo structure, and its value MUST be a valid member name as specified in {{phishing-attacks}}. If absent, the signer MUST be a member whose certificate meets the requirements specified in {{member-certificate}}.
 6. **Produce verification output:**

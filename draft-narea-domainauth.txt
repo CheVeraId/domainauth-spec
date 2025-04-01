@@ -121,7 +121,7 @@ Table of Contents
    14. Privacy Considerations
    15. IANA Considerations
      15.1.  DomainAuth Signature Algorithm Registry
-     15.2.  DomainAuth Hash Function Registry
+     15.2.  DomainAuth Key Digest Type Registry
    16. References
      16.1.  Normative References
      16.2.  Informative References
@@ -517,20 +517,21 @@ Table of Contents
    publish a TXT record at _domainauth.<domain> with the following
    fields separated by simple spaces:
 
-   1.  *Version* (required): An integer denoting the version of the
-       DomainAuth TXT record format, set to 0 (zero) for this version of
-       the specification.
+   1.  *Version* (required): A positive integer denoting the version of
+       the DomainAuth TXT record format, set to 0 (zero) for this
+       version of the specification.
 
-   2.  *Key Algorithm* (required): An integer denoting the key algorithm
-       as registered in the "DomainAuth Signature Algorithm Registry"
-       (Section 15.1).  See also Section 8.1.
+   2.  *Key Algorithm* (required): A positive integer denoting the key
+       algorithm as registered in the "DomainAuth Signature Algorithm
+       Registry" (Section 15.1).  See also Section 8.1.
 
-   3.  *Key Id Type* (required): An integer denoting how the key is
-       identified, as registered in the "DomainAuth Hash Function
-       Registry" (Section 15.2).  See also Section 8.2.
+   3.  *Key Digest Type* (required): A positive integer denoting the key
+       digest type used to identify the key, as registered in the
+       "DomainAuth Key Digest Type Registry" (Section 15.2).
 
-   4.  *Key Id* (required): The Base64-encoded (unpadded) representation
-       of the key digest, as specified by the Key Id Type.
+   4.  *Key Id* (required): The representation of the key identifier.
+       For example, per Section 8.1, for an RSA key, this is the
+       Base64-encoded digest of the public key.
 
    5.  *TTL Override* (required): A positive integer representing the
        number of seconds for the maximum validity period of signatures.
@@ -541,17 +542,14 @@ Table of Contents
        notation) binding the key to a specific service.  If omitted, the
        key is valid for any service.
 
-   Multiple TXT records MAY be published at the same zone to support
-   different keys, key algorithms, or services.
-
-   Verifiers MUST select the appropriate TXT record based on the key
-   information and service OID in the signature being verified.
-
    For example, the following TXT record specifies an RSA-2048 key
    identified by its SHA-512 digest with a TTL override of 24 hours
    (86,400 seconds) and no service binding:
 
 _domainauth.example.com. IN TXT "0 1 3 dGhpcyBpcyBub3QgYSByZWFsIGtleSBkaWdlc3Q 86400"
+
+   Multiple TXT records MAY be published at the same zone to support
+   different keys, key algorithms, or services.
 
 3.3.  TTL Override
 
@@ -1022,18 +1020,35 @@ _domainauth.example.com. IN TXT "0 1 3 dGhpcyBpcyBub3QgYSByZWFsIGtleSBkaWdlc3Q 8
    with modulus size of 2048 MUST be supported, and greater sizes SHOULD
    be supported.
 
+   Due to the size of RSA public keys, they MUST be identified in TXT
+   records using a digest.  The process for creating this identifier
+   involves:
+
+   1.  Taking the public key in its ASN.1 DER-serialised form as a
+       Subject Public Key Info (defined in Section 4.1.2.7 of [X.509]).
+
+   2.  Computing a digest of this serialised key using a hash function
+       from the DomainAuth Key Digest Type Registry (Section 15.2).
+
+   3.  Encoding the resulting digest using Base64 without padding
+       ([RFC4648]).
+
+   This encoded digest is then used as the Key Id in the TXT record.
+
 8.2.  Hash Functions
 
-   For ease of adoption and interoperability reasons, this specification
-   only requires support for SHA2 hash functions, as defined in
-   [RFC6234], in digital signatures.  The DomainAuth Hash Function
-   Registry, as defined in Section 15.2, MAY introduce support for
-   additional hash functions and restrict the use of SHA2 hash functions
-   (including their deprecation).
+   This section pertains specifically to the hash functions used within
+   digital signatures themselves (e.g., X.509 certificates, CMS
+   SignedData structures), distinct from their use in key
+   identification.
 
-   Implementations MUST support SHA-256, SHA-384, and SHA-512 hash
-   functions.  For the avoidance of doubt, SHA-1 and SHA-224 MUST NOT be
+   For ease of adoption and interoperability reasons, this specification
+   only REQUIRES support for SHA2 hash functions ([RFC6234]) in digital
+   signatures, with the exception of SHA-224 which MUST NOT be
    supported.
+
+   The DomainAuth Key Digest Type Registry, as defined in Section 15.2,
+   separately governs the use of hash functions for key identification.
 
 9.  Maximum Validity Period
 
@@ -1133,6 +1148,12 @@ _domainauth.example.com. IN TXT "0 1 3 dGhpcyBpcyBub3QgYSByZWFsIGtleSBkaWdlc3Q 8
 
       -  Hash functions: VeraId only supports SHA-256, SHA-384, and SHA-
          512.
+
+      -  Key identification: VeraId only supports key digests
+         (equivalent to Key Digest Types 1-3 in DomainAuth) as a
+         consequence of its support for RSA keys only, and does not
+         support direct use of public keys (Key Digest Type 0) for key
+         identification.
 
    *  VeraId does not offer protection against IDN homograph attacks
       (see Section 13.2).
@@ -1487,10 +1508,10 @@ _domainauth.example.com. IN TXT "0 1 3 dGhpcyBpcyBub3QgYSByZWFsIGtleSBkaWdlc3Q 8
    vulnerabilities.  Implementers SHOULD NOT use deprecated algorithms
    for new signatures and MUST NOT use obsolete algorithms.
 
-15.2.  DomainAuth Hash Function Registry
+15.2.  DomainAuth Key Digest Type Registry
 
-   IANA is requested to create a new registry titled "DomainAuth Hash
-   Function Registry" under the "DomainAuth Protocol Parameters"
+   IANA is requested to create a new registry titled "DomainAuth Key
+   Digest Type Registry" under the "DomainAuth Protocol Parameters"
    registry group.
 
    The registry policy is Specification Required as defined in
@@ -1498,12 +1519,13 @@ _domainauth.example.com. IN TXT "0 1 3 dGhpcyBpcyBub3QgYSByZWFsIGtleSBkaWdlc3Q 8
 
    Each entry in this registry includes the following fields:
 
-   *  Value: A numeric identifier for the hash function.
+   *  Value: A numeric identifier for the key digest type.
 
-   *  Hash Function: Name of the hash function.
+   *  Hash Function: If applicable, the name of the hash function used
+      to derive the key identifier from the public key.
 
-   *  Reference: Reference to the document that defines the hash
-      function.
+   *  Reference: Reference to the document that defines the key digest
+      type.
 
    *  Status: Either "Active", "Deprecated", or "Obsolete".
 
@@ -1512,6 +1534,8 @@ _domainauth.example.com. IN TXT "0 1 3 dGhpcyBpcyBub3QgYSByZWFsIGtleSBkaWdlc3Q 8
            +=======+===============+=================+========+
            | Value | Hash Function | Reference       | Status |
            +=======+===============+=================+========+
+           | 0     | None          | (This document) | Active |
+           +-------+---------------+-----------------+--------+
            | 1     | SHA-256       | (This document) | Active |
            +-------+---------------+-----------------+--------+
            | 2     | SHA-384       | (This document) | Active |
@@ -1519,23 +1543,25 @@ _domainauth.example.com. IN TXT "0 1 3 dGhpcyBpcyBub3QgYSByZWFsIGtleSBkaWdlc3Q 8
            | 3     | SHA-512       | (This document) | Active |
            +-------+---------------+-----------------+--------+
 
-             Table 2: Initial entries in the DomainAuth Hash
-                            Function Registry
+              Table 2: Initial entries in the DomainAuth Key
+                           Digest Type Registry
 
-   The designated expert(s) MUST ensure that the proposed hash function
-   is cryptographically suitable for digital signatures and that the
-   specification adequately defines its parameters and security
-   properties.  The expert MUST consider whether the hash function has
-   undergone sufficient security analysis and whether its inclusion
-   would promote interoperability.
+   Key Digest Type 0 (None) is reserved for future cryptographic
+   algorithms where the public key itself is compact enough to be
+   included directly in the Key Id field of the DomainAuth TXT record
+   (Section 3.2).
 
-   Hash functions MUST be marked as "Deprecated" if cryptographic
+   The designated expert(s) MUST ensure that the proposed key digest
+   type is cryptographically suitable for identifying public keys, and
+   that the specification adequately defines its parameters and security
+   properties.
+
+   Key digest types MUST be marked as "Deprecated" if cryptographic
    vulnerabilities are discovered that could significantly affect their
-   security properties.  Hash functions SHOULD be marked as "Obsolete"
+   security properties.  Key digest types SHOULD be marked as "Obsolete"
    if they should no longer be used due to serious security
-   vulnerabilities.  Implementers SHOULD NOT use deprecated hash
-   functions for new signatures and MUST NOT use obsolete hash
-   functions.
+   vulnerabilities.  Implementers SHOULD NOT use deprecated key digest
+   types for new signatures and MUST NOT use obsolete key digest types.
 
    _Note to RFC Editor: Please replace all instances of (This document)
    with the RFC number of this document upon publication._
@@ -1588,6 +1614,10 @@ _domainauth.example.com. IN TXT "0 1 3 dGhpcyBpcyBub3QgYSByZWFsIGtleSBkaWdlc3Q 8
               DOI 10.17487/RFC4086, June 2005,
               <https://www.rfc-editor.org/rfc/rfc4086>.
 
+   [RFC4648]  Josefsson, S., "The Base16, Base32, and Base64 Data
+              Encodings", RFC 4648, DOI 10.17487/RFC4648, October 2006,
+              <https://www.rfc-editor.org/rfc/rfc4648>.
+
    [RFC6234]  Eastlake 3rd, D. and T. Hansen, "US Secure Hash Algorithms
               (SHA and SHA-based HMAC and HKDF)", RFC 6234,
               DOI 10.17487/RFC6234, May 2011,
@@ -1597,11 +1627,6 @@ _domainauth.example.com. IN TXT "0 1 3 dGhpcyBpcyBub3QgYSByZWFsIGtleSBkaWdlc3Q 8
               Code: The Implementation Status Section", BCP 205,
               RFC 7942, DOI 10.17487/RFC7942, July 2016,
               <https://www.rfc-editor.org/rfc/rfc7942>.
-
-   [RFC8017]  Moriarty, K., Ed., Kaliski, B., Jonsson, J., and A. Rusch,
-              "PKCS #1: RSA Cryptography Specifications Version 2.2",
-              RFC 8017, DOI 10.17487/RFC8017, November 2016,
-              <https://www.rfc-editor.org/rfc/rfc8017>.
 
    [RFC8126]  Cotton, M., Leiba, B., and T. Narten, "Guidelines for
               Writing an IANA Considerations Section in RFCs", BCP 26,
@@ -1637,6 +1662,11 @@ _domainauth.example.com. IN TXT "0 1 3 dGhpcyBpcyBub3QgYSByZWFsIGtleSBkaWdlc3Q 8
               <https://www.rfc-editor.org/rfc/rfc7519>.
 
    [LETRO]    Narea, G., "Letro", 2023, <https://letro.app/en/>.
+
+   [RFC8017]  Moriarty, K., Ed., Kaliski, B., Jonsson, J., and A. Rusch,
+              "PKCS #1: RSA Cryptography Specifications Version 2.2",
+              RFC 8017, DOI 10.17487/RFC8017, November 2016,
+              <https://www.rfc-editor.org/rfc/rfc8017>.
 
    [VERAID]   Narea, G., "VeraId V1 Specification", 2025,
               <https://veraid.net/spec/>.

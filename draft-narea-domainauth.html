@@ -1317,7 +1317,7 @@ svg :is([fill="white"], [fill^="#fff"]) {
                 <p id="section-toc.1-1.15.2.1.1"><a href="#section-15.1" class="auto internal xref">15.1</a>.  <a href="#name-domainauth-signature-algori" class="internal xref">DomainAuth Signature Algorithm Registry</a></p>
 </li>
               <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.15.2.2">
-                <p id="section-toc.1-1.15.2.2.1"><a href="#section-15.2" class="auto internal xref">15.2</a>.  <a href="#name-domainauth-hash-function-re" class="internal xref">DomainAuth Hash Function Registry</a></p>
+                <p id="section-toc.1-1.15.2.2.1"><a href="#section-15.2" class="auto internal xref">15.2</a>.  <a href="#name-domainauth-key-digest-type-" class="internal xref">DomainAuth Key Digest Type Registry</a></p>
 </li>
             </ul>
 </li>
@@ -1702,16 +1702,16 @@ appear in all capitals, as shown here.<a href="#section-1.3-1" class="pilcrow">�
 <p id="section-3.2-1">Each organisation participating in the DomainAuth protocol <span class="bcp14">MUST</span> publish a TXT record at <code>_domainauth.&lt;domain&gt;</code> with the following fields separated by simple spaces:<a href="#section-3.2-1" class="pilcrow">¶</a></p>
 <ol start="1" type="1" class="normal type-1" id="section-3.2-2">
 <li id="section-3.2-2.1">
-            <p id="section-3.2-2.1.1"><strong>Version</strong> (required): An integer denoting the version of the DomainAuth TXT record format, set to <code>0</code> (zero) for this version of the specification.<a href="#section-3.2-2.1.1" class="pilcrow">¶</a></p>
+            <p id="section-3.2-2.1.1"><strong>Version</strong> (required): A positive integer denoting the version of the DomainAuth TXT record format, set to <code>0</code> (zero) for this version of the specification.<a href="#section-3.2-2.1.1" class="pilcrow">¶</a></p>
 </li>
           <li id="section-3.2-2.2">
-            <p id="section-3.2-2.2.1"><strong>Key Algorithm</strong> (required): An integer denoting the key algorithm as registered in the "DomainAuth Signature Algorithm Registry" (<a href="#domainauth-signature-algorithm-registry" class="auto internal xref">Section 15.1</a>). See also <a href="#digital-signature-algorithms" class="auto internal xref">Section 8.1</a>.<a href="#section-3.2-2.2.1" class="pilcrow">¶</a></p>
+            <p id="section-3.2-2.2.1"><strong>Key Algorithm</strong> (required): A positive integer denoting the key algorithm as registered in the "DomainAuth Signature Algorithm Registry" (<a href="#domainauth-signature-algorithm-registry" class="auto internal xref">Section 15.1</a>).  See also <a href="#digital-signature-algorithms" class="auto internal xref">Section 8.1</a>.<a href="#section-3.2-2.2.1" class="pilcrow">¶</a></p>
 </li>
           <li id="section-3.2-2.3">
-            <p id="section-3.2-2.3.1"><strong>Key Id Type</strong> (required): An integer denoting how the key is identified, as registered in the "DomainAuth Hash Function Registry" (<a href="#domainauth-hash-function-registry" class="auto internal xref">Section 15.2</a>). See also <a href="#hash-functions" class="auto internal xref">Section 8.2</a>.<a href="#section-3.2-2.3.1" class="pilcrow">¶</a></p>
+            <p id="section-3.2-2.3.1"><strong>Key Digest Type</strong> (required): A positive integer denoting the key digest type used to identify the key, as registered in the "DomainAuth Key Digest Type Registry" (<a href="#domainauth-key-digest-type-registry" class="auto internal xref">Section 15.2</a>).<a href="#section-3.2-2.3.1" class="pilcrow">¶</a></p>
 </li>
           <li id="section-3.2-2.4">
-            <p id="section-3.2-2.4.1"><strong>Key Id</strong> (required): The Base64-encoded (unpadded) representation of the key digest, as specified by the Key Id Type.<a href="#section-3.2-2.4.1" class="pilcrow">¶</a></p>
+            <p id="section-3.2-2.4.1"><strong>Key Id</strong> (required): The representation of the key identifier.  For example, per <a href="#digital-signature-algorithms" class="auto internal xref">Section 8.1</a>, for an RSA key, this is the Base64-encoded digest of the public key.<a href="#section-3.2-2.4.1" class="pilcrow">¶</a></p>
 </li>
           <li id="section-3.2-2.5">
             <p id="section-3.2-2.5.1"><strong>TTL Override</strong> (required): A positive integer representing the number of seconds for the maximum validity period of signatures.  This value <span class="bcp14">MUST</span> be at least 1 second and not exceed the limit specified in <a href="#maximum-validity-period" class="auto internal xref">Section 9</a>. Refer to <a href="#ttl-override" class="auto internal xref">Section 3.3</a> for more details.<a href="#section-3.2-2.5.1" class="pilcrow">¶</a></p>
@@ -1720,14 +1720,13 @@ appear in all capitals, as shown here.<a href="#section-1.3-1" class="pilcrow">�
             <p id="section-3.2-2.6.1"><strong>Service OID</strong> (optional): An Object Identifier (in dotted decimal notation) binding the key to a specific service.  If omitted, the key is valid for any service.<a href="#section-3.2-2.6.1" class="pilcrow">¶</a></p>
 </li>
         </ol>
-<p id="section-3.2-3">Multiple TXT records <span class="bcp14">MAY</span> be published at the same zone to support different keys, key algorithms, or services.<a href="#section-3.2-3" class="pilcrow">¶</a></p>
-<p id="section-3.2-4">Verifiers <span class="bcp14">MUST</span> select the appropriate TXT record based on the key information and service OID in the signature being verified.<a href="#section-3.2-4" class="pilcrow">¶</a></p>
-<p id="section-3.2-5">For example, the following TXT record specifies an RSA-2048 key identified by its SHA-512 digest with a TTL override of 24 hours (86,400 seconds) and no service binding:<a href="#section-3.2-5" class="pilcrow">¶</a></p>
-<div class="alignLeft art-text artwork" id="section-3.2-6">
+<p id="section-3.2-3">For example, the following TXT record specifies an RSA-2048 key identified by its SHA-512 digest with a TTL override of 24 hours (86,400 seconds) and no service binding:<a href="#section-3.2-3" class="pilcrow">¶</a></p>
+<div class="alignLeft art-text artwork" id="section-3.2-4">
 <pre>
 _domainauth.example.com. IN TXT "0 1 3 dGhpcyBpcyBub3QgYSByZWFsIGtleSBkaWdlc3Q 86400"
-</pre><a href="#section-3.2-6" class="pilcrow">¶</a>
+</pre><a href="#section-3.2-4" class="pilcrow">¶</a>
 </div>
+<p id="section-3.2-5">Multiple TXT records <span class="bcp14">MAY</span> be published at the same zone to support different keys, key algorithms, or services.<a href="#section-3.2-5" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="ttl-override">
@@ -2155,9 +2154,22 @@ If present, the member attribution attribute <span class="bcp14">MUST</span> be 
         <h3 id="name-digital-signature-algorithm">
 <a href="#section-8.1" class="section-number selfRef">8.1. </a><a href="#name-digital-signature-algorithm" class="section-name selfRef">Digital Signature Algorithms</a>
         </h3>
-<p id="section-8.1-1">For ease of adoption and interoperability reasons, this specification only requires support for RSA Signature Scheme with Appendix - Probabilistic Signature Scheme (RSA-PSS), as defined in <span><a href="https://rfc-editor.org/rfc/rfc8017#section-8.1" class="relref">Section 8.1</a> of [<a href="#RFC8017" class="cite xref">RFC8017</a>]</span>. The DomainAuth Signature Algorithm Registry, as defined in <a href="#domainauth-signature-algorithm-registry" class="auto internal xref">Section 15.1</a>, <span class="bcp14">MAY</span> introduce support for additional signature algorithms and restrict the use of RSA-PSS (including its deprecation).<a href="#section-8.1-1" class="pilcrow">¶</a></p>
+<p id="section-8.1-1">For ease of adoption and interoperability reasons, this specification only requires support for RSA Signature Scheme with Appendix - Probabilistic Signature Scheme (RSA-PSS), as defined in <span><a href="https://rfc-editor.org/rfc/rfc8017#section-8.1" class="relref">Section 8.1</a> of [<a href="#RFC8017" class="cite xref">RFC8017</a>]</span>.  The DomainAuth Signature Algorithm Registry, as defined in <a href="#domainauth-signature-algorithm-registry" class="auto internal xref">Section 15.1</a>, <span class="bcp14">MAY</span> introduce support for additional signature algorithms and restrict the use of RSA-PSS (including its deprecation).<a href="#section-8.1-1" class="pilcrow">¶</a></p>
 <p id="section-8.1-2">Implementations <span class="bcp14">MUST</span> support RSA-PSS in X.509 certificates as defined in <span>[<a href="#RFC4055" class="cite xref">RFC4055</a>]</span> and CMS SignedData structures as defined in <span>[<a href="#RFC4056" class="cite xref">RFC4056</a>]</span>.<a href="#section-8.1-2" class="pilcrow">¶</a></p>
 <p id="section-8.1-3">RSA keys with moduli less than 2048 bits <span class="bcp14">MUST</span> be rejected.  RSA keys with modulus size of 2048 <span class="bcp14">MUST</span> be supported, and greater sizes <span class="bcp14">SHOULD</span> be supported.<a href="#section-8.1-3" class="pilcrow">¶</a></p>
+<p id="section-8.1-4">Due to the size of RSA public keys, they <span class="bcp14">MUST</span> be identified in TXT records using a digest. The process for creating this identifier involves:<a href="#section-8.1-4" class="pilcrow">¶</a></p>
+<ol start="1" type="1" class="normal type-1" id="section-8.1-5">
+<li id="section-8.1-5.1">
+            <p id="section-8.1-5.1.1">Taking the public key in its ASN.1 DER-serialised form as a Subject Public Key Info (defined in <span><a href="https://rfc-editor.org/rfc/rfc5280#section-4.1.2.7" class="relref">Section 4.1.2.7</a> of [<a href="#X.509" class="cite xref">X.509</a>]</span>).<a href="#section-8.1-5.1.1" class="pilcrow">¶</a></p>
+</li>
+          <li id="section-8.1-5.2">
+            <p id="section-8.1-5.2.1">Computing a digest of this serialised key using a hash function from the DomainAuth Key Digest Type Registry (<a href="#domainauth-key-digest-type-registry" class="auto internal xref">Section 15.2</a>).<a href="#section-8.1-5.2.1" class="pilcrow">¶</a></p>
+</li>
+          <li id="section-8.1-5.3">
+            <p id="section-8.1-5.3.1">Encoding the resulting digest using Base64 without padding (<span>[<a href="#RFC4648" class="cite xref">RFC4648</a>]</span>).<a href="#section-8.1-5.3.1" class="pilcrow">¶</a></p>
+</li>
+        </ol>
+<p id="section-8.1-6">This encoded digest is then used as the Key Id in the TXT record.<a href="#section-8.1-6" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="hash-functions">
@@ -2165,8 +2177,9 @@ If present, the member attribution attribute <span class="bcp14">MUST</span> be 
         <h3 id="name-hash-functions">
 <a href="#section-8.2" class="section-number selfRef">8.2. </a><a href="#name-hash-functions" class="section-name selfRef">Hash Functions</a>
         </h3>
-<p id="section-8.2-1">For ease of adoption and interoperability reasons, this specification only requires support for SHA2 hash functions, as defined in <span>[<a href="#RFC6234" class="cite xref">RFC6234</a>]</span>, in digital signatures.  The DomainAuth Hash Function Registry, as defined in <a href="#domainauth-hash-function-registry" class="auto internal xref">Section 15.2</a>, <span class="bcp14">MAY</span> introduce support for additional hash functions and restrict the use of SHA2 hash functions (including their deprecation).<a href="#section-8.2-1" class="pilcrow">¶</a></p>
-<p id="section-8.2-2">Implementations <span class="bcp14">MUST</span> support SHA-256, SHA-384, and SHA-512 hash functions.  For the avoidance of doubt, SHA-1 and SHA-224 <span class="bcp14">MUST NOT</span> be supported.<a href="#section-8.2-2" class="pilcrow">¶</a></p>
+<p id="section-8.2-1">This section pertains specifically to the hash functions used within digital signatures themselves (e.g., X.509 certificates, CMS SignedData structures), distinct from their use in key identification.<a href="#section-8.2-1" class="pilcrow">¶</a></p>
+<p id="section-8.2-2">For ease of adoption and interoperability reasons, this specification only REQUIRES support for SHA2 hash functions (<span>[<a href="#RFC6234" class="cite xref">RFC6234</a>]</span>) in digital signatures, with the exception of SHA-224 which <span class="bcp14">MUST NOT</span> be supported.<a href="#section-8.2-2" class="pilcrow">¶</a></p>
+<p id="section-8.2-3">The DomainAuth Key Digest Type Registry, as defined in <a href="#domainauth-key-digest-type-registry" class="auto internal xref">Section 15.2</a>, separately governs the use of hash functions for key identification.<a href="#section-8.2-3" class="pilcrow">¶</a></p>
 </section>
 </div>
 </section>
@@ -2241,6 +2254,9 @@ If present, the member attribution attribute <span class="bcp14">MUST</span> be 
 </li>
               <li class="normal" id="section-12.1-2.4.2.2">
                 <p id="section-12.1-2.4.2.2.1">Hash functions: VeraId only supports SHA-256, SHA-384, and SHA-512.<a href="#section-12.1-2.4.2.2.1" class="pilcrow">¶</a></p>
+</li>
+              <li class="normal" id="section-12.1-2.4.2.3">
+                <p id="section-12.1-2.4.2.3.1">Key identification: VeraId only supports key digests (equivalent to Key Digest Types 1-3 in DomainAuth) as a consequence of its support for RSA keys only, and does not support direct use of public keys (Key Digest Type 0) for key identification.<a href="#section-12.1-2.4.2.3.1" class="pilcrow">¶</a></p>
 </li>
             </ul>
 </li>
@@ -2645,23 +2661,23 @@ If present, the member attribution attribute <span class="bcp14">MUST</span> be 
 <p id="section-15.1-8">Algorithms <span class="bcp14">MUST</span> be marked as "Deprecated" if cryptographic vulnerabilities are discovered that could significantly affect their security properties.  Algorithms <span class="bcp14">SHOULD</span> be marked as "Obsolete" if they should no longer be used due to serious security vulnerabilities.  Implementers <span class="bcp14">SHOULD NOT</span> use deprecated algorithms for new signatures and <span class="bcp14">MUST NOT</span> use obsolete algorithms.<a href="#section-15.1-8" class="pilcrow">¶</a></p>
 </section>
 </div>
-<div id="domainauth-hash-function-registry">
+<div id="domainauth-key-digest-type-registry">
 <section id="section-15.2">
-        <h3 id="name-domainauth-hash-function-re">
-<a href="#section-15.2" class="section-number selfRef">15.2. </a><a href="#name-domainauth-hash-function-re" class="section-name selfRef">DomainAuth Hash Function Registry</a>
+        <h3 id="name-domainauth-key-digest-type-">
+<a href="#section-15.2" class="section-number selfRef">15.2. </a><a href="#name-domainauth-key-digest-type-" class="section-name selfRef">DomainAuth Key Digest Type Registry</a>
         </h3>
-<p id="section-15.2-1">IANA is requested to create a new registry titled "DomainAuth Hash Function Registry" under the "DomainAuth Protocol Parameters" registry group.<a href="#section-15.2-1" class="pilcrow">¶</a></p>
+<p id="section-15.2-1">IANA is requested to create a new registry titled "DomainAuth Key Digest Type Registry" under the "DomainAuth Protocol Parameters" registry group.<a href="#section-15.2-1" class="pilcrow">¶</a></p>
 <p id="section-15.2-2">The registry policy is Specification Required as defined in <span>[<a href="#RFC8126" class="cite xref">RFC8126</a>]</span>.<a href="#section-15.2-2" class="pilcrow">¶</a></p>
 <p id="section-15.2-3">Each entry in this registry includes the following fields:<a href="#section-15.2-3" class="pilcrow">¶</a></p>
 <ul class="normal">
 <li class="normal" id="section-15.2-4.1">
-            <p id="section-15.2-4.1.1">Value: A numeric identifier for the hash function.<a href="#section-15.2-4.1.1" class="pilcrow">¶</a></p>
+            <p id="section-15.2-4.1.1">Value: A numeric identifier for the key digest type.<a href="#section-15.2-4.1.1" class="pilcrow">¶</a></p>
 </li>
           <li class="normal" id="section-15.2-4.2">
-            <p id="section-15.2-4.2.1">Hash Function: Name of the hash function.<a href="#section-15.2-4.2.1" class="pilcrow">¶</a></p>
+            <p id="section-15.2-4.2.1">Hash Function: If applicable, the name of the hash function used to derive the key identifier from the public key.<a href="#section-15.2-4.2.1" class="pilcrow">¶</a></p>
 </li>
           <li class="normal" id="section-15.2-4.3">
-            <p id="section-15.2-4.3.1">Reference: Reference to the document that defines the hash function.<a href="#section-15.2-4.3.1" class="pilcrow">¶</a></p>
+            <p id="section-15.2-4.3.1">Reference: Reference to the document that defines the key digest type.<a href="#section-15.2-4.3.1" class="pilcrow">¶</a></p>
 </li>
           <li class="normal" id="section-15.2-4.4">
             <p id="section-15.2-4.4.1">Status: Either "Active", "Deprecated", or "Obsolete".<a href="#section-15.2-4.4.1" class="pilcrow">¶</a></p>
@@ -2671,7 +2687,7 @@ If present, the member attribution attribute <span class="bcp14">MUST</span> be 
 <span id="name-initial-entries-in-the-domai"></span><table class="center" id="table-2">
           <caption>
 <a href="#table-2" class="selfRef">Table 2</a>:
-<a href="#name-initial-entries-in-the-domai" class="selfRef">Initial entries in the DomainAuth Hash Function Registry</a>
+<a href="#name-initial-entries-in-the-domai" class="selfRef">Initial entries in the DomainAuth Key Digest Type Registry</a>
           </caption>
 <thead>
             <tr>
@@ -2682,6 +2698,12 @@ If present, the member attribution attribute <span class="bcp14">MUST</span> be 
             </tr>
           </thead>
           <tbody>
+            <tr>
+              <td class="text-left" rowspan="1" colspan="1">0</td>
+              <td class="text-left" rowspan="1" colspan="1">None</td>
+              <td class="text-left" rowspan="1" colspan="1">(This document)</td>
+              <td class="text-left" rowspan="1" colspan="1">Active</td>
+            </tr>
             <tr>
               <td class="text-left" rowspan="1" colspan="1">1</td>
               <td class="text-left" rowspan="1" colspan="1">SHA-256</td>
@@ -2702,9 +2724,10 @@ If present, the member attribution attribute <span class="bcp14">MUST</span> be 
             </tr>
           </tbody>
         </table>
-<p id="section-15.2-7">The designated expert(s) <span class="bcp14">MUST</span> ensure that the proposed hash function is cryptographically suitable for digital signatures and that the specification adequately defines its parameters and security properties.  The expert <span class="bcp14">MUST</span> consider whether the hash function has undergone sufficient security analysis and whether its inclusion would promote interoperability.<a href="#section-15.2-7" class="pilcrow">¶</a></p>
-<p id="section-15.2-8">Hash functions <span class="bcp14">MUST</span> be marked as "Deprecated" if cryptographic vulnerabilities are discovered that could significantly affect their security properties.  Hash functions <span class="bcp14">SHOULD</span> be marked as "Obsolete" if they should no longer be used due to serious security vulnerabilities.  Implementers <span class="bcp14">SHOULD NOT</span> use deprecated hash functions for new signatures and <span class="bcp14">MUST NOT</span> use obsolete hash functions.<a href="#section-15.2-8" class="pilcrow">¶</a></p>
-<p id="section-15.2-9"><em>Note to RFC Editor: Please replace all instances of <code>(This document)</code> with the RFC number of this document upon publication.</em><a href="#section-15.2-9" class="pilcrow">¶</a></p>
+<p id="section-15.2-7">Key Digest Type <code>0</code> (<code>None</code>) is reserved for future cryptographic algorithms where the public key itself is compact enough to be included directly in the Key Id field of the DomainAuth TXT record (<a href="#txt-record" class="auto internal xref">Section 3.2</a>).<a href="#section-15.2-7" class="pilcrow">¶</a></p>
+<p id="section-15.2-8">The designated expert(s) <span class="bcp14">MUST</span> ensure that the proposed key digest type is cryptographically suitable for identifying public keys, and that the specification adequately defines its parameters and security properties.<a href="#section-15.2-8" class="pilcrow">¶</a></p>
+<p id="section-15.2-9">Key digest types <span class="bcp14">MUST</span> be marked as "Deprecated" if cryptographic vulnerabilities are discovered that could significantly affect their security properties.  Key digest types <span class="bcp14">SHOULD</span> be marked as "Obsolete" if they should no longer be used due to serious security vulnerabilities.  Implementers <span class="bcp14">SHOULD NOT</span> use deprecated key digest types for new signatures and <span class="bcp14">MUST NOT</span> use obsolete key digest types.<a href="#section-15.2-9" class="pilcrow">¶</a></p>
+<p id="section-15.2-10"><em>Note to RFC Editor: Please replace all instances of <code>(This document)</code> with the RFC number of this document upon publication.</em><a href="#section-15.2-10" class="pilcrow">¶</a></p>
 </section>
 </div>
 </section>
@@ -2756,6 +2779,10 @@ If present, the member attribution attribute <span class="bcp14">MUST</span> be 
         <dd>
 <span class="refAuthor">Eastlake 3rd, D.</span>, <span class="refAuthor">Schiller, J.</span>, and <span class="refAuthor">S. Crocker</span>, <span class="refTitle">"Randomness Requirements for Security"</span>, <span class="seriesInfo">BCP 106</span>, <span class="seriesInfo">RFC 4086</span>, <span class="seriesInfo">DOI 10.17487/RFC4086</span>, <time datetime="2005-06" class="refDate">June 2005</time>, <span>&lt;<a href="https://www.rfc-editor.org/rfc/rfc4086">https://www.rfc-editor.org/rfc/rfc4086</a>&gt;</span>. </dd>
 <dd class="break"></dd>
+<dt id="RFC4648">[RFC4648]</dt>
+        <dd>
+<span class="refAuthor">Josefsson, S.</span>, <span class="refTitle">"The Base16, Base32, and Base64 Data Encodings"</span>, <span class="seriesInfo">RFC 4648</span>, <span class="seriesInfo">DOI 10.17487/RFC4648</span>, <time datetime="2006-10" class="refDate">October 2006</time>, <span>&lt;<a href="https://www.rfc-editor.org/rfc/rfc4648">https://www.rfc-editor.org/rfc/rfc4648</a>&gt;</span>. </dd>
+<dd class="break"></dd>
 <dt id="RFC6234">[RFC6234]</dt>
         <dd>
 <span class="refAuthor">Eastlake 3rd, D.</span> and <span class="refAuthor">T. Hansen</span>, <span class="refTitle">"US Secure Hash Algorithms (SHA and SHA-based HMAC and HKDF)"</span>, <span class="seriesInfo">RFC 6234</span>, <span class="seriesInfo">DOI 10.17487/RFC6234</span>, <time datetime="2011-05" class="refDate">May 2011</time>, <span>&lt;<a href="https://www.rfc-editor.org/rfc/rfc6234">https://www.rfc-editor.org/rfc/rfc6234</a>&gt;</span>. </dd>
@@ -2763,10 +2790,6 @@ If present, the member attribution attribute <span class="bcp14">MUST</span> be 
 <dt id="RFC7942">[RFC7942]</dt>
         <dd>
 <span class="refAuthor">Sheffer, Y.</span> and <span class="refAuthor">A. Farrel</span>, <span class="refTitle">"Improving Awareness of Running Code: The Implementation Status Section"</span>, <span class="seriesInfo">BCP 205</span>, <span class="seriesInfo">RFC 7942</span>, <span class="seriesInfo">DOI 10.17487/RFC7942</span>, <time datetime="2016-07" class="refDate">July 2016</time>, <span>&lt;<a href="https://www.rfc-editor.org/rfc/rfc7942">https://www.rfc-editor.org/rfc/rfc7942</a>&gt;</span>. </dd>
-<dd class="break"></dd>
-<dt id="RFC8017">[RFC8017]</dt>
-        <dd>
-<span class="refAuthor">Moriarty, K., Ed.</span>, <span class="refAuthor">Kaliski, B.</span>, <span class="refAuthor">Jonsson, J.</span>, and <span class="refAuthor">A. Rusch</span>, <span class="refTitle">"PKCS #1: RSA Cryptography Specifications Version 2.2"</span>, <span class="seriesInfo">RFC 8017</span>, <span class="seriesInfo">DOI 10.17487/RFC8017</span>, <time datetime="2016-11" class="refDate">November 2016</time>, <span>&lt;<a href="https://www.rfc-editor.org/rfc/rfc8017">https://www.rfc-editor.org/rfc/rfc8017</a>&gt;</span>. </dd>
 <dd class="break"></dd>
 <dt id="RFC8126">[RFC8126]</dt>
         <dd>
@@ -2808,6 +2831,10 @@ If present, the member attribution attribute <span class="bcp14">MUST</span> be 
 <dt id="LETRO">[LETRO]</dt>
         <dd>
 <span class="refAuthor">Narea, G.</span>, <span class="refTitle">"Letro"</span>, <time datetime="2023" class="refDate">2023</time>, <span>&lt;<a href="https://letro.app/en/">https://letro.app/en/</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="RFC8017">[RFC8017]</dt>
+        <dd>
+<span class="refAuthor">Moriarty, K., Ed.</span>, <span class="refAuthor">Kaliski, B.</span>, <span class="refAuthor">Jonsson, J.</span>, and <span class="refAuthor">A. Rusch</span>, <span class="refTitle">"PKCS #1: RSA Cryptography Specifications Version 2.2"</span>, <span class="seriesInfo">RFC 8017</span>, <span class="seriesInfo">DOI 10.17487/RFC8017</span>, <time datetime="2016-11" class="refDate">November 2016</time>, <span>&lt;<a href="https://www.rfc-editor.org/rfc/rfc8017">https://www.rfc-editor.org/rfc/rfc8017</a>&gt;</span>. </dd>
 <dd class="break"></dd>
 <dt id="VERAID">[VERAID]</dt>
       <dd>

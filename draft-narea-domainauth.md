@@ -44,6 +44,7 @@ normative:
     date: 1994
     seriesinfo:
       ITU-T: Recommendation X.690
+  RFC2826:
   RFC4086:
   RFC7942:
   RFC4055:
@@ -451,7 +452,7 @@ Implementations MUST verify every syntactically-valid signature bundle as follow
    - Service: The OID of the service for which the signature must be valid.
    - Validity period: The inclusive time range during which the signature bundle must be valid for at least one second (e.g. 1st January 1970 00:00:00 UTC to 31st January 1970 23:59:59 UTC). This period MAY be specified as a specific time (e.g. 1st January 1970 00:00:00 UTC), in which case it MUST be converted to a 1-second period where the start and end are the same as the specified time.
 
-   The verifier MAY override the root zone DNSSEC DS record(s) for testing purposes only.
+   The verifier MAY override the root zone DS record(s) only for testing purposes or to reflect updated IANA trust anchors before the underlying DNSSEC implementation updates its copy.
 2. **Identify the relevant DomainAuth TXT record and determine the verification time window for the DNSSEC chain:**
    1. Extract the domain name from the Common Name attribute in the organisation certificate's Distinguished Name.
    2. Extract all records in the RRSet for `_domainauth.<domain>/TXT`.
@@ -607,6 +608,7 @@ DomainAuth's security model relies fundamentally on DNSSEC, which introduces spe
    - The DomainAuth protocol inherits trust from the DNSSEC root zone.
    - Compromise of the root KSK would undermine the entire system.
    - Implementations MUST securely manage and update DNSSEC trust anchors.
+   - Whilst the protocol allows overriding root zone DS records, this MUST only be done for testing or to reflect updated IANA trust anchors. Using alternative DNS roots in production contradicts the unique DNS root principle outlined in {{RFC2826}}.
 2. **TLD Control:**
    - Many TLDs are controlled by governments or private entities.
    - A malicious TLD operator could theoretically issue fraudulent DNSSEC responses for domains under their zone.
@@ -825,6 +827,8 @@ The validity period for signatures, specified in the signature metadata ({{signa
 
 DomainAuth specifies mandatory-to-implement cryptographic algorithms ({{cryptographic-algorithms}}). Services have the option to recommend specific algorithms from the allowed set but cannot mandate unsupported ones.
 
+Service implementations must not override root zone DS records except for testing or to reflect updated IANA trust anchors. Services using DomainAuth should clearly distinguish test environments from production.
+
 Services designers should also consider the following potential attack vectors:
 
 - **Replay attacks:** DomainAuth provides authenticity and integrity but does not inherently mitigate replay attacks. Services may need to implement additional measures, such as nonces, depending on the application's sensitivity to replays ({{offline-verification-limitations}}).
@@ -854,6 +858,8 @@ This non-normative section provides guidance for developers implementing DomainA
 Implementations should ensure strict compliance with the ASN.1 schemas ({{asn1-schemas}}), serialisation formats ({{data-serialisation}}), and cryptographic algorithms ({{cryptographic-algorithms}}). Separating core protocol functionality from service-specific logic enables reuse across multiple services.
 
 For testing purposes, implementers should consider establishing a dedicated DNSSEC-enabled test domain with a DomainAuth TXT record whose private key is publicly available, bound specifically to the test service OID (`1.3.6.1.4.1.58708.1.1`). This approach is secure when properly scoped: the domain is controlled by the implementation team, the key is bound only to the test service, and documentation clearly indicates these are for testing only. Serialised DNSSEC chains can also serve as test fixtures, allowing offline testing.
+
+Implementations have to provide the ability to override root zone DS records, which is only intended for local testing environments or to reflect updated IANA trust anchors before the underlying DNSSEC implementation is updated.
 
 The verification procedure should support both verification orders described in {{verification-procedure}}: either starting with the DNSSEC chain and ending with the signature, or vice versa. A critical aspect is validating that all components in the trust chain—DNSSEC records, certificates, and signature—have validity periods that overlap for at least one second. Implementations should also handle multiple TXT records correctly, selecting the appropriate one based on key information and service OID.
 

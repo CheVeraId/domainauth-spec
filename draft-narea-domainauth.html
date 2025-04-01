@@ -1378,27 +1378,27 @@ svg :is([fill="white"], [fill^="#fff"]) {
       <h2 id="name-introduction">
 <a href="#section-1" class="section-number selfRef">1. </a><a href="#name-introduction" class="section-name selfRef">Introduction</a>
       </h2>
-<p id="section-1-1">Public Key Infrastructures typically require continuous Internet connectivity for certificate validation or prior distribution of public keys, creating significant limitations for offline or intermittently connected environments. This document addresses the challenge of securely attributing content to domain names in scenarios where verification must occur entirely offline, without reliance on real-time certificate status checking or pre-distributed trust anchors.<a href="#section-1-1" class="pilcrow">¶</a></p>
-<p id="section-1-2">DomainAuth solves this verification challenge by creating self-contained "signature bundles" that encapsulate the complete trust chain required for validation. Each bundle comprises three cryptographically linked components: a DNSSEC chain extending from the DNS root to a domain's TXT record containing key material, an X.509 certificate chain from the domain to the signing entity, and a CMS SignedData structure containing the digital signature. This architecture leverages established standards whilst eliminating the need for continuous connectivity or prior trust establishment.<a href="#section-1-2" class="pilcrow">¶</a></p>
-<p id="section-1-3">This specification defines the protocol components, data structures, and verification procedures that constitute the DomainAuth protocol. It covers the DNS integration mechanism, cryptographic requirements, certificate management practices, and signature verification processes.<a href="#section-1-3" class="pilcrow">¶</a></p>
+<p id="section-1-1">Public Key Infrastructures typically require continuous Internet connectivity for certificate validation or prior distribution of public keys, creating significant limitations for offline or intermittently connected environments.  This document addresses the challenge of securely attributing content to domain names in scenarios where verification must occur entirely offline, without reliance on real-time certificate status checking or pre-distributed trust anchors.<a href="#section-1-1" class="pilcrow">¶</a></p>
+<p id="section-1-2">DomainAuth solves this verification challenge by creating self-contained "signature bundles" that encapsulate the complete trust chain required for validation.  Each bundle comprises three cryptographically linked components: a DNSSEC chain extending from the DNS root to a domain's TXT record containing key material, an X.509 certificate chain from the domain to the signing entity, and a CMS SignedData structure containing the digital signature.  This architecture leverages established standards whilst eliminating the need for continuous connectivity or prior trust establishment.<a href="#section-1-2" class="pilcrow">¶</a></p>
+<p id="section-1-3">This specification defines the protocol components, data structures, and verification procedures that constitute the DomainAuth protocol.  It covers the DNS integration mechanism, cryptographic requirements, certificate management practices, and signature verification processes.<a href="#section-1-3" class="pilcrow">¶</a></p>
 <div id="problem-statement">
 <section id="section-1.1">
         <h3 id="name-problem-statement">
 <a href="#section-1.1" class="section-number selfRef">1.1. </a><a href="#name-problem-statement" class="section-name selfRef">Problem Statement</a>
         </h3>
 <p id="section-1.1-1">The protocol was initially designed and implemented to provide users of the offline messaging application Letro <span>[<a href="#LETRO" class="cite xref">LETRO</a>]</span> with identifiers that are customisable, user friendly, universally unique, and verifiable.<a href="#section-1.1-1" class="pilcrow">¶</a></p>
-<p id="section-1.1-2">Letro is powered by the delay-tolerant network Awala <span>[<a href="#AWALA" class="cite xref">AWALA</a>]</span>, which offers an end-to-end encrypted sneakernet to transport data between a region disconnected from the Internet and a location with access to the Internet. In the most extreme cases, this physical transport may take several weeks, during which users should be able to produce and verify digital signatures without relying on online services.<a href="#section-1.1-2" class="pilcrow">¶</a></p>
+<p id="section-1.1-2">Letro is powered by the delay-tolerant network Awala <span>[<a href="#AWALA" class="cite xref">AWALA</a>]</span>, which offers an end-to-end encrypted sneakernet to transport data between a region disconnected from the Internet and a location with access to the Internet.  In the most extreme cases, this physical transport may take several weeks, during which users should be able to produce and verify digital signatures without relying on online services.<a href="#section-1.1-2" class="pilcrow">¶</a></p>
 <p id="section-1.1-3">Attacks by powerful adversaries, such as nation-state actors, are part of the threat model, given that Awala and Letro explicitly target people disconnected from the Internet due to conflict or government-sponsored censorship.<a href="#section-1.1-3" class="pilcrow">¶</a></p>
 <p id="section-1.1-4">Despite its origin in delay-tolerant networking, DomainAuth has broader applicability and can be useful when the Internet is available, such as the following use cases:<a href="#section-1.1-4" class="pilcrow">¶</a></p>
 <ul class="normal">
 <li class="normal" id="section-1.1-5.1">
-            <p id="section-1.1-5.1.1">Client authentication. A client could prove its identity to a server by sending a short-lived token signed with DomainAuth; this would be analogous to using a JSON Web Token <span>[<a href="#JWT" class="cite xref">JWT</a>]</span>, except that it can be verified without a prior distribution of public keys or remote operations. Alternatively, the client could sign each message sent to the server.<a href="#section-1.1-5.1.1" class="pilcrow">¶</a></p>
+            <p id="section-1.1-5.1.1">Client authentication.  A client could prove its identity to a server by sending a short-lived token signed with DomainAuth; this would be analogous to using a JSON Web Token <span>[<a href="#JWT" class="cite xref">JWT</a>]</span>, except that it can be verified without a prior distribution of public keys or remote operations.  Alternatively, the client could sign each message sent to the server.<a href="#section-1.1-5.1.1" class="pilcrow">¶</a></p>
 </li>
           <li class="normal" id="section-1.1-5.2">
-            <p id="section-1.1-5.2.1">Artefact signing. Documents, applications, libraries, and other files could be signed on behalf of a domain name, without vendor-specific gatekeeping mechanisms. This could unlock further use cases, such as enabling users to share original content whilst proving authenticity and integrity, instead of sharing URLs to resources that could be blocked at the network level.<a href="#section-1.1-5.2.1" class="pilcrow">¶</a></p>
+            <p id="section-1.1-5.2.1">Artefact signing.  Documents, applications, libraries, and other files could be signed on behalf of a domain name, without vendor-specific gatekeeping mechanisms.  This could unlock further use cases, such as enabling users to share original content whilst proving authenticity and integrity, instead of sharing URLs to resources that could be blocked at the network level.<a href="#section-1.1-5.2.1" class="pilcrow">¶</a></p>
 </li>
           <li class="normal" id="section-1.1-5.3">
-            <p id="section-1.1-5.3.1">Peer-to-peer web hosting. A next-generation of websites could be hosted on a peer-to-peer network, with files reliably attributed to their respective domain names.<a href="#section-1.1-5.3.1" class="pilcrow">¶</a></p>
+            <p id="section-1.1-5.3.1">Peer-to-peer web hosting.  A next-generation of websites could be hosted on a peer-to-peer network, with files reliably attributed to their respective domain names.<a href="#section-1.1-5.3.1" class="pilcrow">¶</a></p>
 </li>
         </ul>
 <p id="section-1.1-6">The present document is meant to provide the foundation for all the use cases above in a generic manner.<a href="#section-1.1-6" class="pilcrow">¶</a></p>
@@ -1412,7 +1412,7 @@ svg :is([fill="white"], [fill^="#fff"]) {
 <p id="section-1.2-1">DomainAuth is designed with the following primary goals:<a href="#section-1.2-1" class="pilcrow">¶</a></p>
 <ol start="1" type="1" class="normal type-1" id="section-1.2-2">
 <li id="section-1.2-2.1">
-            <p id="section-1.2-2.1.1"><strong>Decentralisation:</strong> The protocol avoids the need for centralised authorities beyond the DNS hierarchy itself. Each domain owner has exclusive control over their domain and its associated members.<a href="#section-1.2-2.1.1" class="pilcrow">¶</a></p>
+            <p id="section-1.2-2.1.1"><strong>Decentralisation:</strong> The protocol avoids the need for centralised authorities beyond the DNS hierarchy itself.  Each domain owner has exclusive control over their domain and its associated members.<a href="#section-1.2-2.1.1" class="pilcrow">¶</a></p>
 </li>
           <li id="section-1.2-2.2">
             <p id="section-1.2-2.2.1"><strong>Offline verification:</strong> All signature bundles contain sufficient information to be independently verified without requiring external network queries.<a href="#section-1.2-2.2.1" class="pilcrow">¶</a></p>
@@ -1447,13 +1447,13 @@ appear in all capitals, as shown here.<a href="#section-1.3-1" class="pilcrow">�
             <p id="section-1.3-3.1.1"><strong>Organisation:</strong> A domain name that participates in the DomainAuth protocol by configuring DNSSEC and publishing the necessary DomainAuth TXT record(s).<a href="#section-1.3-3.1.1" class="pilcrow">¶</a></p>
 </li>
           <li class="normal" id="section-1.3-3.2">
-            <p id="section-1.3-3.2.1"><strong>Member:</strong> An entity that produces signatures on behalf of an organisation. There are two types of members:<a href="#section-1.3-3.2.1" class="pilcrow">¶</a></p>
+            <p id="section-1.3-3.2.1"><strong>Member:</strong> An entity that produces signatures on behalf of an organisation.  There are two types of members:<a href="#section-1.3-3.2.1" class="pilcrow">¶</a></p>
 <ul class="normal">
 <li class="normal" id="section-1.3-3.2.2.1">
                 <p id="section-1.3-3.2.2.1.1"><strong>User:</strong> A member identified by a unique user name within an organisation.<a href="#section-1.3-3.2.2.1.1" class="pilcrow">¶</a></p>
 </li>
               <li class="normal" id="section-1.3-3.2.2.2">
-                <p id="section-1.3-3.2.2.2.1"><strong>Bot:</strong> A special type of member that acts on behalf of the organisation as a whole. Bots do not have user names.<a href="#section-1.3-3.2.2.2.1" class="pilcrow">¶</a></p>
+                <p id="section-1.3-3.2.2.2.1"><strong>Bot:</strong> A special type of member that acts on behalf of the organisation as a whole.  Bots do not have user names.<a href="#section-1.3-3.2.2.2.1" class="pilcrow">¶</a></p>
 </li>
             </ul>
 </li>
@@ -1470,7 +1470,7 @@ appear in all capitals, as shown here.<a href="#section-1.3-1" class="pilcrow">�
             <p id="section-1.3-3.6.1"><strong>Member Id Bundle:</strong> A data structure containing a member certificate, its issuing organisation certificate, and the DNSSEC chain proving the authenticity of the organisation's DomainAuth TXT record.<a href="#section-1.3-3.6.1" class="pilcrow">¶</a></p>
 </li>
           <li class="normal" id="section-1.3-3.7">
-            <p id="section-1.3-3.7.1"><strong>Signature Bundle:</strong> A data structure containing a digital signature and all the information needed to verify it offline. There are two types of signature bundles:<a href="#section-1.3-3.7.1" class="pilcrow">¶</a></p>
+            <p id="section-1.3-3.7.1"><strong>Signature Bundle:</strong> A data structure containing a digital signature and all the information needed to verify it offline.  There are two types of signature bundles:<a href="#section-1.3-3.7.1" class="pilcrow">¶</a></p>
 <ul class="normal">
 <li class="normal" id="section-1.3-3.7.2.1">
                 <p id="section-1.3-3.7.2.1.1"><strong>Member Signature Bundle:</strong> A signature bundle containing a signature produced by a member using their private key.<a href="#section-1.3-3.7.2.1.1" class="pilcrow">¶</a></p>
@@ -1484,7 +1484,7 @@ appear in all capitals, as shown here.<a href="#section-1.3-1" class="pilcrow">�
             <p id="section-1.3-3.8.1"><strong>DNSSEC Chain:</strong> A sequence of DNS responses that allows a verifier to cryptographically validate the authenticity of a DNS record.<a href="#section-1.3-3.8.1" class="pilcrow">¶</a></p>
 </li>
           <li class="normal" id="section-1.3-3.9">
-            <p id="section-1.3-3.9.1"><strong>Service:</strong> A protocol or system that employs DomainAuth signatures for a specific use case. Each service defines the context in which a signature is valid, and its own rules for signature creation and verification.<a href="#section-1.3-3.9.1" class="pilcrow">¶</a></p>
+            <p id="section-1.3-3.9.1"><strong>Service:</strong> A protocol or system that employs DomainAuth signatures for a specific use case.  Each service defines the context in which a signature is valid, and its own rules for signature creation and verification.<a href="#section-1.3-3.9.1" class="pilcrow">¶</a></p>
 </li>
         </ul>
 </section>
@@ -1577,7 +1577,7 @@ appear in all capitals, as shown here.<a href="#section-1.3-1" class="pilcrow">�
 <a href="#section-2.2.2" class="section-number selfRef">2.2.2. </a><a href="#name-certificate-issuance" class="section-name selfRef">Certificate Issuance</a>
           </h4>
 <p id="section-2.2.2-1">The organisation must issue an X.509 certificate using its private key, or reuse an existing certificate valid during the intended validity period.<a href="#section-2.2.2-1" class="pilcrow">¶</a></p>
-<p id="section-2.2.2-2">When issuing a member certificate, the organisation must distribute it along with the organisation certificate. This can be done with a member id bundle as defined in <a href="#member-id-bundle" class="auto internal xref">Section 5</a>, which is desirable in services meant to be used offline as it also contains the DNSSEC chain.<a href="#section-2.2.2-2" class="pilcrow">¶</a></p>
+<p id="section-2.2.2-2">When issuing a member certificate, the organisation must distribute it along with the organisation certificate.  This can be done with a member id bundle as defined in <a href="#member-id-bundle" class="auto internal xref">Section 5</a>, which is desirable in services meant to be used offline as it also contains the DNSSEC chain.<a href="#section-2.2.2-2" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="signature-bundle-production">
@@ -1591,7 +1591,7 @@ appear in all capitals, as shown here.<a href="#section-1.3-1" class="pilcrow">�
               <p id="section-2.2.3-2.1.1">Use their private key to produce a CMS SignedData structure, encapsulating the member's certificate.<a href="#section-2.2.3-2.1.1" class="pilcrow">¶</a></p>
 </li>
             <li id="section-2.2.3-2.2">
-              <p id="section-2.2.3-2.2.1">Obtain the DNSSEC chain from the DomainAuth TXT record. If not provided by the organisation (e.g. in the form of a member id bundle), the member will have to resolve it or retrieve it from a cache.<a href="#section-2.2.3-2.2.1" class="pilcrow">¶</a></p>
+              <p id="section-2.2.3-2.2.1">Obtain the DNSSEC chain from the DomainAuth TXT record.  If not provided by the organisation (e.g. in the form of a member id bundle), the member will have to resolve it or retrieve it from a cache.<a href="#section-2.2.3-2.2.1" class="pilcrow">¶</a></p>
 </li>
             <li id="section-2.2.3-2.3">
               <p id="section-2.2.3-2.3.1">Construct a signature bundle with the CMS SignedData structure, the organisation certificate, and the DNSSEC chain.<a href="#section-2.2.3-2.3.1" class="pilcrow">¶</a></p>
@@ -1626,7 +1626,7 @@ appear in all capitals, as shown here.<a href="#section-1.3-1" class="pilcrow">�
               <p id="section-2.2.4-2.2.1">Verify the organisation certificate using the public key from the TXT record.<a href="#section-2.2.4-2.2.1" class="pilcrow">¶</a></p>
 </li>
             <li id="section-2.2.4-2.3">
-              <p id="section-2.2.4-2.3.1">Determine the certificate of the signer of the CMS SignedData structure. If it is an organisation signature, use the organisation certificate. Otherwise, use the certificate of the member, which is encapsulated in the CMS SignedData structure.<a href="#section-2.2.4-2.3.1" class="pilcrow">¶</a></p>
+              <p id="section-2.2.4-2.3.1">Determine the certificate of the signer of the CMS SignedData structure.  If it is an organisation signature, use the organisation certificate.  Otherwise, use the certificate of the member, which is encapsulated in the CMS SignedData structure.<a href="#section-2.2.4-2.3.1" class="pilcrow">¶</a></p>
 </li>
             <li id="section-2.2.4-2.4">
               <p id="section-2.2.4-2.4.1">Verify the CMS SignedData structure against the certificate of the signer.<a href="#section-2.2.4-2.4.1" class="pilcrow">¶</a></p>
@@ -1649,30 +1649,30 @@ appear in all capitals, as shown here.<a href="#section-1.3-1" class="pilcrow">�
 <p id="section-2.3-1">DomainAuth's trust model differs significantly from traditional PKIs such as the one used for TLS:<a href="#section-2.3-1" class="pilcrow">¶</a></p>
 <ol start="1" type="1" class="normal type-1" id="section-2.3-2">
 <li id="section-2.3-2.1">
-            <p id="section-2.3-2.1.1"><strong>Domain-specific trust roots:</strong> Each organisation is only able to issue certificates for itself and its members. Unlike traditional PKIs where any Certificate Authority can issue certificates for any domain, DomainAuth enforces a strict hierarchy where domain control is the only path to certificate issuance.<a href="#section-2.3-2.1.1" class="pilcrow">¶</a></p>
+            <p id="section-2.3-2.1.1"><strong>Domain-specific trust roots:</strong> Each organisation is only able to issue certificates for itself and its members.  Unlike traditional PKIs where any Certificate Authority can issue certificates for any domain, DomainAuth enforces a strict hierarchy where domain control is the only path to certificate issuance.<a href="#section-2.3-2.1.1" class="pilcrow">¶</a></p>
 </li>
           <li id="section-2.3-2.2">
-            <p id="section-2.3-2.2.1"><strong>DNSSEC as the foundation:</strong> Trust is anchored in DNSSEC, relying on the hierarchical nature of DNS to establish domain control. The chain of trust begins with the DNS root zone and extends through each DNS subdelegation to the organisation's domain.<a href="#section-2.3-2.2.1" class="pilcrow">¶</a></p>
+            <p id="section-2.3-2.2.1"><strong>DNSSEC as the foundation:</strong> Trust is anchored in DNSSEC, relying on the hierarchical nature of DNS to establish domain control.  The chain of trust begins with the DNS root zone and extends through each DNS subdelegation to the organisation's domain.<a href="#section-2.3-2.2.1" class="pilcrow">¶</a></p>
 </li>
           <li id="section-2.3-2.3">
             <p id="section-2.3-2.3.1"><strong>Self-contained verification:</strong> Signature bundles include all necessary information (DNSSEC chains, certificates) to allow completely offline verification.<a href="#section-2.3-2.3.1" class="pilcrow">¶</a></p>
 </li>
           <li id="section-2.3-2.4">
-            <p id="section-2.3-2.4.1"><strong>Short-lived credentials:</strong> DomainAuth favours short-lived credentials over revocation mechanisms, reducing complexity and vulnerability to disconnected operation. However, what constitutes "short-lived" will be entirely dependent on the nature of the service.<a href="#section-2.3-2.4.1" class="pilcrow">¶</a></p>
+            <p id="section-2.3-2.4.1"><strong>Short-lived credentials:</strong> DomainAuth favours short-lived credentials over revocation mechanisms, reducing complexity and vulnerability to disconnected operation.  However, what constitutes "short-lived" will be entirely dependent on the nature of the service.<a href="#section-2.3-2.4.1" class="pilcrow">¶</a></p>
 </li>
           <li id="section-2.3-2.5">
             <p id="section-2.3-2.5.1"><strong>Two signature types with different trust models:</strong><a href="#section-2.3-2.5.1" class="pilcrow">¶</a></p>
 <ul class="normal">
 <li class="normal" id="section-2.3-2.5.2.1">
-                <p id="section-2.3-2.5.2.1.1"><strong>Member signatures:</strong> Produced by members using their private keys, these signatures cryptographically prove that a specific member created the content. The verification chain goes from DNSSEC to the organisation certificate to the member certificate to the signature.<a href="#section-2.3-2.5.2.1.1" class="pilcrow">¶</a></p>
+                <p id="section-2.3-2.5.2.1.1"><strong>Member signatures:</strong> Produced by members using their private keys, these signatures cryptographically prove that a specific member created the content.  The verification chain goes from DNSSEC to the organisation certificate to the member certificate to the signature.<a href="#section-2.3-2.5.2.1.1" class="pilcrow">¶</a></p>
 </li>
               <li class="normal" id="section-2.3-2.5.2.2">
-                <p id="section-2.3-2.5.2.2.1"><strong>Organisation signatures:</strong> Produced directly by organisations using their private keys, these signatures prove that the organisation vouches for the content. When including user attribution, the organisation claims (but does not cryptographically prove) that a specific user created the content.<a href="#section-2.3-2.5.2.2.1" class="pilcrow">¶</a></p>
+                <p id="section-2.3-2.5.2.2.1"><strong>Organisation signatures:</strong> Produced directly by organisations using their private keys, these signatures prove that the organisation vouches for the content.  When including user attribution, the organisation claims (but does not cryptographically prove) that a specific user created the content.<a href="#section-2.3-2.5.2.2.1" class="pilcrow">¶</a></p>
 </li>
             </ul>
 </li>
         </ol>
-<p id="section-2.3-3">By relying on DNSSEC, DomainAuth inherits its security properties and limitations. The protocol's trust is ultimately rooted in the DNS hierarchy, including the root zone and TLD operators.<a href="#section-2.3-3" class="pilcrow">¶</a></p>
+<p id="section-2.3-3">By relying on DNSSEC, DomainAuth inherits its security properties and limitations.  The protocol's trust is ultimately rooted in the DNS hierarchy, including the root zone and TLD operators.<a href="#section-2.3-3" class="pilcrow">¶</a></p>
 </section>
 </div>
 </section>
@@ -1682,8 +1682,8 @@ appear in all capitals, as shown here.<a href="#section-1.3-1" class="pilcrow">�
       <h2 id="name-dns-integration">
 <a href="#section-3" class="section-number selfRef">3. </a><a href="#name-dns-integration" class="section-name selfRef">DNS Integration</a>
       </h2>
-<p id="section-3-1">This document makes no distinction between different types of DNS zones, with the exception of the root zone which <span class="bcp14">MUST NOT</span> participate in DomainAuth. The root zone exclusion avoids representation challenges in user interfaces (where it would appear as a dot or empty string) and eliminates the need for implementations to handle this special case.<a href="#section-3-1" class="pilcrow">¶</a></p>
-<p id="section-3-2">TLDs, apex domains, and subdomains are all treated equivalently. Any domain at any level in the DNS hierarchy, except the root zone, <span class="bcp14">MAY</span> implement DomainAuth. Each participating domain operates entirely independently from its parent zones, with no hierarchical relationship or inherited trust.<a href="#section-3-2" class="pilcrow">¶</a></p>
+<p id="section-3-1">This document makes no distinction between different types of DNS zones, with the exception of the root zone which <span class="bcp14">MUST NOT</span> participate in DomainAuth.  The root zone exclusion avoids representation challenges in user interfaces (where it would appear as a dot or empty string) and eliminates the need for implementations to handle this special case.<a href="#section-3-1" class="pilcrow">¶</a></p>
+<p id="section-3-2">TLDs, apex domains, and subdomains are all treated equivalently.  Any domain at any level in the DNS hierarchy, except the root zone, <span class="bcp14">MAY</span> implement DomainAuth.  Each participating domain operates entirely independently from its parent zones, with no hierarchical relationship or inherited trust.<a href="#section-3-2" class="pilcrow">¶</a></p>
 <p id="section-3-3">Throughout this document, the terms "domain" and "domain name" refer to any such zone without regard to its hierarchical position.<a href="#section-3-3" class="pilcrow">¶</a></p>
 <div id="dnssec-configuration">
 <section id="section-3.1">
@@ -1714,10 +1714,10 @@ appear in all capitals, as shown here.<a href="#section-1.3-1" class="pilcrow">�
             <p id="section-3.2-2.4.1"><strong>Key Id</strong> (required): The Base64-encoded (unpadded) representation of the key digest, as specified by the Key Id Type.<a href="#section-3.2-2.4.1" class="pilcrow">¶</a></p>
 </li>
           <li id="section-3.2-2.5">
-            <p id="section-3.2-2.5.1"><strong>TTL Override</strong> (required): A positive integer representing the number of seconds for the maximum validity period of signatures. This value <span class="bcp14">MUST</span> be at least 1 second and not exceed the limit specified in <a href="#maximum-validity-period" class="auto internal xref">Section 9</a>. Refer to <a href="#ttl-override" class="auto internal xref">Section 3.3</a> for more details.<a href="#section-3.2-2.5.1" class="pilcrow">¶</a></p>
+            <p id="section-3.2-2.5.1"><strong>TTL Override</strong> (required): A positive integer representing the number of seconds for the maximum validity period of signatures.  This value <span class="bcp14">MUST</span> be at least 1 second and not exceed the limit specified in <a href="#maximum-validity-period" class="auto internal xref">Section 9</a>. Refer to <a href="#ttl-override" class="auto internal xref">Section 3.3</a> for more details.<a href="#section-3.2-2.5.1" class="pilcrow">¶</a></p>
 </li>
           <li id="section-3.2-2.6">
-            <p id="section-3.2-2.6.1"><strong>Service OID</strong> (optional): An Object Identifier (in dotted decimal notation) binding the key to a specific service. If omitted, the key is valid for any service.<a href="#section-3.2-2.6.1" class="pilcrow">¶</a></p>
+            <p id="section-3.2-2.6.1"><strong>Service OID</strong> (optional): An Object Identifier (in dotted decimal notation) binding the key to a specific service.  If omitted, the key is valid for any service.<a href="#section-3.2-2.6.1" class="pilcrow">¶</a></p>
 </li>
         </ol>
 <p id="section-3.2-3">Multiple TXT records <span class="bcp14">MAY</span> be published at the same zone to support different keys, key algorithms, or services.<a href="#section-3.2-3" class="pilcrow">¶</a></p>
@@ -1736,9 +1736,9 @@ _domainauth.example.com. IN TXT "0 1 3 dGhpcyBpcyBub3QgYSByZWFsIGtleSBkaWdlc3Q 8
 <a href="#section-3.3" class="section-number selfRef">3.3. </a><a href="#name-ttl-override" class="section-name selfRef">TTL Override</a>
         </h3>
 <p id="section-3.3-1">The TTL override field in the DomainAuth TXT record enables verification of DNS records and DNSSEC signatures for longer periods than their respective specifications would allow, which is essential for delay-tolerant use cases where users may be offline for extended periods.<a href="#section-3.3-1" class="pilcrow">¶</a></p>
-<p id="section-3.3-2">DNS records and DNSSEC signatures typically have TTL values that may be as short as a few minutes or hours. The TTL override mechanism allows the DNSSEC chain to remain verifiable for a significantly longer period, regardless of the TTL in such records. Refer to <a href="#maximum-validity-period" class="auto internal xref">Section 9</a> for the maximum validity period.<a href="#section-3.3-2" class="pilcrow">¶</a></p>
-<p id="section-3.3-3">During verification, the TTL override creates a restricted time window that extends backwards from the end of the requested verification period by the specified number of seconds. Verification will succeed if the DNSSEC records were valid at any point during this window, even if the standard DNS TTLs would have expired.<a href="#section-3.3-3" class="pilcrow">¶</a></p>
-<p id="section-3.3-4">For example, if a DNS record has a standard TTL of 3600 seconds (1 hour) but the DomainAuth TXT record specifies a TTL override of 604,800 seconds (7 days), a signature can still be verified up to 7 days after creation, even when offline. If a verifier attempts to verify a signature 5 days after it was created, the verification would succeed with the TTL override, whereas it would fail with only the standard 1-hour TTL.<a href="#section-3.3-4" class="pilcrow">¶</a></p>
+<p id="section-3.3-2">DNS records and DNSSEC signatures typically have TTL values that may be as short as a few minutes or hours.  The TTL override mechanism allows the DNSSEC chain to remain verifiable for a significantly longer period, regardless of the TTL in such records.  Refer to <a href="#maximum-validity-period" class="auto internal xref">Section 9</a> for the maximum validity period.<a href="#section-3.3-2" class="pilcrow">¶</a></p>
+<p id="section-3.3-3">During verification, the TTL override creates a restricted time window that extends backwards from the end of the requested verification period by the specified number of seconds.  Verification will succeed if the DNSSEC records were valid at any point during this window, even if the standard DNS TTLs would have expired.<a href="#section-3.3-3" class="pilcrow">¶</a></p>
+<p id="section-3.3-4">For example, if a DNS record has a standard TTL of 3600 seconds (1 hour) but the DomainAuth TXT record specifies a TTL override of 604,800 seconds (7 days), a signature can still be verified up to 7 days after creation, even when offline.  If a verifier attempts to verify a signature 5 days after it was created, the verification would succeed with the TTL override, whereas it would fail with only the standard 1-hour TTL.<a href="#section-3.3-4" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="dnssec-chain-serialisation">
@@ -1752,7 +1752,7 @@ _domainauth.example.com. IN TXT "0 1 3 dGhpcyBpcyBub3QgYSByZWFsIGtleSBkaWdlc3Q 8
 DnssecChain ::= SET OF OCTET STRING
 </pre><a href="#section-3.4-2" class="pilcrow">¶</a>
 </div>
-<p id="section-3.4-3">This chain <span class="bcp14">MUST</span> include all DNSSEC responses necessary to validate the <code>_domainauth.&lt;domain&gt;/TXT</code> record from the trust anchor. However, the root zone DS records <span class="bcp14">SHOULD</span> be omitted, since they will be ignored by verifiers as described in <a href="#verification-procedure" class="auto internal xref">Section 7.1</a>.<a href="#section-3.4-3" class="pilcrow">¶</a></p>
+<p id="section-3.4-3">This chain <span class="bcp14">MUST</span> include all DNSSEC responses necessary to validate the <code>_domainauth.&lt;domain&gt;/TXT</code> record from the trust anchor.  However, the root zone DS records <span class="bcp14">SHOULD</span> be omitted, since they will be ignored by verifiers as described in <a href="#verification-procedure" class="auto internal xref">Section 7.1</a>.<a href="#section-3.4-3" class="pilcrow">¶</a></p>
 <p id="section-3.4-4">Implementations <span class="bcp14">SHOULD</span> optimise the serialisation to minimise redundancy and size whilst ensuring completeness for offline verification.<a href="#section-3.4-4" class="pilcrow">¶</a></p>
 </section>
 </div>
@@ -1789,16 +1789,16 @@ DnssecChain ::= SET OF OCTET STRING
         <h3 id="name-organisation-certificate">
 <a href="#section-4.1" class="section-number selfRef">4.1. </a><a href="#name-organisation-certificate" class="section-name selfRef">Organisation Certificate</a>
         </h3>
-<p id="section-4.1-1">This is certificate whose subject key is referenced by the DomainAuth TXT record. The following requirements and recommendations apply:<a href="#section-4.1-1" class="pilcrow">¶</a></p>
+<p id="section-4.1-1">This is certificate whose subject key is referenced by the DomainAuth TXT record.  The following requirements and recommendations apply:<a href="#section-4.1-1" class="pilcrow">¶</a></p>
 <ul class="normal">
 <li class="normal" id="section-4.1-2.1">
             <p id="section-4.1-2.1.1">Its Subject Distinguished Name <span class="bcp14">MUST</span> contain the Common Name attribute (OID <code>2.5.4.3</code>) set to the organisation's domain name with a trailing dot (e.g. <code>example.com.</code>).<a href="#section-4.1-2.1.1" class="pilcrow">¶</a></p>
 </li>
           <li class="normal" id="section-4.1-2.2">
-            <p id="section-4.1-2.2.1">When the certificate is used to issue other certificates, the Basic Constraints extension from <span><a href="https://rfc-editor.org/rfc/rfc5280#section-4.2.1.9" class="relref">Section 4.2.1.9</a> of [<a href="#X.509" class="cite xref">X.509</a>]</span> <span class="bcp14">MUST</span> be present and marked as critical. Additionally, the CA flag <span class="bcp14">MUST</span> be enabled, and the Path Length Constraint <span class="bcp14">SHOULD</span> be set to the lowest possible value for the length of the intended certificate chains.<a href="#section-4.1-2.2.1" class="pilcrow">¶</a></p>
+            <p id="section-4.1-2.2.1">When the certificate is used to issue other certificates, the Basic Constraints extension from <span><a href="https://rfc-editor.org/rfc/rfc5280#section-4.2.1.9" class="relref">Section 4.2.1.9</a> of [<a href="#X.509" class="cite xref">X.509</a>]</span> <span class="bcp14">MUST</span> be present and marked as critical.  Additionally, the CA flag <span class="bcp14">MUST</span> be enabled, and the Path Length Constraint <span class="bcp14">SHOULD</span> be set to the lowest possible value for the length of the intended certificate chains.<a href="#section-4.1-2.2.1" class="pilcrow">¶</a></p>
 </li>
           <li class="normal" id="section-4.1-2.3">
-            <p id="section-4.1-2.3.1">When the certificate is used directly to sign CMS SignedData structures, the Basic Constraints extension <span class="bcp14">MAY</span> be absent. If present, it <span class="bcp14">SHOULD</span> have the CA flag disabled.<a href="#section-4.1-2.3.1" class="pilcrow">¶</a></p>
+            <p id="section-4.1-2.3.1">When the certificate is used directly to sign CMS SignedData structures, the Basic Constraints extension <span class="bcp14">MAY</span> be absent.  If present, it <span class="bcp14">SHOULD</span> have the CA flag disabled.<a href="#section-4.1-2.3.1" class="pilcrow">¶</a></p>
 </li>
         </ul>
 </section>
@@ -1813,7 +1813,7 @@ DnssecChain ::= SET OF OCTET STRING
             <p id="section-4.2-1.1.1">Its Subject Distinguished Name <span class="bcp14">MUST</span> contain the Common Name attribute (OID <code>2.5.4.3</code>) set to the member's name in the case of users or the at sign (<code>@</code>) in the case of bots.<a href="#section-4.2-1.1.1" class="pilcrow">¶</a></p>
 </li>
           <li class="normal" id="section-4.2-1.2">
-            <p id="section-4.2-1.2.1">The Basic Constraints extension from <span><a href="https://rfc-editor.org/rfc/rfc5280#section-4.2.1.9" class="relref">Section 4.2.1.9</a> of [<a href="#X.509" class="cite xref">X.509</a>]</span> <span class="bcp14">MAY</span> be absent. If present, it <span class="bcp14">SHOULD</span> have the CA flag disabled.<a href="#section-4.2-1.2.1" class="pilcrow">¶</a></p>
+            <p id="section-4.2-1.2.1">The Basic Constraints extension from <span><a href="https://rfc-editor.org/rfc/rfc5280#section-4.2.1.9" class="relref">Section 4.2.1.9</a> of [<a href="#X.509" class="cite xref">X.509</a>]</span> <span class="bcp14">MAY</span> be absent.  If present, it <span class="bcp14">SHOULD</span> have the CA flag disabled.<a href="#section-4.2-1.2.1" class="pilcrow">¶</a></p>
 </li>
         </ul>
 </section>
@@ -1824,7 +1824,7 @@ DnssecChain ::= SET OF OCTET STRING
 <a href="#section-4.3" class="section-number selfRef">4.3. </a><a href="#name-intermediate-certificate" class="section-name selfRef">Intermediate Certificate</a>
         </h3>
 <p id="section-4.3-1">Organisations <span class="bcp14">MAY</span> issue intermediate certificates to delegate the responsibility of signing member certificates to other entities.<a href="#section-4.3-1" class="pilcrow">¶</a></p>
-<p id="section-4.3-2">When an intermediate certificate is used, the Basic Constraints extension from <span><a href="https://rfc-editor.org/rfc/rfc5280#section-4.2.1.9" class="relref">Section 4.2.1.9</a> of [<a href="#X.509" class="cite xref">X.509</a>]</span> <span class="bcp14">MUST</span> be present and marked as critical. Additionally, the CA flag <span class="bcp14">MUST</span> be enabled, and the Path Length Constraint <span class="bcp14">SHOULD</span> be set to the lowest possible value for the length of the intended certificate chains.<a href="#section-4.3-2" class="pilcrow">¶</a></p>
+<p id="section-4.3-2">When an intermediate certificate is used, the Basic Constraints extension from <span><a href="https://rfc-editor.org/rfc/rfc5280#section-4.2.1.9" class="relref">Section 4.2.1.9</a> of [<a href="#X.509" class="cite xref">X.509</a>]</span> <span class="bcp14">MUST</span> be present and marked as critical.  Additionally, the CA flag <span class="bcp14">MUST</span> be enabled, and the Path Length Constraint <span class="bcp14">SHOULD</span> be set to the lowest possible value for the length of the intended certificate chains.<a href="#section-4.3-2" class="pilcrow">¶</a></p>
 <p id="section-4.3-3">Note that if an intermediate certificate is assigned a Common Name, it could also be used as a member certificate and it could therefore produce member signatures.<a href="#section-4.3-3" class="pilcrow">¶</a></p>
 </section>
 </div>
@@ -1835,7 +1835,7 @@ DnssecChain ::= SET OF OCTET STRING
       <h2 id="name-member-id-bundle">
 <a href="#section-5" class="section-number selfRef">5. </a><a href="#name-member-id-bundle" class="section-name selfRef">Member Id Bundle</a>
       </h2>
-<p id="section-5-1">The Member Id Bundle is a self-contained message that provides all the information needed for a member to produce verifiable signatures. It is serialised using ASN.1 with the following structure:<a href="#section-5-1" class="pilcrow">¶</a></p>
+<p id="section-5-1">The Member Id Bundle is a self-contained message that provides all the information needed for a member to produce verifiable signatures.  It is serialised using ASN.1 with the following structure:<a href="#section-5-1" class="pilcrow">¶</a></p>
 <div class="alignLeft art-text artwork" id="section-5-2">
 <pre>
 MemberIdBundle ::= SEQUENCE {
@@ -1862,10 +1862,10 @@ MemberIdBundle ::= SEQUENCE {
           <p id="section-5-4.4.1"><code>memberCertificate</code> is the X.509 certificate issued to the member by the organisation.<a href="#section-5-4.4.1" class="pilcrow">¶</a></p>
 </li>
         <li class="normal" id="section-5-4.5">
-          <p id="section-5-4.5.1"><code>intermediateCertificates</code> is a set of X.509 certificates issued by the organisation to other entities that can sign member certificates. It <span class="bcp14">SHOULD NOT</span> include certificates extraneous to the chain between the organisation certificate and the member certificate.<a href="#section-5-4.5.1" class="pilcrow">¶</a></p>
+          <p id="section-5-4.5.1"><code>intermediateCertificates</code> is a set of X.509 certificates issued by the organisation to other entities that can sign member certificates.  It <span class="bcp14">SHOULD NOT</span> include certificates extraneous to the chain between the organisation certificate and the member certificate.<a href="#section-5-4.5.1" class="pilcrow">¶</a></p>
 </li>
       </ul>
-<p id="section-5-5">The Member Id Bundle links the member to their organisation and provides all the cryptographic material needed to verify this relationship. It serves as a precursor to signature production and is typically distributed to members by their organisation's certificate management system.<a href="#section-5-5" class="pilcrow">¶</a></p>
+<p id="section-5-5">The Member Id Bundle links the member to their organisation and provides all the cryptographic material needed to verify this relationship.  It serves as a precursor to signature production and is typically distributed to members by their organisation's certificate management system.<a href="#section-5-5" class="pilcrow">¶</a></p>
 <p id="section-5-6">Member Id Bundles are not inherently confidential, as they contain only public information, but their integrity is critical for secure signature production.<a href="#section-5-6" class="pilcrow">¶</a></p>
 </section>
 </div>
@@ -1927,7 +1927,7 @@ MemberIdBundle ::= SEQUENCE {
           <h4 id="name-member-signatures">
 <a href="#section-6.1.1" class="section-number selfRef">6.1.1. </a><a href="#name-member-signatures" class="section-name selfRef">Member Signatures</a>
           </h4>
-<p id="section-6.1.1-1">Member signatures are produced by members (users or bots) using their own private key. They are suitable for scenarios requiring strong non-repudiation at the individual member level, or when members need to produce signatures whilst being offline for extended periods.<a href="#section-6.1.1-1" class="pilcrow">¶</a></p>
+<p id="section-6.1.1-1">Member signatures are produced by members (users or bots) using their own private key.  They are suitable for scenarios requiring strong non-repudiation at the individual member level, or when members need to produce signatures whilst being offline for extended periods.<a href="#section-6.1.1-1" class="pilcrow">¶</a></p>
 <p id="section-6.1.1-2">The member's certificate <span class="bcp14">MUST</span> be included in the <code>SignedData.certificates</code> field.<a href="#section-6.1.1-2" class="pilcrow">¶</a></p>
 </section>
 </div>
@@ -1936,7 +1936,7 @@ MemberIdBundle ::= SEQUENCE {
           <h4 id="name-organisation-signatures">
 <a href="#section-6.1.2" class="section-number selfRef">6.1.2. </a><a href="#name-organisation-signatures" class="section-name selfRef">Organisation Signatures</a>
           </h4>
-<p id="section-6.1.2-1">Organisation signatures are produced using either the organisation's private key or a delegated signing key. All organisation signatures include mandatory member attribution to indicate content authorship. These signatures are suitable for scenarios where individual member certificate management is impractical or when the organisation takes direct responsibility for content.<a href="#section-6.1.2-1" class="pilcrow">¶</a></p>
+<p id="section-6.1.2-1">Organisation signatures are produced using either the organisation's private key or a delegated signing key.  All organisation signatures include mandatory member attribution to indicate content authorship.  These signatures are suitable for scenarios where individual member certificate management is impractical or when the organisation takes direct responsibility for content.<a href="#section-6.1.2-1" class="pilcrow">¶</a></p>
 <p id="section-6.1.2-2">The SignerInfo structure <span class="bcp14">MUST</span> include the DomainAuth member attribution in its signed attributes, using the OID <code>1.3.6.1.4.1.58708.1.2</code> and the value defined in the ASN.1 structure below:<a href="#section-6.1.2-2" class="pilcrow">¶</a></p>
 <div class="alignLeft art-text artwork" id="section-6.1.2-3">
 <pre>
@@ -1944,7 +1944,7 @@ MemberAttribution ::= UTF8String
 </pre><a href="#section-6.1.2-3" class="pilcrow">¶</a>
 </div>
 <p id="section-6.1.2-4">The member attribution value <span class="bcp14">MUST</span> conform to the restrictions defined in <a href="#phishing-attacks" class="auto internal xref">Section 13.2</a>. For users, this is the user name; for bots, this is the at sign (<code>@</code>).<a href="#section-6.1.2-4" class="pilcrow">¶</a></p>
-<p id="section-6.1.2-5">Member attribution is a claim made by the organisation, not cryptographically proven by the member. Verifiers <span class="bcp14">SHOULD</span> present this distinction clearly to end users.<a href="#section-6.1.2-5" class="pilcrow">¶</a></p>
+<p id="section-6.1.2-5">Member attribution is a claim made by the organisation, not cryptographically proven by the member.  Verifiers <span class="bcp14">SHOULD</span> present this distinction clearly to end users.<a href="#section-6.1.2-5" class="pilcrow">¶</a></p>
 </section>
 </div>
 </section>
@@ -1954,7 +1954,7 @@ MemberAttribution ::= UTF8String
         <h3 id="name-signature-metadata">
 <a href="#section-6.2" class="section-number selfRef">6.2. </a><a href="#name-signature-metadata" class="section-name selfRef">Signature Metadata</a>
         </h3>
-<p id="section-6.2-1">Each SignedData structure includes metadata that binds the signature to a specific service and validity period. This metadata is included as a signed attribute in the SignerInfo structure.<a href="#section-6.2-1" class="pilcrow">¶</a></p>
+<p id="section-6.2-1">Each SignedData structure includes metadata that binds the signature to a specific service and validity period.  This metadata is included as a signed attribute in the SignerInfo structure.<a href="#section-6.2-1" class="pilcrow">¶</a></p>
 <p id="section-6.2-2">The signature metadata attribute <span class="bcp14">MUST</span> use the OID <code>1.3.6.1.4.1.58708.1.0</code> and be encoded as the <code>SignatureMetadata</code> ASN.1 structure below:<a href="#section-6.2-2" class="pilcrow">¶</a></p>
 <div class="alignLeft art-text artwork" id="section-6.2-3">
 <pre>
@@ -1975,7 +1975,7 @@ DatePeriod ::= SEQUENCE {
             <p id="section-6.2-5.1.1"><code>serviceOid</code> is the Object Identifier of the service for which the signature is valid.<a href="#section-6.2-5.1.1" class="pilcrow">¶</a></p>
 </li>
           <li class="normal" id="section-6.2-5.2">
-            <p id="section-6.2-5.2.1"><code>validityPeriod</code> specifies the time period during which the signature is considered valid. The <code>start</code> and <code>end</code> fields <span class="bcp14">MUST</span> be expressed in Greenwich Mean Time (GMT) and <span class="bcp14">MUST</span> include seconds. Therefore, both times will follow the format <code>YYYYMMDDHHMMSSZ</code>. Both the start and end times are inclusive, meaning the signature is valid at exactly the start time and remains valid until exactly the end time.<a href="#section-6.2-5.2.1" class="pilcrow">¶</a></p>
+            <p id="section-6.2-5.2.1"><code>validityPeriod</code> specifies the time period during which the signature is considered valid.  The <code>start</code> and <code>end</code> fields <span class="bcp14">MUST</span> be expressed in Greenwich Mean Time (GMT) and <span class="bcp14">MUST</span> include seconds.  Therefore, both times will follow the format <code>YYYYMMDDHHMMSSZ</code>. Both the start and end times are inclusive, meaning the signature is valid at exactly the start time and remains valid until exactly the end time.<a href="#section-6.2-5.2.1" class="pilcrow">¶</a></p>
 </li>
         </ul>
 </section>
@@ -1987,7 +1987,7 @@ DatePeriod ::= SEQUENCE {
       <h2 id="name-signature-bundle">
 <a href="#section-7" class="section-number selfRef">7. </a><a href="#name-signature-bundle" class="section-name selfRef">Signature Bundle</a>
       </h2>
-<p id="section-7-1">The Signature Bundle is the primary artefact of the DomainAuth protocol, containing a digital signature and all the information needed to verify it offline. It is serialised using ASN.1 with the following structure:<a href="#section-7-1" class="pilcrow">¶</a></p>
+<p id="section-7-1">The Signature Bundle is the primary artefact of the DomainAuth protocol, containing a digital signature and all the information needed to verify it offline.  It is serialised using ASN.1 with the following structure:<a href="#section-7-1" class="pilcrow">¶</a></p>
 <div class="alignLeft art-text artwork" id="section-7-2">
 <pre>
 SignatureBundle ::= SEQUENCE {
@@ -2019,8 +2019,8 @@ SignatureBundle ::= SEQUENCE {
         <h3 id="name-verification-procedure">
 <a href="#section-7.1" class="section-number selfRef">7.1. </a><a href="#name-verification-procedure" class="section-name selfRef">Verification Procedure</a>
         </h3>
-<p id="section-7.1-1">Implementations <span class="bcp14">MUST</span> verify the syntactic validity of the signature bundle against its ASN.1 schema and reject malformed values. Refer to <a href="#data-serialisation" class="auto internal xref">Section 10</a> for more information on serialisation formats.<a href="#section-7.1-1" class="pilcrow">¶</a></p>
-<p id="section-7.1-2">A fundamental aspect of the verification procedure is to establish that all components—the DNSSEC chain, X.509 certificate path and the signature itself—were simultaneously valid for at least one second within the specified verification period. This temporal intersection of validity periods ensures the cryptographic continuity of the trust chain at the time of verification.<a href="#section-7.1-2" class="pilcrow">¶</a></p>
+<p id="section-7.1-1">Implementations <span class="bcp14">MUST</span> verify the syntactic validity of the signature bundle against its ASN.1 schema and reject malformed values.  Refer to <a href="#data-serialisation" class="auto internal xref">Section 10</a> for more information on serialisation formats.<a href="#section-7.1-1" class="pilcrow">¶</a></p>
+<p id="section-7.1-2">A fundamental aspect of the verification procedure is to establish that all components—the DNSSEC chain, X.509 certificate path and the signature itself—were simultaneously valid for at least one second within the specified verification period.  This temporal intersection of validity periods ensures the cryptographic continuity of the trust chain at the time of verification.<a href="#section-7.1-2" class="pilcrow">¶</a></p>
 <p id="section-7.1-3">Implementations <span class="bcp14">MUST</span> verify every syntactically-valid signature bundle as follows, and fail if any step fails:<a href="#section-7.1-3" class="pilcrow">¶</a></p>
 <ol start="1" type="1" class="normal type-1" id="section-7.1-4">
 <li id="section-7.1-4.1">
@@ -2052,7 +2052,7 @@ The verifier <span class="bcp14">MAY</span> override the root zone DS record(s) 
                 <p id="section-7.1-4.2.2.3.1">Parse each TXT record rdata, per the rules in <a href="#txt-record" class="auto internal xref">Section 3.2</a>.<a href="#section-7.1-4.2.2.3.1" class="pilcrow">¶</a></p>
 </li>
               <li id="section-7.1-4.2.2.4">
-                <p id="section-7.1-4.2.2.4.1">Locate records matching the subject key specification from the organisation certificate (key algorithm and key id) and the service OID specified by the verifier (either matching exactly or with an absent service OID). If multiple matching records exist, use the one with the specific service OID; if none exists, use the wildcard record. If multiple records of the same type (specific or wildcard) match, verification <span class="bcp14">MUST</span> fail.<a href="#section-7.1-4.2.2.4.1" class="pilcrow">¶</a></p>
+                <p id="section-7.1-4.2.2.4.1">Locate records matching the subject key specification from the organisation certificate (key algorithm and key id) and the service OID specified by the verifier (either matching exactly or with an absent service OID). If multiple matching records exist, use the one with the specific service OID; if none exists, use the wildcard record.  If multiple records of the same type (specific or wildcard) match, verification <span class="bcp14">MUST</span> fail.<a href="#section-7.1-4.2.2.4.1" class="pilcrow">¶</a></p>
 </li>
               <li id="section-7.1-4.2.2.5">
                 <p id="section-7.1-4.2.2.5.1">Extract the TTL override value from the identified TXT record.<a href="#section-7.1-4.2.2.5.1" class="pilcrow">¶</a></p>
@@ -2082,14 +2082,14 @@ The verifier <span class="bcp14">MAY</span> override the root zone DS record(s) 
             <p id="section-7.1-4.3.1"><strong>Verify the DNSSEC chain</strong> from the root zone to the <code>_domainauth.&lt;domain&gt;/TXT</code> RRSet as described in <span>[<a href="#DNSSEC" class="cite xref">DNSSEC</a>]</span>, ensuring that the chain was valid for at least one second within the verification time window calculated in the previous step.<a href="#section-7.1-4.3.1" class="pilcrow">¶</a></p>
 </li>
           <li id="section-7.1-4.4">
-            <p id="section-7.1-4.4.1"><strong>Verify the X.509 certificate chain</strong> from the organisation certificate to the signer's certificate as specified in <span>[<a href="#X.509" class="cite xref">X.509</a>]</span>, using any additional certificates in the <code>SignedData.certificates</code> field as potential intermediate certificates when constructing the chain. Note that the chain will comprise a single certificate when the organisation itself is the signer.<a href="#section-7.1-4.4.1" class="pilcrow">¶</a></p>
+            <p id="section-7.1-4.4.1"><strong>Verify the X.509 certificate chain</strong> from the organisation certificate to the signer's certificate as specified in <span>[<a href="#X.509" class="cite xref">X.509</a>]</span>, using any additional certificates in the <code>SignedData.certificates</code> field as potential intermediate certificates when constructing the chain.  Note that the chain will comprise a single certificate when the organisation itself is the signer.<a href="#section-7.1-4.4.1" class="pilcrow">¶</a></p>
 <p id="section-7.1-4.4.2">
 The certificate chain <span class="bcp14">MUST</span> overlap with the verification time window and the DNSSEC chain for at least one second.<a href="#section-7.1-4.4.2" class="pilcrow">¶</a></p>
 </li>
           <li id="section-7.1-4.5">
             <p id="section-7.1-4.5.1"><strong>Verify the CMS SignedData structure</strong> as described in <span><a href="https://rfc-editor.org/rfc/rfc5652#section-5.6" class="relref">Section 5.6</a> of [<a href="#CMS" class="cite xref">CMS</a>]</span>, using the signer's certificate from the <code>SignedData.certificates</code> field or the organisation certificate if the signer is the organisation itself.<a href="#section-7.1-4.5.1" class="pilcrow">¶</a></p>
 <p id="section-7.1-4.5.2">
-The signature metadata attribute <span class="bcp14">MUST</span> be present in the signed attributes of the SignerInfo structure. Additionally:<a href="#section-7.1-4.5.2" class="pilcrow">¶</a></p>
+The signature metadata attribute <span class="bcp14">MUST</span> be present in the signed attributes of the SignerInfo structure.  Additionally:<a href="#section-7.1-4.5.2" class="pilcrow">¶</a></p>
 <ul class="normal">
 <li class="normal" id="section-7.1-4.5.3.1">
                 <p id="section-7.1-4.5.3.1.1">The service OID <span class="bcp14">MUST</span> match that specified by the verifier.<a href="#section-7.1-4.5.3.1.1" class="pilcrow">¶</a></p>
@@ -2108,7 +2108,7 @@ If present, the member attribution attribute <span class="bcp14">MUST</span> be 
                 <p id="section-7.1-4.6.2.1.1">The organisation name without a trailing dot (e.g. <code>example.com</code>). This string <span class="bcp14">MUST</span> be represented using Unicode, converting from Punycode if necessary.<a href="#section-7.1-4.6.2.1.1" class="pilcrow">¶</a></p>
 </li>
               <li class="normal" id="section-7.1-4.6.2.2">
-                <p id="section-7.1-4.6.2.2.1">If the signer is a user, their name <span class="bcp14">MUST</span> be a Unicode string. The name <span class="bcp14">MUST</span> be taken from the signer certificate in the case of member signatures, or from the member attribution in the case of organisation signatures. If the signer is a bot, no name <span class="bcp14">MUST</span> be produced (not even an empty string).<a href="#section-7.1-4.6.2.2.1" class="pilcrow">¶</a></p>
+                <p id="section-7.1-4.6.2.2.1">If the signer is a user, their name <span class="bcp14">MUST</span> be a Unicode string.  The name <span class="bcp14">MUST</span> be taken from the signer certificate in the case of member signatures, or from the member attribution in the case of organisation signatures.  If the signer is a bot, no name <span class="bcp14">MUST</span> be produced (not even an empty string).<a href="#section-7.1-4.6.2.2.1" class="pilcrow">¶</a></p>
 </li>
               <li class="normal" id="section-7.1-4.6.2.3">
                 <p id="section-7.1-4.6.2.3.1">Whether the signature was produced by the member or the organisation.<a href="#section-7.1-4.6.2.3.1" class="pilcrow">¶</a></p>
@@ -2157,7 +2157,7 @@ If present, the member attribution attribute <span class="bcp14">MUST</span> be 
         </h3>
 <p id="section-8.1-1">For ease of adoption and interoperability reasons, this specification only requires support for RSA Signature Scheme with Appendix - Probabilistic Signature Scheme (RSA-PSS), as defined in <span><a href="https://rfc-editor.org/rfc/rfc8017#section-8.1" class="relref">Section 8.1</a> of [<a href="#RFC8017" class="cite xref">RFC8017</a>]</span>. The DomainAuth Signature Algorithm Registry, as defined in <a href="#domainauth-signature-algorithm-registry" class="auto internal xref">Section 15.1</a>, <span class="bcp14">MAY</span> introduce support for additional signature algorithms and restrict the use of RSA-PSS (including its deprecation).<a href="#section-8.1-1" class="pilcrow">¶</a></p>
 <p id="section-8.1-2">Implementations <span class="bcp14">MUST</span> support RSA-PSS in X.509 certificates as defined in <span>[<a href="#RFC4055" class="cite xref">RFC4055</a>]</span> and CMS SignedData structures as defined in <span>[<a href="#RFC4056" class="cite xref">RFC4056</a>]</span>.<a href="#section-8.1-2" class="pilcrow">¶</a></p>
-<p id="section-8.1-3">RSA keys with moduli less than 2048 bits <span class="bcp14">MUST</span> be rejected. RSA keys with modulus size of 2048 <span class="bcp14">MUST</span> be supported, and greater sizes <span class="bcp14">SHOULD</span> be supported.<a href="#section-8.1-3" class="pilcrow">¶</a></p>
+<p id="section-8.1-3">RSA keys with moduli less than 2048 bits <span class="bcp14">MUST</span> be rejected.  RSA keys with modulus size of 2048 <span class="bcp14">MUST</span> be supported, and greater sizes <span class="bcp14">SHOULD</span> be supported.<a href="#section-8.1-3" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="hash-functions">
@@ -2165,8 +2165,8 @@ If present, the member attribution attribute <span class="bcp14">MUST</span> be 
         <h3 id="name-hash-functions">
 <a href="#section-8.2" class="section-number selfRef">8.2. </a><a href="#name-hash-functions" class="section-name selfRef">Hash Functions</a>
         </h3>
-<p id="section-8.2-1">For ease of adoption and interoperability reasons, this specification only requires support for SHA2 hash functions, as defined in <span>[<a href="#RFC6234" class="cite xref">RFC6234</a>]</span>, in digital signatures. The DomainAuth Hash Function Registry, as defined in <a href="#domainauth-hash-function-registry" class="auto internal xref">Section 15.2</a>, <span class="bcp14">MAY</span> introduce support for additional hash functions and restrict the use of SHA2 hash functions (including their deprecation).<a href="#section-8.2-1" class="pilcrow">¶</a></p>
-<p id="section-8.2-2">Implementations <span class="bcp14">MUST</span> support SHA-256, SHA-384, and SHA-512 hash functions. For the avoidance of doubt, SHA-1 and SHA-224 <span class="bcp14">MUST NOT</span> be supported.<a href="#section-8.2-2" class="pilcrow">¶</a></p>
+<p id="section-8.2-1">For ease of adoption and interoperability reasons, this specification only requires support for SHA2 hash functions, as defined in <span>[<a href="#RFC6234" class="cite xref">RFC6234</a>]</span>, in digital signatures.  The DomainAuth Hash Function Registry, as defined in <a href="#domainauth-hash-function-registry" class="auto internal xref">Section 15.2</a>, <span class="bcp14">MAY</span> introduce support for additional hash functions and restrict the use of SHA2 hash functions (including their deprecation).<a href="#section-8.2-1" class="pilcrow">¶</a></p>
+<p id="section-8.2-2">Implementations <span class="bcp14">MUST</span> support SHA-256, SHA-384, and SHA-512 hash functions.  For the avoidance of doubt, SHA-1 and SHA-224 <span class="bcp14">MUST NOT</span> be supported.<a href="#section-8.2-2" class="pilcrow">¶</a></p>
 </section>
 </div>
 </section>
@@ -2178,7 +2178,7 @@ If present, the member attribution attribute <span class="bcp14">MUST</span> be 
       </h2>
 <p id="section-9-1">Digital signatures <span class="bcp14">MUST NOT</span> have a validity period greater than 7,776,000 seconds (90 days). This limit applies to DNSSEC RRSIG records, X.509 certificates, and CMS SignedData structures (including the signature metadata).<a href="#section-9-1" class="pilcrow">¶</a></p>
 <p id="section-9-2">Similarly, verifiers <span class="bcp14">MUST NOT</span> allow a validity period greater than this limit when verifying signatures over a time period.<a href="#section-9-2" class="pilcrow">¶</a></p>
-<p id="section-9-3">Services <span class="bcp14">SHOULD</span> specify a maximum validity period shorter than the protocol-level limit where feasible. This approach improves security by limiting the window of vulnerability in case of key compromise or other security incidents.<a href="#section-9-3" class="pilcrow">¶</a></p>
+<p id="section-9-3">Services <span class="bcp14">SHOULD</span> specify a maximum validity period shorter than the protocol-level limit where feasible.  This approach improves security by limiting the window of vulnerability in case of key compromise or other security incidents.<a href="#section-9-3" class="pilcrow">¶</a></p>
 <p id="section-9-4">Applications built on DomainAuth services <span class="bcp14">MAY</span> impose even shorter validity periods based on their specific security requirements and threat models.<a href="#section-9-4" class="pilcrow">¶</a></p>
 </section>
 </div>
@@ -2189,7 +2189,7 @@ If present, the member attribution attribute <span class="bcp14">MUST</span> be 
       </h2>
 <p id="section-10-1">All data structures in the DomainAuth protocol are defined using Abstract Syntax Notation One (ASN.1), as referenced in <span>[<a href="#ASN.1" class="cite xref">ASN.1</a>]</span>.<a href="#section-10-1" class="pilcrow">¶</a></p>
 <p id="section-10-2">Implementations <span class="bcp14">MUST</span> support Distinguished Encoding Rules (DER) as defined in <span>[<a href="#ASN.1" class="cite xref">ASN.1</a>]</span>.<a href="#section-10-2" class="pilcrow">¶</a></p>
-<p id="section-10-3">Services <span class="bcp14">MAY</span> require or recommend additional ASN.1 encoding rules. In such cases, service implementations <span class="bcp14">MUST</span> handle the conversion between DER and the alternative encoding rules, if the additional rules are not supported by the DomainAuth implementation.<a href="#section-10-3" class="pilcrow">¶</a></p>
+<p id="section-10-3">Services <span class="bcp14">MAY</span> require or recommend additional ASN.1 encoding rules.  In such cases, service implementations <span class="bcp14">MUST</span> handle the conversion between DER and the alternative encoding rules, if the additional rules are not supported by the DomainAuth implementation.<a href="#section-10-3" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="test-service">
@@ -2206,8 +2206,8 @@ If present, the member attribution attribute <span class="bcp14">MUST</span> be 
       <h2 id="name-implementation-status">
 <a href="#section-12" class="section-number selfRef">12. </a><a href="#name-implementation-status" class="section-name selfRef">Implementation Status</a>
       </h2>
-<p id="section-12-1">This section records the status of known implementations of the protocol defined by this specification at the time of posting of this Internet-Draft, and is based on a proposal described in <span>[<a href="#RFC7942" class="cite xref">RFC7942</a>]</span>. The description of implementations in this section is intended to assist the IETF in its decision processes in progressing drafts to RFCs. Please note that the listing of any individual implementation here does not imply endorsement by the IETF. Furthermore, no effort has been spent to verify the information presented here that was supplied by IETF contributors. This is not intended as, and must not be construed to be, a catalog of available implementations or their features. Readers are advised to note that other implementations may exist.<a href="#section-12-1" class="pilcrow">¶</a></p>
-<p id="section-12-2">According to <span>[<a href="#RFC7942" class="cite xref">RFC7942</a>]</span>, "this will allow reviewers and working groups to assign due consideration to documents that have the benefit of running code, which may serve as evidence of valuable experimentation and feedback that have made the implemented protocols more mature. It is up to the individual working groups to use this information as they see fit".<a href="#section-12-2" class="pilcrow">¶</a></p>
+<p id="section-12-1">This section records the status of known implementations of the protocol defined by this specification at the time of posting of this Internet-Draft, and is based on a proposal described in <span>[<a href="#RFC7942" class="cite xref">RFC7942</a>]</span>. The description of implementations in this section is intended to assist the IETF in its decision processes in progressing drafts to RFCs.  Please note that the listing of any individual implementation here does not imply endorsement by the IETF.  Furthermore, no effort has been spent to verify the information presented here that was supplied by IETF contributors.  This is not intended as, and must not be construed to be, a catalog of available implementations or their features.  Readers are advised to note that other implementations may exist.<a href="#section-12-1" class="pilcrow">¶</a></p>
+<p id="section-12-2">According to <span>[<a href="#RFC7942" class="cite xref">RFC7942</a>]</span>, "this will allow reviewers and working groups to assign due consideration to documents that have the benefit of running code, which may serve as evidence of valuable experimentation and feedback that have made the implemented protocols more mature.  It is up to the individual working groups to use this information as they see fit".<a href="#section-12-2" class="pilcrow">¶</a></p>
 <p id="section-12-3"><em>Note to RFC Editor: Please remove this section before publication.</em><a href="#section-12-3" class="pilcrow">¶</a></p>
 <div id="veraid">
 <section id="section-12.1">
@@ -2223,12 +2223,12 @@ If present, the member attribution attribute <span class="bcp14">MUST</span> be 
                 <p id="section-12.1-2.1.2.1.1">Name: DomainAuth uses <code>_domainauth.example.com.</code>, whilst VeraId uses <code>_veraid.example.com.</code>.<a href="#section-12.1-2.1.2.1.1" class="pilcrow">¶</a></p>
 </li>
               <li class="normal" id="section-12.1-2.1.2.2">
-                <p id="section-12.1-2.1.2.2.1">Value: DomainAuth requires the value to begin with the number <code>0</code>, denoting the version of the DomainAuth TXT record format, followed by a space. This value does not have a version number in VeraId.<a href="#section-12.1-2.1.2.2.1" class="pilcrow">¶</a></p>
+                <p id="section-12.1-2.1.2.2.1">Value: DomainAuth requires the value to begin with the number <code>0</code>, denoting the version of the DomainAuth TXT record format, followed by a space.  This value does not have a version number in VeraId.<a href="#section-12.1-2.1.2.2.1" class="pilcrow">¶</a></p>
 </li>
             </ul>
 </li>
           <li class="normal" id="section-12.1-2.2">
-            <p id="section-12.1-2.2.1">VeraId does not explicitly support intermediate certificates, and its implementations do not support them. Consequently, the <code>intermediateCertificates</code> field in the Member Id Bundle is not present in VeraId.<a href="#section-12.1-2.2.1" class="pilcrow">¶</a></p>
+            <p id="section-12.1-2.2.1">VeraId does not explicitly support intermediate certificates, and its implementations do not support them.  Consequently, the <code>intermediateCertificates</code> field in the Member Id Bundle is not present in VeraId.<a href="#section-12.1-2.2.1" class="pilcrow">¶</a></p>
 </li>
           <li class="normal" id="section-12.1-2.3">
             <p id="section-12.1-2.3.1">VeraId only allows ASN.1 DER serialisation.<a href="#section-12.1-2.3.1" class="pilcrow">¶</a></p>
@@ -2237,7 +2237,7 @@ If present, the member attribution attribute <span class="bcp14">MUST</span> be 
             <p id="section-12.1-2.4.1">Cryptographic algorithms:<a href="#section-12.1-2.4.1" class="pilcrow">¶</a></p>
 <ul class="normal">
 <li class="normal" id="section-12.1-2.4.2.1">
-                <p id="section-12.1-2.4.2.1.1">Signature algorithms: VeraId only supports RSA-PSS with modulus sizes of 2048, 3072, and 4096 bits. Support for EdDSA signatures was considered, but not implemented due to lack of support in the target Hardware Security Modules (HSMs), as documented in <a href="https://issuetracker.google.com/issues/232422224">https://issuetracker.google.com/issues/232422224</a>.<a href="#section-12.1-2.4.2.1.1" class="pilcrow">¶</a></p>
+                <p id="section-12.1-2.4.2.1.1">Signature algorithms: VeraId only supports RSA-PSS with modulus sizes of 2048, 3072, and 4096 bits.  Support for EdDSA signatures was considered, but not implemented due to lack of support in the target Hardware Security Modules (HSMs), as documented in <a href="https://issuetracker.google.com/issues/232422224">https://issuetracker.google.com/issues/232422224</a>.<a href="#section-12.1-2.4.2.1.1" class="pilcrow">¶</a></p>
 </li>
               <li class="normal" id="section-12.1-2.4.2.2">
                 <p id="section-12.1-2.4.2.2.1">Hash functions: VeraId only supports SHA-256, SHA-384, and SHA-512.<a href="#section-12.1-2.4.2.2.1" class="pilcrow">¶</a></p>
@@ -2248,7 +2248,7 @@ If present, the member attribution attribute <span class="bcp14">MUST</span> be 
             <p id="section-12.1-2.5.1">VeraId does not offer protection against IDN homograph attacks (see <a href="#phishing-attacks" class="auto internal xref">Section 13.2</a>).<a href="#section-12.1-2.5.1" class="pilcrow">¶</a></p>
 </li>
           <li class="normal" id="section-12.1-2.6">
-            <p id="section-12.1-2.6.1">VeraId only disallows at-signs (<code>@</code>), tabs, and new lines in user names. Otherwise, user names are case-sensitive and may contain spaces in VeraId.<a href="#section-12.1-2.6.1" class="pilcrow">¶</a></p>
+            <p id="section-12.1-2.6.1">VeraId only disallows at-signs (<code>@</code>), tabs, and new lines in user names.  Otherwise, user names are case-sensitive and may contain spaces in VeraId.<a href="#section-12.1-2.6.1" class="pilcrow">¶</a></p>
 </li>
         </ul>
 <p id="section-12.1-3">VeraId is led by the author of this document, who intends to deprecate the VeraId specification in favour of DomainAuth and update the reference implementations to fully comply with this specification.<a href="#section-12.1-3" class="pilcrow">¶</a></p>
@@ -2326,10 +2326,10 @@ If present, the member attribution attribute <span class="bcp14">MUST</span> be 
             <p id="section-12.2-2.2.1">URLs:<a href="#section-12.2-2.2.1" class="pilcrow">¶</a></p>
 <ul class="normal">
 <li class="normal" id="section-12.2-2.2.2.1">
-                <p id="section-12.2-2.2.2.1.1">https://github.com/relaycorp/letro-android<a href="#section-12.2-2.2.2.1.1" class="pilcrow">¶</a></p>
+                <p id="section-12.2-2.2.2.1.1"><a href="https://github.com/relaycorp/letro-android">https://github.com/relaycorp/letro-android</a><a href="#section-12.2-2.2.2.1.1" class="pilcrow">¶</a></p>
 </li>
               <li class="normal" id="section-12.2-2.2.2.2">
-                <p id="section-12.2-2.2.2.2.1">https://docs.relaycorp.tech/letro-server/<a href="#section-12.2-2.2.2.2.1" class="pilcrow">¶</a></p>
+                <p id="section-12.2-2.2.2.2.1"><a href="https://docs.relaycorp.tech/letro-server/">https://docs.relaycorp.tech/letro-server/</a><a href="#section-12.2-2.2.2.2.1" class="pilcrow">¶</a></p>
 </li>
             </ul>
 </li>
@@ -2337,13 +2337,13 @@ If present, the member attribution attribute <span class="bcp14">MUST</span> be 
             <p id="section-12.2-2.3.1">Maturity: Experimental.<a href="#section-12.2-2.3.1" class="pilcrow">¶</a></p>
 </li>
           <li class="normal" id="section-12.2-2.4">
-            <p id="section-12.2-2.4.1">Coverage: The implementation exercises the entire protocol as defined in <span>[<a href="#VERAID" class="cite xref">VERAID</a>]</span>, except for organisation signatures and bot members. It uses the VeraId JVM Library to issue member signatures on Android, and the VeraId Authority to issue Member Id Bundles under a variety of domain names operated by Relaycorp (e.g. <code>applepie.rocks</code>, <code>cuppa.fans</code>).<a href="#section-12.2-2.4.1" class="pilcrow">¶</a></p>
+            <p id="section-12.2-2.4.1">Coverage: The implementation exercises the entire protocol as defined in <span>[<a href="#VERAID" class="cite xref">VERAID</a>]</span>, except for organisation signatures and bot members.  It uses the VeraId JVM Library to issue member signatures on Android, and the VeraId Authority to issue Member Id Bundles under a variety of domain names operated by Relaycorp (e.g. <code>applepie.rocks</code>, <code>cuppa.fans</code>).<a href="#section-12.2-2.4.1" class="pilcrow">¶</a></p>
 </li>
           <li class="normal" id="section-12.2-2.5">
             <p id="section-12.2-2.5.1">Licensing: Freely distributable with acknowledgement (GNU GPLv3 and GNU AGPLv3 licences).<a href="#section-12.2-2.5.1" class="pilcrow">¶</a></p>
 </li>
           <li class="normal" id="section-12.2-2.6">
-            <p id="section-12.2-2.6.1">Contact: https://relaycorp.tech/<a href="#section-12.2-2.6.1" class="pilcrow">¶</a></p>
+            <p id="section-12.2-2.6.1">Contact: <a href="https://relaycorp.tech/">https://relaycorp.tech/</a><a href="#section-12.2-2.6.1" class="pilcrow">¶</a></p>
 </li>
           <li class="normal" id="section-12.2-2.7">
             <p id="section-12.2-2.7.1">Last updated: 2024<a href="#section-12.2-2.7.1" class="pilcrow">¶</a></p>
@@ -2378,7 +2378,7 @@ If present, the member attribution attribute <span class="bcp14">MUST</span> be 
                 <p id="section-13.1-2.1.2.3.1">Implementations <span class="bcp14">MUST</span> securely manage and update DNSSEC trust anchors.<a href="#section-13.1-2.1.2.3.1" class="pilcrow">¶</a></p>
 </li>
               <li class="normal" id="section-13.1-2.1.2.4">
-                <p id="section-13.1-2.1.2.4.1">Whilst the protocol allows overriding root zone DS records, this <span class="bcp14">MUST</span> only be done for testing or to reflect updated IANA trust anchors. Using alternative DNS roots in production contradicts the unique DNS root principle outlined in <span>[<a href="#RFC2826" class="cite xref">RFC2826</a>]</span>.<a href="#section-13.1-2.1.2.4.1" class="pilcrow">¶</a></p>
+                <p id="section-13.1-2.1.2.4.1">Whilst the protocol allows overriding root zone DS records, this <span class="bcp14">MUST</span> only be done for testing or to reflect updated IANA trust anchors.  Using alternative DNS roots in production contradicts the unique DNS root principle outlined in <span>[<a href="#RFC2826" class="cite xref">RFC2826</a>]</span>.<a href="#section-13.1-2.1.2.4.1" class="pilcrow">¶</a></p>
 </li>
             </ul>
 </li>
@@ -2428,8 +2428,8 @@ If present, the member attribution attribute <span class="bcp14">MUST</span> be 
         <h3 id="name-domain-ownership-changes">
 <a href="#section-13.3" class="section-number selfRef">13.3. </a><a href="#name-domain-ownership-changes" class="section-name selfRef">Domain Ownership Changes</a>
         </h3>
-<p id="section-13.3-1">Organisations <span class="bcp14">SHOULD</span> delay implementing DomainAuth until at least the period specified in <a href="#maximum-validity-period" class="auto internal xref">Section 9</a> has elapsed since the domain was registered or acquired. This prevents the DNSSEC chain from the previous owner from remaining valid.<a href="#section-13.3-1" class="pilcrow">¶</a></p>
-<p id="section-13.3-2">Domain ownership changes represent a fundamental challenge to any domain-based authentication system. DomainAuth's approach of using short-lived certificates and signatures helps mitigate these risks by limiting the time window during which historical signatures remain valid.<a href="#section-13.3-2" class="pilcrow">¶</a></p>
+<p id="section-13.3-1">Organisations <span class="bcp14">SHOULD</span> delay implementing DomainAuth until at least the period specified in <a href="#maximum-validity-period" class="auto internal xref">Section 9</a> has elapsed since the domain was registered or acquired.  This prevents the DNSSEC chain from the previous owner from remaining valid.<a href="#section-13.3-1" class="pilcrow">¶</a></p>
+<p id="section-13.3-2">Domain ownership changes represent a fundamental challenge to any domain-based authentication system.  DomainAuth's approach of using short-lived certificates and signatures helps mitigate these risks by limiting the time window during which historical signatures remain valid.<a href="#section-13.3-2" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="offline-verification-limitations">
@@ -2440,7 +2440,7 @@ If present, the member attribution attribute <span class="bcp14">MUST</span> be 
 <p id="section-13.4-1">Offline verification introduces specific security considerations:<a href="#section-13.4-1" class="pilcrow">¶</a></p>
 <ul class="normal">
 <li class="normal" id="section-13.4-2.1">
-            <p id="section-13.4-2.1.1"><strong>Time Synchronisation.</strong> Verifiers rely on accurate local clocks to determine if signatures and certificates are within their validity periods. Devices with incorrect time settings may incorrectly accept expired signatures or reject valid ones.<a href="#section-13.4-2.1.1" class="pilcrow">¶</a></p>
+            <p id="section-13.4-2.1.1"><strong>Time Synchronisation.</strong> Verifiers rely on accurate local clocks to determine if signatures and certificates are within their validity periods.  Devices with incorrect time settings may incorrectly accept expired signatures or reject valid ones.<a href="#section-13.4-2.1.1" class="pilcrow">¶</a></p>
 </li>
           <li class="normal" id="section-13.4-2.2">
             <p id="section-13.4-2.2.1"><strong>Replay Attacks.</strong> Services <span class="bcp14">SHOULD</span> implement additional measures (e.g., nonces) for replay-sensitive operations.<a href="#section-13.4-2.2.1" class="pilcrow">¶</a></p>
@@ -2462,7 +2462,7 @@ If present, the member attribution attribute <span class="bcp14">MUST</span> be 
             <p id="section-13.5-2.1.1"><strong>Resource-exhaustion attacks</strong>: Attackers could submit malformed or excessively complex signature bundles requiring significant resources to parse and validate, particularly during DNSSEC chain and certificate validation.<a href="#section-13.5-2.1.1" class="pilcrow">¶</a></p>
 </li>
           <li id="section-13.5-2.2">
-            <p id="section-13.5-2.2.1"><strong>Large bundles</strong>: The protocol doesn't inherently limit signature bundle size. Services <span class="bcp14">SHOULD</span> enforce maximum bundle sizes appropriate to their use case to prevent resource exhaustion.<a href="#section-13.5-2.2.1" class="pilcrow">¶</a></p>
+            <p id="section-13.5-2.2.1"><strong>Large bundles</strong>: The protocol doesn't inherently limit signature bundle size.  Services <span class="bcp14">SHOULD</span> enforce maximum bundle sizes appropriate to their use case to prevent resource exhaustion.<a href="#section-13.5-2.2.1" class="pilcrow">¶</a></p>
 </li>
           <li id="section-13.5-2.3">
             <p id="section-13.5-2.3.1"><strong>Certificate chain complexity</strong>: Bundles with extremely long certificate chains may cause excessive processing time or memory consumption during validation.<a href="#section-13.5-2.3.1" class="pilcrow">¶</a></p>
@@ -2475,16 +2475,16 @@ If present, the member attribution attribute <span class="bcp14">MUST</span> be 
         <h3 id="name-key-management">
 <a href="#section-13.6" class="section-number selfRef">13.6. </a><a href="#name-key-management" class="section-name selfRef">Key Management</a>
         </h3>
-<p id="section-13.6-1">Proper key management is essential for the security of the DomainAuth protocol. The following requirements and recommendations apply:<a href="#section-13.6-1" class="pilcrow">¶</a></p>
+<p id="section-13.6-1">Proper key management is essential for the security of the DomainAuth protocol.  The following requirements and recommendations apply:<a href="#section-13.6-1" class="pilcrow">¶</a></p>
 <ul class="normal">
 <li class="normal" id="section-13.6-2.1">
             <p id="section-13.6-2.1.1"><strong>Key Generation.</strong> DomainAuth REQUIRES a Cryptographically-Secure Pseudorandom Number Generator (CSPRNG) compliant with <span>[<a href="#RFC4086" class="cite xref">RFC4086</a>]</span>. Implementations <span class="bcp14">SHOULD</span> integrate an existing CSPRNG instead of creating their own.<a href="#section-13.6-2.1.1" class="pilcrow">¶</a></p>
 </li>
           <li class="normal" id="section-13.6-2.2">
-            <p id="section-13.6-2.2.1"><strong>Key Storage.</strong> Private keys <span class="bcp14">MUST</span> be protected from unauthorised access. Organisation private keys <span class="bcp14">SHOULD</span> be stored with the highest level of protection available, preferably in Hardware Security Modules (HSMs). Member private keys <span class="bcp14">SHOULD</span> be protected with appropriate measures, such as operating system security mechanisms or hardware tokens.<a href="#section-13.6-2.2.1" class="pilcrow">¶</a></p>
+            <p id="section-13.6-2.2.1"><strong>Key Storage.</strong> Private keys <span class="bcp14">MUST</span> be protected from unauthorised access.  Organisation private keys <span class="bcp14">SHOULD</span> be stored with the highest level of protection available, preferably in Hardware Security Modules (HSMs). Member private keys <span class="bcp14">SHOULD</span> be protected with appropriate measures, such as operating system security mechanisms or hardware tokens.<a href="#section-13.6-2.2.1" class="pilcrow">¶</a></p>
 </li>
           <li class="normal" id="section-13.6-2.3">
-            <p id="section-13.6-2.3.1"><strong>Key Rotation.</strong> Organisations <span class="bcp14">SHOULD</span> establish a regular schedule for rotating their keys. Given the nature of the protocol, DomainAuth TXT records for old keys <span class="bcp14">MAY</span> be removed as soon as the new key is deployed without affecting signatures produced with the old key.<a href="#section-13.6-2.3.1" class="pilcrow">¶</a></p>
+            <p id="section-13.6-2.3.1"><strong>Key Rotation.</strong> Organisations <span class="bcp14">SHOULD</span> establish a regular schedule for rotating their keys.  Given the nature of the protocol, DomainAuth TXT records for old keys <span class="bcp14">MAY</span> be removed as soon as the new key is deployed without affecting signatures produced with the old key.<a href="#section-13.6-2.3.1" class="pilcrow">¶</a></p>
 </li>
           <li class="normal" id="section-13.6-2.4">
             <p id="section-13.6-2.4.1"><strong>Key Compromise.</strong> In the event of a key compromise, immediate rotation is <span class="bcp14">REQUIRED</span> and the compromised key's TXT record <span class="bcp14">MUST</span> be removed as soon as possible.<a href="#section-13.6-2.4.1" class="pilcrow">¶</a></p>
@@ -2573,9 +2573,9 @@ If present, the member attribution attribute <span class="bcp14">MUST</span> be 
       <h2 id="name-privacy-considerations">
 <a href="#section-14" class="section-number selfRef">14. </a><a href="#name-privacy-considerations" class="section-name selfRef">Privacy Considerations</a>
       </h2>
-<p id="section-14-1">DomainAuth is focused on authentication and integrity. Confidentiality, a key property of privacy, is outside the scope of this protocol. Services <span class="bcp14">MAY</span> use other complementary mechanisms such as encryption to provide confidentiality where required.<a href="#section-14-1" class="pilcrow">¶</a></p>
-<p id="section-14-2">The protocol's PKI design, where each organisation manages its own certificate hierarchy, helps avoid unnecessary information disclosure. By allowing an organisation to serve as the certificate authority for its members, this approach minimises the data that would otherwise need to be shared with verifiers, thereby reducing the risk of user information leakage or enabling user enumeration attacks.<a href="#section-14-2" class="pilcrow">¶</a></p>
-<p id="section-14-3">Signature bundles do not contain sensitive personal data beyond what is necessary for identity verification, following the principle of data minimisation. The protocol also supports the use of bot signatures that do not identify specific individuals.<a href="#section-14-3" class="pilcrow">¶</a></p>
+<p id="section-14-1">DomainAuth is focused on authentication and integrity.  Confidentiality, a key property of privacy, is outside the scope of this protocol.  Services <span class="bcp14">MAY</span> use other complementary mechanisms such as encryption to provide confidentiality where required.<a href="#section-14-1" class="pilcrow">¶</a></p>
+<p id="section-14-2">The protocol's PKI design, where each organisation manages its own certificate hierarchy, helps avoid unnecessary information disclosure.  By allowing an organisation to serve as the certificate authority for its members, this approach minimises the data that would otherwise need to be shared with verifiers, thereby reducing the risk of user information leakage or enabling user enumeration attacks.<a href="#section-14-2" class="pilcrow">¶</a></p>
+<p id="section-14-3">Signature bundles do not contain sensitive personal data beyond what is necessary for identity verification, following the principle of data minimisation.  The protocol also supports the use of bot signatures that do not identify specific individuals.<a href="#section-14-3" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="iana-considerations">
@@ -2641,8 +2641,8 @@ If present, the member attribution attribute <span class="bcp14">MUST</span> be 
             </tr>
           </tbody>
         </table>
-<p id="section-15.1-7">The designated expert(s) <span class="bcp14">MUST</span> ensure that the proposed algorithm is appropriate for digital signatures and that the specification adequately defines its parameters and security properties. The expert <span class="bcp14">MUST</span> consider whether the algorithm has undergone sufficient security analysis and whether its inclusion would promote interoperability.<a href="#section-15.1-7" class="pilcrow">¶</a></p>
-<p id="section-15.1-8">Algorithms <span class="bcp14">MUST</span> be marked as "Deprecated" if cryptographic vulnerabilities are discovered that could significantly affect their security properties. Algorithms <span class="bcp14">SHOULD</span> be marked as "Obsolete" if they should no longer be used due to serious security vulnerabilities. Implementers <span class="bcp14">SHOULD NOT</span> use deprecated algorithms for new signatures and <span class="bcp14">MUST NOT</span> use obsolete algorithms.<a href="#section-15.1-8" class="pilcrow">¶</a></p>
+<p id="section-15.1-7">The designated expert(s) <span class="bcp14">MUST</span> ensure that the proposed algorithm is appropriate for digital signatures and that the specification adequately defines its parameters and security properties.  The expert <span class="bcp14">MUST</span> consider whether the algorithm has undergone sufficient security analysis and whether its inclusion would promote interoperability.<a href="#section-15.1-7" class="pilcrow">¶</a></p>
+<p id="section-15.1-8">Algorithms <span class="bcp14">MUST</span> be marked as "Deprecated" if cryptographic vulnerabilities are discovered that could significantly affect their security properties.  Algorithms <span class="bcp14">SHOULD</span> be marked as "Obsolete" if they should no longer be used due to serious security vulnerabilities.  Implementers <span class="bcp14">SHOULD NOT</span> use deprecated algorithms for new signatures and <span class="bcp14">MUST NOT</span> use obsolete algorithms.<a href="#section-15.1-8" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="domainauth-hash-function-registry">
@@ -2702,8 +2702,8 @@ If present, the member attribution attribute <span class="bcp14">MUST</span> be 
             </tr>
           </tbody>
         </table>
-<p id="section-15.2-7">The designated expert(s) <span class="bcp14">MUST</span> ensure that the proposed hash function is cryptographically suitable for digital signatures and that the specification adequately defines its parameters and security properties. The expert <span class="bcp14">MUST</span> consider whether the hash function has undergone sufficient security analysis and whether its inclusion would promote interoperability.<a href="#section-15.2-7" class="pilcrow">¶</a></p>
-<p id="section-15.2-8">Hash functions <span class="bcp14">MUST</span> be marked as "Deprecated" if cryptographic vulnerabilities are discovered that could significantly affect their security properties. Hash functions <span class="bcp14">SHOULD</span> be marked as "Obsolete" if they should no longer be used due to serious security vulnerabilities. Implementers <span class="bcp14">SHOULD NOT</span> use deprecated hash functions for new signatures and <span class="bcp14">MUST NOT</span> use obsolete hash functions.<a href="#section-15.2-8" class="pilcrow">¶</a></p>
+<p id="section-15.2-7">The designated expert(s) <span class="bcp14">MUST</span> ensure that the proposed hash function is cryptographically suitable for digital signatures and that the specification adequately defines its parameters and security properties.  The expert <span class="bcp14">MUST</span> consider whether the hash function has undergone sufficient security analysis and whether its inclusion would promote interoperability.<a href="#section-15.2-7" class="pilcrow">¶</a></p>
+<p id="section-15.2-8">Hash functions <span class="bcp14">MUST</span> be marked as "Deprecated" if cryptographic vulnerabilities are discovered that could significantly affect their security properties.  Hash functions <span class="bcp14">SHOULD</span> be marked as "Obsolete" if they should no longer be used due to serious security vulnerabilities.  Implementers <span class="bcp14">SHOULD NOT</span> use deprecated hash functions for new signatures and <span class="bcp14">MUST NOT</span> use obsolete hash functions.<a href="#section-15.2-8" class="pilcrow">¶</a></p>
 <p id="section-15.2-9"><em>Note to RFC Editor: Please replace all instances of <code>(This document)</code> with the RFC number of this document upon publication.</em><a href="#section-15.2-9" class="pilcrow">¶</a></p>
 </section>
 </div>
@@ -2904,7 +2904,7 @@ MemberAttribution ::= UTF8String
 <p id="appendix-C-1">This non-normative section summarises key considerations for system designers creating services that utilise DomainAuth, drawing upon requirements and recommendations specified elsewhere in this document.<a href="#appendix-C-1" class="pilcrow">¶</a></p>
 <p id="appendix-C-2">Service designers are required to obtain a unique OID for their service, distinct from the DomainAuth OID arc (see <a href="#oid-registry" class="auto internal xref">Appendix B</a>), as this OID is embedded within the signature metadata (<a href="#signature-metadata" class="auto internal xref">Section 6.2</a>) and used during verification (<a href="#verification-procedure" class="auto internal xref">Section 7.1</a>). Note that organisations have the option to bind specific keys to a service OID via the DomainAuth TXT record (<a href="#txt-record" class="auto internal xref">Section 3.2</a>), which verifiers are required to account for when matching signatures to keys.<a href="#appendix-C-2" class="pilcrow">¶</a></p>
 <p id="appendix-C-3">Consideration should be given to incorporating version information either within the OID structure or the service-specific plaintext data being signed, to facilitate future upgrades to the plaintext format.<a href="#appendix-C-3" class="pilcrow">¶</a></p>
-<p id="appendix-C-4">Given the reliance on local clocks for offline verification (<a href="#offline-verification-limitations" class="auto internal xref">Section 13.4</a>), services may find it beneficial to establish a minimum signature validity duration (e.g., several minutes) to accommodate potential clock skew. Remember that the overall verification requires temporal overlap between the DNSSEC chain's validity window (influenced by the TTL override <a href="#ttl-override" class="auto internal xref">Section 3.3</a>), the certificate chain's validity (<a href="#x509-certificate-profile" class="auto internal xref">Section 4</a>), and the signature metadata's validity period (<a href="#verification-procedure" class="auto internal xref">Section 7.1</a>).<a href="#appendix-C-4" class="pilcrow">¶</a></p>
+<p id="appendix-C-4">Given the reliance on local clocks for offline verification (<a href="#offline-verification-limitations" class="auto internal xref">Section 13.4</a>), services may find it beneficial to establish a minimum signature validity duration (e.g., several minutes) to accommodate potential clock skew.  Remember that the overall verification requires temporal overlap between the DNSSEC chain's validity window (influenced by the TTL override <a href="#ttl-override" class="auto internal xref">Section 3.3</a>), the certificate chain's validity (<a href="#x509-certificate-profile" class="auto internal xref">Section 4</a>), and the signature metadata's validity period (<a href="#verification-procedure" class="auto internal xref">Section 7.1</a>).<a href="#appendix-C-4" class="pilcrow">¶</a></p>
 <p id="appendix-C-5">Whilst the protocol mandates ASN.1 DER encoding (<a href="#data-serialisation" class="auto internal xref">Section 10</a>), services have the option to specify alternative ASN.1 encoding rules, but service-level implementations bear the responsibility for any necessary conversions if the underlying DomainAuth library does not support the alternative rules (<a href="#data-serialisation" class="auto internal xref">Section 10</a>).<a href="#appendix-C-5" class="pilcrow">¶</a></p>
 <p id="appendix-C-6">Services need to determine which signature types (Member, Organisation, or both) are appropriate for their use case (<a href="#signature-types" class="auto internal xref">Section 6.1</a>), and whether plaintext will be encapsulated or detached (<a href="#signature-bundle-production" class="auto internal xref">Section 2.2.3</a>).<a href="#appendix-C-6" class="pilcrow">¶</a></p>
 <div id="service-security-considerations">
@@ -2914,11 +2914,11 @@ MemberAttribution ::= UTF8String
         </h3>
 <p id="appendix-C.1-1">The validity period for signatures, specified in the signature metadata (<a href="#signature-metadata" class="auto internal xref">Section 6.2</a>), is required to adhere to the maximum limit defined in <a href="#maximum-validity-period" class="auto internal xref">Section 9</a>. It is recommended that services define their own maximum validity period, as short as possible for their use case, to enhance security (<a href="#maximum-validity-period" class="auto internal xref">Section 9</a>).<a href="#appendix-C.1-1" class="pilcrow">¶</a></p>
 <p id="appendix-C.1-2">DomainAuth specifies mandatory-to-implement cryptographic algorithms (<a href="#cryptographic-algorithms" class="auto internal xref">Section 8</a>). Services have the option to recommend specific algorithms from the allowed set but cannot mandate unsupported ones.<a href="#appendix-C.1-2" class="pilcrow">¶</a></p>
-<p id="appendix-C.1-3">Service implementations must not override root zone DS records except for testing or to reflect updated IANA trust anchors. Services using DomainAuth should clearly distinguish test environments from production.<a href="#appendix-C.1-3" class="pilcrow">¶</a></p>
+<p id="appendix-C.1-3">Service implementations must not override root zone DS records except for testing or to reflect updated IANA trust anchors.  Services using DomainAuth should clearly distinguish test environments from production.<a href="#appendix-C.1-3" class="pilcrow">¶</a></p>
 <p id="appendix-C.1-4">Services designers should also consider the following potential attack vectors:<a href="#appendix-C.1-4" class="pilcrow">¶</a></p>
 <ul class="normal">
 <li class="normal" id="appendix-C.1-5.1">
-            <p id="appendix-C.1-5.1.1"><strong>Replay attacks:</strong> DomainAuth provides authenticity and integrity but does not inherently mitigate replay attacks. Services may need to implement additional measures, such as nonces, depending on the application's sensitivity to replays (<a href="#offline-verification-limitations" class="auto internal xref">Section 13.4</a>).<a href="#appendix-C.1-5.1.1" class="pilcrow">¶</a></p>
+            <p id="appendix-C.1-5.1.1"><strong>Replay attacks:</strong> DomainAuth provides authenticity and integrity but does not inherently mitigate replay attacks.  Services may need to implement additional measures, such as nonces, depending on the application's sensitivity to replays (<a href="#offline-verification-limitations" class="auto internal xref">Section 13.4</a>).<a href="#appendix-C.1-5.1.1" class="pilcrow">¶</a></p>
 </li>
           <li class="normal" id="appendix-C.1-5.2">
             <p id="appendix-C.1-5.2.1"><strong>Phishing attacks:</strong> Service logic built upon the verified identity ought to correctly handle the required Unicode representation of domain names, and the specific normalisation and character restrictions applicable to user names (<a href="#phishing-attacks" class="auto internal xref">Section 13.2</a>, <a href="#verification-procedure" class="auto internal xref">Section 7.1</a>). Adhering to guidelines like those in <span>[<a href="#UTR36" class="cite xref">UTR36</a>]</span> for displaying Internationalised Domain Names can help mitigate homograph attacks.<a href="#appendix-C.1-5.2.1" class="pilcrow">¶</a></p>
@@ -2935,11 +2935,11 @@ MemberAttribution ::= UTF8String
         <h3 id="name-service-user-experience-con">
 <a href="#appendix-C.2" class="section-number selfRef">C.2. </a><a href="#name-service-user-experience-con" class="section-name selfRef">Service User Experience Considerations</a>
         </h3>
-<p id="appendix-C.2-1">Presenting DomainAuth verification results clearly is important for users to understand the basis of trust. Since DomainAuth supports different signature types with distinct trust implications, user interfaces can play a crucial role in conveying this information accurately.<a href="#appendix-C.2-1" class="pilcrow">¶</a></p>
+<p id="appendix-C.2-1">Presenting DomainAuth verification results clearly is important for users to understand the basis of trust.  Since DomainAuth supports different signature types with distinct trust implications, user interfaces can play a crucial role in conveying this information accurately.<a href="#appendix-C.2-1" class="pilcrow">¶</a></p>
 <p id="appendix-C.2-2">Designers should consider the following points when crafting the user experience for DomainAuth services:<a href="#appendix-C.2-2" class="pilcrow">¶</a></p>
 <ul class="normal">
 <li class="normal" id="appendix-C.2-3.1">
-            <p id="appendix-C.2-3.1.1"><strong>Communicating signature origin.</strong> Consider distinguishing between member signatures (cryptographically proven) and organisation signatures (where the organisation vouches for content with member attribution). For organisation signatures, the attribution may be presented as a claim by the organisation (e.g., "Vouched for by example.com, attributed to alice") rather than implying direct proof from the member. However, the distinction may or may not be relevant depending on the service.<a href="#appendix-C.2-3.1.1" class="pilcrow">¶</a></p>
+            <p id="appendix-C.2-3.1.1"><strong>Communicating signature origin.</strong> Consider distinguishing between member signatures (cryptographically proven) and organisation signatures (where the organisation vouches for content with member attribution). For organisation signatures, the attribution may be presented as a claim by the organisation (e.g., "Vouched for by example.com, attributed to alice") rather than implying direct proof from the member.  However, the distinction may or may not be relevant depending on the service.<a href="#appendix-C.2-3.1.1" class="pilcrow">¶</a></p>
 </li>
           <li class="normal" id="appendix-C.2-3.2">
             <p id="appendix-C.2-3.2.1"><strong>Representing bot signatures.</strong> When displaying signatures associated with bots, the interface has to attribute the signature to the organisation itself, omitting any specific user name (e.g. "Signed by example.com").<a href="#appendix-C.2-3.2.1" class="pilcrow">¶</a></p>
@@ -2973,10 +2973,10 @@ MemberAttribution ::= UTF8String
       </h2>
 <p id="appendix-D-1">This non-normative section provides guidance for developers implementing DomainAuth libraries.<a href="#appendix-D-1" class="pilcrow">¶</a></p>
 <p id="appendix-D-2">Implementations should ensure strict compliance with the ASN.1 schemas (<a href="#asn1-schemas" class="auto internal xref">Appendix A</a>), serialisation formats (<a href="#data-serialisation" class="auto internal xref">Section 10</a>), and cryptographic algorithms (<a href="#cryptographic-algorithms" class="auto internal xref">Section 8</a>). Separating core protocol functionality from service-specific logic enables reuse across multiple services.<a href="#appendix-D-2" class="pilcrow">¶</a></p>
-<p id="appendix-D-3">For testing purposes, implementers should consider establishing a dedicated DNSSEC-enabled test domain with a DomainAuth TXT record whose private key is publicly available, bound specifically to the test service OID (<code>1.3.6.1.4.1.58708.1.1</code>). This approach is secure when properly scoped: the domain is controlled by the implementation team, the key is bound only to the test service, and documentation clearly indicates these are for testing only. Serialised DNSSEC chains can also serve as test fixtures, allowing offline testing.<a href="#appendix-D-3" class="pilcrow">¶</a></p>
+<p id="appendix-D-3">For testing purposes, implementers should consider establishing a dedicated DNSSEC-enabled test domain with a DomainAuth TXT record whose private key is publicly available, bound specifically to the test service OID (<code>1.3.6.1.4.1.58708.1.1</code>). This approach is secure when properly scoped: the domain is controlled by the implementation team, the key is bound only to the test service, and documentation clearly indicates these are for testing only.  Serialised DNSSEC chains can also serve as test fixtures, allowing offline testing.<a href="#appendix-D-3" class="pilcrow">¶</a></p>
 <p id="appendix-D-4">Implementations have to provide the ability to override root zone DS records, which is only intended for local testing environments or to reflect updated IANA trust anchors before the underlying DNSSEC implementation is updated.<a href="#appendix-D-4" class="pilcrow">¶</a></p>
-<p id="appendix-D-5">The verification procedure should support both verification orders described in <a href="#verification-procedure" class="auto internal xref">Section 7.1</a>: either starting with the DNSSEC chain and ending with the signature, or vice versa. A critical aspect is validating that all components in the trust chain—DNSSEC records, certificates, and signature—have validity periods that overlap for at least one second. Implementations should also handle multiple TXT records correctly, selecting the appropriate one based on key information and service OID.<a href="#appendix-D-5" class="pilcrow">¶</a></p>
-<p id="appendix-D-6">Error handling should categorise failures based on verification steps (<a href="#verification-procedure" class="auto internal xref">Section 7.1</a>), with different diagnostic detail levels for debugging versus production. Performance optimisations may include caching verified DNSSEC chains, using efficient ASN.1 parsing libraries, ensuring thread safety, and optimising certificate validation operations.<a href="#appendix-D-6" class="pilcrow">¶</a></p>
+<p id="appendix-D-5">The verification procedure should support both verification orders described in <a href="#verification-procedure" class="auto internal xref">Section 7.1</a>: either starting with the DNSSEC chain and ending with the signature, or vice versa.  A critical aspect is validating that all components in the trust chain—DNSSEC records, certificates, and signature—have validity periods that overlap for at least one second.  Implementations should also handle multiple TXT records correctly, selecting the appropriate one based on key information and service OID.<a href="#appendix-D-5" class="pilcrow">¶</a></p>
+<p id="appendix-D-6">Error handling should categorise failures based on verification steps (<a href="#verification-procedure" class="auto internal xref">Section 7.1</a>), with different diagnostic detail levels for debugging versus production.  Performance optimisations may include caching verified DNSSEC chains, using efficient ASN.1 parsing libraries, ensuring thread safety, and optimising certificate validation operations.<a href="#appendix-D-6" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="organisation-operation-guidance">
@@ -3007,7 +3007,7 @@ MemberAttribution ::= UTF8String
 </li>
         </ul>
 <p id="appendix-E.1-3">For security-critical applications, organisations may wish to select TLDs with strong security practices and jurisdictions with robust legal protections.<a href="#appendix-E.1-3" class="pilcrow">¶</a></p>
-<p id="appendix-E.1-4">Similar considerations apply to the DNS hosting provider used for the domain, as they represent another potential attack vector. The security practices, DNSSEC support, access controls, and jurisdictional factors of the entity responsible for hosting the domain's DNS records can significantly impact the overall security of a DomainAuth implementation.<a href="#appendix-E.1-4" class="pilcrow">¶</a></p>
+<p id="appendix-E.1-4">Similar considerations apply to the DNS hosting provider used for the domain, as they represent another potential attack vector.  The security practices, DNSSEC support, access controls, and jurisdictional factors of the entity responsible for hosting the domain's DNS records can significantly impact the overall security of a DomainAuth implementation.<a href="#appendix-E.1-4" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="organisation-key-management">
@@ -3015,9 +3015,9 @@ MemberAttribution ::= UTF8String
         <h3 id="name-organisation-key-management">
 <a href="#appendix-E.2" class="section-number selfRef">E.2. </a><a href="#name-organisation-key-management" class="section-name selfRef">Organisation Key Management</a>
         </h3>
-<p id="appendix-E.2-1">Key management practices should include secure generation (potentially using HSMs as suggested in <a href="#key-management" class="auto internal xref">Section 13.6</a>), protected storage, and scheduled rotation. Organisations may publish multiple TXT records for different keys, algorithms, or services, which facilitates smooth key rotation. The TTL override value in TXT records significantly affects verification windows and should be set appropriately for the service's offline requirements.<a href="#appendix-E.2-1" class="pilcrow">¶</a></p>
-<p id="appendix-E.2-2">The organisation certificate serves as the trust anchor for all members, making its protection particularly important. For member management, establish clear processes for certificate issuance, naming conventions that comply with normalisation requirements (<a href="#phishing-attacks" class="auto internal xref">Section 13.2</a>), secure distribution of Member Id Bundles, and handling departing members.<a href="#appendix-E.2-2" class="pilcrow">¶</a></p>
-<p id="appendix-E.2-3">Operational security measures should include regular verification of DomainAuth TXT records, comprehensive logging (<a href="#audit-trails" class="auto internal xref">Section 13.7</a>), certificate inventory maintenance, and monitoring for unauthorised DNS modifications. Incident response procedures should address key compromise, DNS hijacking, and trust recovery, noting that the limited validity period of signatures helps contain security incident impact.<a href="#appendix-E.2-3" class="pilcrow">¶</a></p>
+<p id="appendix-E.2-1">Key management practices should include secure generation (potentially using HSMs as suggested in <a href="#key-management" class="auto internal xref">Section 13.6</a>), protected storage, and scheduled rotation.  Organisations may publish multiple TXT records for different keys, algorithms, or services, which facilitates smooth key rotation.  The TTL override value in TXT records significantly affects verification windows and should be set appropriately for the service's offline requirements.<a href="#appendix-E.2-1" class="pilcrow">¶</a></p>
+<p id="appendix-E.2-2">The organisation certificate serves as the trust anchor for all members, making its protection particularly important.  For member management, establish clear processes for certificate issuance, naming conventions that comply with normalisation requirements (<a href="#phishing-attacks" class="auto internal xref">Section 13.2</a>), secure distribution of Member Id Bundles, and handling departing members.<a href="#appendix-E.2-2" class="pilcrow">¶</a></p>
+<p id="appendix-E.2-3">Operational security measures should include regular verification of DomainAuth TXT records, comprehensive logging (<a href="#audit-trails" class="auto internal xref">Section 13.7</a>), certificate inventory maintenance, and monitoring for unauthorised DNS modifications.  Incident response procedures should address key compromise, DNS hijacking, and trust recovery, noting that the limited validity period of signatures helps contain security incident impact.<a href="#appendix-E.2-3" class="pilcrow">¶</a></p>
 <p id="appendix-E.2-4">Due to the residual risks regarding offline verification (<a href="#offline-verification-limitations" class="auto internal xref">Section 13.4</a>), organisations should implement additional safeguards:<a href="#appendix-E.2-4" class="pilcrow">¶</a></p>
 <ul class="normal">
 <li class="normal" id="appendix-E.2-5.1">

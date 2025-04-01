@@ -1196,8 +1196,10 @@ _domainauth.example.com. IN TXT "0 1 3 dGhpcyBpcyBub3QgYSByZWFsIGtleSBkaWdlc3Q 8
    *  URLs:
 
       -  https://github.com/relaycorp/letro-android
+         (https://github.com/relaycorp/letro-android)
 
       -  https://docs.relaycorp.tech/letro-server/
+         (https://docs.relaycorp.tech/letro-server/)
 
    *  Maturity: Experimental.
 
@@ -1211,7 +1213,7 @@ _domainauth.example.com. IN TXT "0 1 3 dGhpcyBpcyBub3QgYSByZWFsIGtleSBkaWdlc3Q 8
    *  Licensing: Freely distributable with acknowledgement (GNU GPLv3
       and GNU AGPLv3 licences).
 
-   *  Contact: https://relaycorp.tech/
+   *  Contact: https://relaycorp.tech/ (https://relaycorp.tech/)
 
    *  Last updated: 2024
 

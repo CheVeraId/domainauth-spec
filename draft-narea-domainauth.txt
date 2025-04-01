@@ -276,7 +276,7 @@ Table of Contents
       TXT record.
 
    *  *Signature Bundle:* A data structure containing a digital
-      signature and all the information needed to verify it offline.
+      signature and chain of trust that enables offline verification.
       There are two types of signature bundles:
 
       -  *Member Signature Bundle:* A signature bundle containing a
@@ -606,19 +606,14 @@ _domainauth.example.com. IN TXT "0 1 3 dGhpcyBpcyBub3QgYSByZWFsIGtleSBkaWdlc3Q 8
 
    *  Only use the algorithms specified in Section 8.
 
-   *  Contain the following extensions marked as critical:
-
-      -  Authority Key Identifier from Section 4.2.1.1 of [X.509].
-
-      -  Subject Key Identifier from Section 4.2.1.2 of [X.509].
-
    Additional requirements and recommendations apply to specific
    certificate types as described in the following sections.
 
 4.1.  Organisation Certificate
 
-   This is certificate whose subject key is referenced by the DomainAuth
-   TXT record.  The following requirements and recommendations apply:
+   This is a certificate whose subject key is referenced by the
+   DomainAuth TXT record.  The following requirements and
+   recommendations apply:
 
    *  Its Subject Distinguished Name MUST contain the Common Name
       attribute (OID 2.5.4.3) set to the organisation's domain name with
@@ -722,6 +717,9 @@ _domainauth.example.com. IN TXT "0 1 3 dGhpcyBpcyBub3QgYSByZWFsIGtleSBkaWdlc3Q 8
 
          o  DomainAuth signature metadata attribute as defined in
             Section 6.2.
+
+      -  The SignerInfo.sid field MUST use the issuerAndSerialNumber
+         choice as defined in Section 5.3 of [CMS].
 
    *  certificates field:
 
@@ -1160,6 +1158,9 @@ _domainauth.example.com. IN TXT "0 1 3 dGhpcyBpcyBub3QgYSByZWFsIGtleSBkaWdlc3Q 8
    *  VeraId only disallows at-signs (@), tabs, and new lines in user
       names.  Otherwise, user names are case-sensitive and may contain
       spaces in VeraId.
+
+   *  VeraId unnecessarily requires X.509 certificates to have the
+      Authority Key Identifier and Subject Key Identifier extensions.
 
    VeraId is led by the author of this document, who intends to
    deprecate the VeraId specification in favour of DomainAuth and update

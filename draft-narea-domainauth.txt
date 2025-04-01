@@ -440,49 +440,26 @@ Table of Contents
 
 2.3.  Trust Model
 
-   DomainAuth's trust model differs significantly from traditional PKIs
-   such as the one used for TLS:
+   DomainAuth's trust model is anchored in DNSSEC and offers key
+   distinctions from traditional PKIs:
 
-   1.  *Domain-specific trust roots:* Each organisation is only able to
-       issue certificates for itself and its members.  Unlike
-       traditional PKIs where any Certificate Authority can issue
-       certificates for any domain, DomainAuth enforces a strict
-       hierarchy where domain control is the only path to certificate
-       issuance.
+   *  *Domain-specific trust roots:* Each organisation can only issue
+      certificates for itself and its members, enforcing a strict
+      hierarchy where domain control is the only path to certificate
+      issuance.
 
-   2.  *DNSSEC as the foundation:* Trust is anchored in DNSSEC, relying
-       on the hierarchical nature of DNS to establish domain control.
-       The chain of trust begins with the DNS root zone and extends
-       through each DNS subdelegation to the organisation's domain.
+   *  *Self-contained verification:* The inclusion of complete DNSSEC
+      chains and certificates in signature bundles enables fully offline
+      verification without prior key distribution.
 
-   3.  *Self-contained verification:* Signature bundles include all
-       necessary information (DNSSEC chains, certificates) to allow
-       completely offline verification.
+   *  *Credential lifecycle:* DomainAuth favours short-lived credentials
+      over revocation mechanisms, reducing complexity for disconnected
+      operation.
 
-   4.  *Short-lived credentials:* DomainAuth favours short-lived
-       credentials over revocation mechanisms, reducing complexity and
-       vulnerability to disconnected operation.  However, what
-       constitutes "short-lived" will be entirely dependent on the
-       nature of the service.
-
-   5.  *Two signature types with different trust models:*
-
-       *  *Member signatures:* Produced by members using their private
-          keys, these signatures cryptographically prove that a specific
-          member created the content.  The verification chain goes from
-          DNSSEC to the organisation certificate to the member
-          certificate to the signature.
-
-       *  *Organisation signatures:* Produced directly by organisations
-          using their private keys, these signatures prove that the
-          organisation vouches for the content.  When including user
-          attribution, the organisation claims (but does not
-          cryptographically prove) that a specific user created the
-          content.
-
-   By relying on DNSSEC, DomainAuth inherits its security properties and
-   limitations.  The protocol's trust is ultimately rooted in the DNS
-   hierarchy, including the root zone and TLD operators.
+   *  *Trust inheritance:* By relying on DNSSEC, DomainAuth inherits
+      both its security properties and limitations, with trust
+      ultimately rooted in the DNS hierarchy, including the root zone
+      and TLD operators.
 
 3.  DNS Integration
 

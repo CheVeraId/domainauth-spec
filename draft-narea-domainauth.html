@@ -2178,7 +2178,7 @@ If present, the member attribution attribute <span class="bcp14">MUST</span> be 
 <a href="#section-8.2" class="section-number selfRef">8.2. </a><a href="#name-hash-functions" class="section-name selfRef">Hash Functions</a>
         </h3>
 <p id="section-8.2-1">This section pertains specifically to the hash functions used within digital signatures themselves (e.g., X.509 certificates, CMS SignedData structures), distinct from their use in key identification.<a href="#section-8.2-1" class="pilcrow">¶</a></p>
-<p id="section-8.2-2">For ease of adoption and interoperability reasons, this specification only REQUIRES support for SHA2 hash functions (<span>[<a href="#RFC6234" class="cite xref">RFC6234</a>]</span>) in digital signatures, with the exception of SHA-224 which <span class="bcp14">MUST NOT</span> be supported.<a href="#section-8.2-2" class="pilcrow">¶</a></p>
+<p id="section-8.2-2">For ease of adoption and interoperability reasons, implementations <span class="bcp14">MUST</span> support SHA-256, SHA-384, and SHA-512 as defined in <span>[<a href="#NIST.FIPS.180-4" class="cite xref">NIST.FIPS.180-4</a>]</span>.<a href="#section-8.2-2" class="pilcrow">¶</a></p>
 <p id="section-8.2-3">The DomainAuth Key Digest Type Registry, as defined in <a href="#domainauth-key-digest-type-registry" class="auto internal xref">Section 15.2</a>, separately governs the use of hash functions for key identification.<a href="#section-8.2-3" class="pilcrow">¶</a></p>
 </section>
 </div>
@@ -2759,13 +2759,13 @@ If present, the member attribution attribute <span class="bcp14">MUST</span> be 
         <dd>
 <span class="refAuthor">Hoffman, P.</span>, <span class="refTitle">"DNS Security Extensions (DNSSEC)"</span>, <span class="seriesInfo">BCP 237</span>, <span class="seriesInfo">RFC 9364</span>, <span class="seriesInfo">DOI 10.17487/RFC9364</span>, <time datetime="2023-02" class="refDate">February 2023</time>, <span>&lt;<a href="https://www.rfc-editor.org/rfc/rfc9364">https://www.rfc-editor.org/rfc/rfc9364</a>&gt;</span>. </dd>
 <dd class="break"></dd>
+<dt id="NIST.FIPS.180-4">[NIST.FIPS.180-4]</dt>
+        <dd>
+<span class="refAuthor">Dang, Q. H.</span> and <span class="refAuthor">NIST</span>, <span class="refTitle">"Secure Hash Standard"</span>, <span class="seriesInfo">NIST Federal Information Processing Standards Publications 180-4</span>, <span class="seriesInfo">DOI 10.6028/NIST.FIPS.180-4</span>, <time datetime="2015-07" class="refDate">July 2015</time>, <span>&lt;<a href="https://nvlpubs.nist.gov/nistpubs/FIPS/NIST.FIPS.180-4.pdf">https://nvlpubs.nist.gov/nistpubs/FIPS/NIST.FIPS.180-4.pdf</a>&gt;</span>. </dd>
+<dd class="break"></dd>
 <dt id="RFC2119">[RFC2119]</dt>
         <dd>
 <span class="refAuthor">Bradner, S.</span>, <span class="refTitle">"Key words for use in RFCs to Indicate Requirement Levels"</span>, <span class="seriesInfo">BCP 14</span>, <span class="seriesInfo">RFC 2119</span>, <span class="seriesInfo">DOI 10.17487/RFC2119</span>, <time datetime="1997-03" class="refDate">March 1997</time>, <span>&lt;<a href="https://www.rfc-editor.org/rfc/rfc2119">https://www.rfc-editor.org/rfc/rfc2119</a>&gt;</span>. </dd>
-<dd class="break"></dd>
-<dt id="RFC2826">[RFC2826]</dt>
-        <dd>
-<span class="refAuthor">IAB</span>, <span class="refTitle">"IAB Technical Comment on the Unique DNS Root"</span>, <span class="seriesInfo">RFC 2826</span>, <span class="seriesInfo">DOI 10.17487/RFC2826</span>, <time datetime="2000-05" class="refDate">May 2000</time>, <span>&lt;<a href="https://www.rfc-editor.org/rfc/rfc2826">https://www.rfc-editor.org/rfc/rfc2826</a>&gt;</span>. </dd>
 <dd class="break"></dd>
 <dt id="RFC4055">[RFC4055]</dt>
         <dd>
@@ -2782,10 +2782,6 @@ If present, the member attribution attribute <span class="bcp14">MUST</span> be 
 <dt id="RFC4648">[RFC4648]</dt>
         <dd>
 <span class="refAuthor">Josefsson, S.</span>, <span class="refTitle">"The Base16, Base32, and Base64 Data Encodings"</span>, <span class="seriesInfo">RFC 4648</span>, <span class="seriesInfo">DOI 10.17487/RFC4648</span>, <time datetime="2006-10" class="refDate">October 2006</time>, <span>&lt;<a href="https://www.rfc-editor.org/rfc/rfc4648">https://www.rfc-editor.org/rfc/rfc4648</a>&gt;</span>. </dd>
-<dd class="break"></dd>
-<dt id="RFC6234">[RFC6234]</dt>
-        <dd>
-<span class="refAuthor">Eastlake 3rd, D.</span> and <span class="refAuthor">T. Hansen</span>, <span class="refTitle">"US Secure Hash Algorithms (SHA and SHA-based HMAC and HKDF)"</span>, <span class="seriesInfo">RFC 6234</span>, <span class="seriesInfo">DOI 10.17487/RFC6234</span>, <time datetime="2011-05" class="refDate">May 2011</time>, <span>&lt;<a href="https://www.rfc-editor.org/rfc/rfc6234">https://www.rfc-editor.org/rfc/rfc6234</a>&gt;</span>. </dd>
 <dd class="break"></dd>
 <dt id="RFC7942">[RFC7942]</dt>
         <dd>
@@ -2831,6 +2827,10 @@ If present, the member attribution attribute <span class="bcp14">MUST</span> be 
 <dt id="LETRO">[LETRO]</dt>
         <dd>
 <span class="refAuthor">Narea, G.</span>, <span class="refTitle">"Letro"</span>, <time datetime="2023" class="refDate">2023</time>, <span>&lt;<a href="https://letro.app/en/">https://letro.app/en/</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="RFC2826">[RFC2826]</dt>
+        <dd>
+<span class="refAuthor">IAB</span>, <span class="refTitle">"IAB Technical Comment on the Unique DNS Root"</span>, <span class="seriesInfo">RFC 2826</span>, <span class="seriesInfo">DOI 10.17487/RFC2826</span>, <time datetime="2000-05" class="refDate">May 2000</time>, <span>&lt;<a href="https://www.rfc-editor.org/rfc/rfc2826">https://www.rfc-editor.org/rfc/rfc2826</a>&gt;</span>. </dd>
 <dd class="break"></dd>
 <dt id="RFC8017">[RFC8017]</dt>
         <dd>
@@ -3002,7 +3002,7 @@ MemberAttribution ::= UTF8String
 <p id="appendix-D-2">Implementations should ensure strict compliance with the ASN.1 schemas (<a href="#asn1-schemas" class="auto internal xref">Appendix A</a>), serialisation formats (<a href="#data-serialisation" class="auto internal xref">Section 10</a>), and cryptographic algorithms (<a href="#cryptographic-algorithms" class="auto internal xref">Section 8</a>). Separating core protocol functionality from service-specific logic enables reuse across multiple services.<a href="#appendix-D-2" class="pilcrow">¶</a></p>
 <p id="appendix-D-3">For testing purposes, implementers should consider establishing a dedicated DNSSEC-enabled test domain with a DomainAuth TXT record whose private key is publicly available, bound specifically to the test service OID (<code>1.3.6.1.4.1.58708.1.1</code>). This approach is secure when properly scoped: the domain is controlled by the implementation team, the key is bound only to the test service, and documentation clearly indicates these are for testing only.  Serialised DNSSEC chains can also serve as test fixtures, allowing offline testing.<a href="#appendix-D-3" class="pilcrow">¶</a></p>
 <p id="appendix-D-4">Implementations have to provide the ability to override root zone DS records, which is only intended for local testing environments or to reflect updated IANA trust anchors before the underlying DNSSEC implementation is updated.<a href="#appendix-D-4" class="pilcrow">¶</a></p>
-<p id="appendix-D-5">The verification procedure should support both verification orders described in <a href="#verification-procedure" class="auto internal xref">Section 7.1</a>: either starting with the DNSSEC chain and ending with the signature, or vice versa.  A critical aspect is validating that all components in the trust chain—DNSSEC records, certificates, and signature—have validity periods that overlap for at least one second.  Implementations should also handle multiple TXT records correctly, selecting the appropriate one based on key information and service OID.<a href="#appendix-D-5" class="pilcrow">¶</a></p>
+<p id="appendix-D-5">The verification procedure should support both verification orders described in <a href="#verification-procedure" class="auto internal xref">Section 7.1</a>: either starting with the DNSSEC chain and ending with the signature, or vice versa.  A critical aspect is validating that all components in the trust chain (DNSSEC records, certificates, and signatures) have validity periods that overlap for at least one second.  Implementations should also handle multiple TXT records correctly, selecting the appropriate one based on key information and service OID.<a href="#appendix-D-5" class="pilcrow">¶</a></p>
 <p id="appendix-D-6">Error handling should categorise failures based on verification steps (<a href="#verification-procedure" class="auto internal xref">Section 7.1</a>), with different diagnostic detail levels for debugging versus production.  Performance optimisations may include caching verified DNSSEC chains, using efficient ASN.1 parsing libraries, ensuring thread safety, and optimising certificate validation operations.<a href="#appendix-D-6" class="pilcrow">¶</a></p>
 </section>
 </div>

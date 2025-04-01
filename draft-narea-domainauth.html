@@ -2105,7 +2105,7 @@ If present, the member attribution attribute <span class="bcp14">MUST</span> be 
             <p id="section-7.1-4.6.1"><strong>Produce verification output:</strong><a href="#section-7.1-4.6.1" class="pilcrow">¶</a></p>
 <ul class="normal">
 <li class="normal" id="section-7.1-4.6.2.1">
-                <p id="section-7.1-4.6.2.1.1">The organisation name without a trailing dot (e.g. <code>example.com</code>). This string <span class="bcp14">MUST</span> be represented using Unicode, coverting from Punycode if necessary.<a href="#section-7.1-4.6.2.1.1" class="pilcrow">¶</a></p>
+                <p id="section-7.1-4.6.2.1.1">The organisation name without a trailing dot (e.g. <code>example.com</code>). This string <span class="bcp14">MUST</span> be represented using Unicode, converting from Punycode if necessary.<a href="#section-7.1-4.6.2.1.1" class="pilcrow">¶</a></p>
 </li>
               <li class="normal" id="section-7.1-4.6.2.2">
                 <p id="section-7.1-4.6.2.2.1">If the signer is a user, their name <span class="bcp14">MUST</span> be a Unicode string. The name <span class="bcp14">MUST</span> be taken from the signer certificate in the case of member signatures, or from the member attribution in the case of organisation signatures. If the signer is a bot, no name <span class="bcp14">MUST</span> be produced (not even an empty string).<a href="#section-7.1-4.6.2.2.1" class="pilcrow">¶</a></p>
@@ -2237,7 +2237,7 @@ If present, the member attribution attribute <span class="bcp14">MUST</span> be 
             <p id="section-12.1-2.4.1">Cryptographic algorithms:<a href="#section-12.1-2.4.1" class="pilcrow">¶</a></p>
 <ul class="normal">
 <li class="normal" id="section-12.1-2.4.2.1">
-                <p id="section-12.1-2.4.2.1.1">Signature algorithms: VeraId only supports RSA-PSS with modulus sizes of 2048, 3072, and 4096 bits. Support for EdDSA signatures was considered, but not implemented due to lack of support in the target Hardware Security Modules (HSMs), as documented in https://issuetracker.google.com/issues/232422224.<a href="#section-12.1-2.4.2.1.1" class="pilcrow">¶</a></p>
+                <p id="section-12.1-2.4.2.1.1">Signature algorithms: VeraId only supports RSA-PSS with modulus sizes of 2048, 3072, and 4096 bits. Support for EdDSA signatures was considered, but not implemented due to lack of support in the target Hardware Security Modules (HSMs), as documented in <a href="https://issuetracker.google.com/issues/232422224">https://issuetracker.google.com/issues/232422224</a>.<a href="#section-12.1-2.4.2.1.1" class="pilcrow">¶</a></p>
 </li>
               <li class="normal" id="section-12.1-2.4.2.2">
                 <p id="section-12.1-2.4.2.2.1">Hash functions: VeraId only supports SHA-256, SHA-384, and SHA-512.<a href="#section-12.1-2.4.2.2.1" class="pilcrow">¶</a></p>
@@ -2258,7 +2258,7 @@ If present, the member attribution attribute <span class="bcp14">MUST</span> be 
             <p id="section-12.1-5.1.1"><strong>VeraId JavaScript Library</strong><a href="#section-12.1-5.1.1" class="pilcrow">¶</a></p>
 <ul class="normal">
 <li class="normal" id="section-12.1-5.1.2.1">
-                <p id="section-12.1-5.1.2.1.1">URL: https://github.com/relaycorp/veraid-js<a href="#section-12.1-5.1.2.1.1" class="pilcrow">¶</a></p>
+                <p id="section-12.1-5.1.2.1.1">URL: <a href="https://github.com/relaycorp/veraid-js">https://github.com/relaycorp/veraid-js</a><a href="#section-12.1-5.1.2.1.1" class="pilcrow">¶</a></p>
 </li>
               <li class="normal" id="section-12.1-5.1.2.2">
                 <p id="section-12.1-5.1.2.2.1">Maturity: Used in production in the VeraId Authority application.<a href="#section-12.1-5.1.2.2.1" class="pilcrow">¶</a></p>
@@ -2275,7 +2275,7 @@ If present, the member attribution attribute <span class="bcp14">MUST</span> be 
             <p id="section-12.1-5.2.1"><strong>VeraId JVM Library</strong><a href="#section-12.1-5.2.1" class="pilcrow">¶</a></p>
 <ul class="normal">
 <li class="normal" id="section-12.1-5.2.2.1">
-                <p id="section-12.1-5.2.2.1.1">URL: https://github.com/relaycorp/veraid-jvm<a href="#section-12.1-5.2.2.1.1" class="pilcrow">¶</a></p>
+                <p id="section-12.1-5.2.2.1.1">URL: <a href="https://github.com/relaycorp/veraid-jvm">https://github.com/relaycorp/veraid-jvm</a><a href="#section-12.1-5.2.2.1.1" class="pilcrow">¶</a></p>
 </li>
               <li class="normal" id="section-12.1-5.2.2.2">
                 <p id="section-12.1-5.2.2.2.1">Maturity: Used in the Android version of Letro <span>[<a href="#LETRO" class="cite xref">LETRO</a>]</span>.<a href="#section-12.1-5.2.2.2.1" class="pilcrow">¶</a></p>
@@ -2292,7 +2292,7 @@ If present, the member attribution attribute <span class="bcp14">MUST</span> be 
             <p id="section-12.1-5.3.1"><strong>VeraId Authority</strong><a href="#section-12.1-5.3.1" class="pilcrow">¶</a></p>
 <ul class="normal">
 <li class="normal" id="section-12.1-5.3.2.1">
-                <p id="section-12.1-5.3.2.1.1">URL: https://github.com/relaycorp/veraid-authority<a href="#section-12.1-5.3.2.1.1" class="pilcrow">¶</a></p>
+                <p id="section-12.1-5.3.2.1.1">URL: <a href="https://github.com/relaycorp/veraid-authority">https://github.com/relaycorp/veraid-authority</a><a href="#section-12.1-5.3.2.1.1" class="pilcrow">¶</a></p>
 </li>
               <li class="normal" id="section-12.1-5.3.2.2">
                 <p id="section-12.1-5.3.2.2.1">Description: A multi-tenant, cloud-native application for managing organisation members and issuing Member Id Bundles.<a href="#section-12.1-5.3.2.2.1" class="pilcrow">¶</a></p>
@@ -2836,7 +2836,8 @@ MemberIdBundle ::= SEQUENCE {
     version                  [0] INTEGER,
     dnssecChain              [1] DnssecChain,
     organisationCertificate  [2] Certificate,
-    memberCertificate        [3] Certificate
+    memberCertificate        [3] Certificate,
+    intermediateCertificates [4] SET OF Certificate OPTIONAL
 }
 
 -- Signature Bundle

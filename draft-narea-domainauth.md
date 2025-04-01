@@ -273,9 +273,9 @@ The TTL override field in the DomainAuth TXT record enables verification of DNS 
 
 DNS records and DNSSEC signatures typically have TTL values that may be as short as a few minutes or hours.  The TTL override mechanism allows the DNSSEC chain to remain verifiable for a significantly longer period, regardless of the TTL in such records.  Refer to {{maximum-validity-period}} for the maximum validity period.
 
-During verification, the TTL override creates a restricted time window that extends backwards from the end of the requested verification period by the specified number of seconds.  Verification will succeed if the DNSSEC records were valid at any point during this window, even if the standard DNS TTLs would have expired.
+During verification, the TTL override creates a restricted time window that extends backwards from the end of the requested verification period by the specified number of seconds.  Verification will succeed if the DNSSEC signatures (RRSIGs) were valid at any point during this window, even if they would have expired according to their original validity periods.
 
-For example, if a DNS record has a standard TTL of 3600 seconds (1 hour) but the DomainAuth TXT record specifies a TTL override of 604,800 seconds (7 days), a signature can still be verified up to 7 days after creation, even when offline.  If a verifier attempts to verify a signature 5 days after it was created, the verification would succeed with the TTL override, whereas it would fail with only the standard 1-hour TTL.
+For example, if a DNSSEC signature has a standard validity period of 3600 seconds (1 hour) but the DomainAuth TXT record specifies a TTL override of 604,800 seconds (7 days), a signature bundle can still be verified up to 7 days after creation, even when offline.  If a verifier attempts to verify a signature bundle 5 days after it was created, the verification would succeed with the TTL override, whereas it would fail with only the 1-hour DNSSEC signature validity period.
 
 ## DNSSEC Chain Serialisation
 

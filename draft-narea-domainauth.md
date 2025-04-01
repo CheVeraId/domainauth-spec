@@ -534,7 +534,7 @@ All data structures in the DomainAuth protocol are defined using Abstract Syntax
 
 Implementations MUST support Distinguished Encoding Rules (DER) as defined in {{ASN.1}}.
 
-Services MAY require or recommend additional ASN.1 encoding rules.  In such cases, service implementations MUST handle the conversion between DER and the alternative encoding rules, if the additional rules are not supported by the DomainAuth implementation.
+Services MAY require or recommend additional ASN.1 encoding rules.
 
 # Test Service
 

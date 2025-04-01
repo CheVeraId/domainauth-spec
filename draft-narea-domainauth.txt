@@ -253,13 +253,12 @@ Table of Contents
       DomainAuth TXT record(s).
 
    *  *Member:* An entity that produces signatures on behalf of an
-      organisation.  There are two types of members:
+      organisation.  Members are either:
 
-      -  *User:* A member identified by a unique user name within an
+      -  *Users:* Identified by a unique user name within an
          organisation.
 
-      -  *Bot:* A special type of member that acts on behalf of the
-         organisation as a whole.  Bots do not have user names.
+      -  *Bots:* Acting on behalf of the organisation as a whole.
 
    *  *DomainAuth TXT Record:* A DNS TXT record at _domainauth.<domain>
       that contains the organisation's public key information.
@@ -916,9 +915,11 @@ _domainauth.example.com. IN TXT "0 1 3 dGhpcyBpcyBub3QgYSByZWFsIGtleSBkaWdlc3Q 8
               -  The end time minus the TTL override value in seconds.
 
    3.  *Verify the DNSSEC chain* from the root zone to the
-       _domainauth.<domain>/TXT RRSet as described in [DNSSEC], ensuring
-       that the chain was valid for at least one second within the
-       verification time window calculated in the previous step.
+       _domainauth.<domain>/TXT RRSet as described in [DNSSEC].  The
+       chain is considered valid if all DNSSEC signatures in the chain
+       were simultaneously valid (i.e., not expired and not in the
+       future) for at least one second within the verification time
+       window calculated in the previous step.
 
    4.  *Verify the X.509 certificate chain* from the organisation
        certificate to the signer's certificate as specified in [X.509],
@@ -928,7 +929,11 @@ _domainauth.example.com. IN TXT "0 1 3 dGhpcyBpcyBub3QgYSByZWFsIGtleSBkaWdlc3Q 8
        certificate when the organisation itself is the signer.
 
        The certificate chain MUST overlap with the verification time
-       window and the DNSSEC chain for at least one second.
+       window and the DNSSEC chain for at least one second, meaning
+       there must be at least one second during which all certificates
+       in the chain were simultaneously valid and this second falls
+       within both the verification time window and the period when the
+       DNSSEC chain was valid.
 
    5.  *Verify the CMS SignedData structure* as described in Section 5.6
        of [CMS], using the signer's certificate from the
@@ -942,7 +947,9 @@ _domainauth.example.com. IN TXT "0 1 3 dGhpcyBpcyBub3QgYSByZWFsIGtleSBkaWdlc3Q 8
 
        *  The validity period MUST overlap with the verification time
           window, the X.509 certificate chain and the DNSSEC chain for
-          at least one second.
+          at least one second, meaning there must be a minimum one-
+          second period during which the signature was valid, all
+          certificates were valid, and the DNSSEC chain was valid.
 
        If present, the member attribution attribute MUST be in the
        signed attributes of the SignerInfo structure, and its value MUST

@@ -1447,13 +1447,13 @@ appear in all capitals, as shown here.<a href="#section-1.3-1" class="pilcrow">�
             <p id="section-1.3-3.1.1"><strong>Organisation:</strong> A domain name that participates in the DomainAuth protocol by configuring DNSSEC and publishing the necessary DomainAuth TXT record(s).<a href="#section-1.3-3.1.1" class="pilcrow">¶</a></p>
 </li>
           <li class="normal" id="section-1.3-3.2">
-            <p id="section-1.3-3.2.1"><strong>Member:</strong> An entity that produces signatures on behalf of an organisation.  There are two types of members:<a href="#section-1.3-3.2.1" class="pilcrow">¶</a></p>
+            <p id="section-1.3-3.2.1"><strong>Member:</strong> An entity that produces signatures on behalf of an organisation. Members are either:<a href="#section-1.3-3.2.1" class="pilcrow">¶</a></p>
 <ul class="normal">
 <li class="normal" id="section-1.3-3.2.2.1">
-                <p id="section-1.3-3.2.2.1.1"><strong>User:</strong> A member identified by a unique user name within an organisation.<a href="#section-1.3-3.2.2.1.1" class="pilcrow">¶</a></p>
+                <p id="section-1.3-3.2.2.1.1"><strong>Users:</strong> Identified by a unique user name within an organisation.<a href="#section-1.3-3.2.2.1.1" class="pilcrow">¶</a></p>
 </li>
               <li class="normal" id="section-1.3-3.2.2.2">
-                <p id="section-1.3-3.2.2.2.1"><strong>Bot:</strong> A special type of member that acts on behalf of the organisation as a whole.  Bots do not have user names.<a href="#section-1.3-3.2.2.2.1" class="pilcrow">¶</a></p>
+                <p id="section-1.3-3.2.2.2.1"><strong>Bots:</strong> Acting on behalf of the organisation as a whole.<a href="#section-1.3-3.2.2.2.1" class="pilcrow">¶</a></p>
 </li>
             </ul>
 </li>
@@ -2079,12 +2079,12 @@ The verifier <span class="bcp14">MAY</span> override the root zone DS record(s) 
             </ol>
 </li>
           <li id="section-7.1-4.3">
-            <p id="section-7.1-4.3.1"><strong>Verify the DNSSEC chain</strong> from the root zone to the <code>_domainauth.&lt;domain&gt;/TXT</code> RRSet as described in <span>[<a href="#DNSSEC" class="cite xref">DNSSEC</a>]</span>, ensuring that the chain was valid for at least one second within the verification time window calculated in the previous step.<a href="#section-7.1-4.3.1" class="pilcrow">¶</a></p>
+            <p id="section-7.1-4.3.1"><strong>Verify the DNSSEC chain</strong> from the root zone to the <code>_domainauth.&lt;domain&gt;/TXT</code> RRSet as described in <span>[<a href="#DNSSEC" class="cite xref">DNSSEC</a>]</span>. The chain is considered valid if all DNSSEC signatures in the chain were simultaneously valid (i.e., not expired and not in the future) for at least one second within the verification time window calculated in the previous step.<a href="#section-7.1-4.3.1" class="pilcrow">¶</a></p>
 </li>
           <li id="section-7.1-4.4">
             <p id="section-7.1-4.4.1"><strong>Verify the X.509 certificate chain</strong> from the organisation certificate to the signer's certificate as specified in <span>[<a href="#X.509" class="cite xref">X.509</a>]</span>, using any additional certificates in the <code>SignedData.certificates</code> field as potential intermediate certificates when constructing the chain.  Note that the chain will comprise a single certificate when the organisation itself is the signer.<a href="#section-7.1-4.4.1" class="pilcrow">¶</a></p>
 <p id="section-7.1-4.4.2">
-The certificate chain <span class="bcp14">MUST</span> overlap with the verification time window and the DNSSEC chain for at least one second.<a href="#section-7.1-4.4.2" class="pilcrow">¶</a></p>
+The certificate chain <span class="bcp14">MUST</span> overlap with the verification time window and the DNSSEC chain for at least one second, meaning there must be at least one second during which all certificates in the chain were simultaneously valid and this second falls within both the verification time window and the period when the DNSSEC chain was valid.<a href="#section-7.1-4.4.2" class="pilcrow">¶</a></p>
 </li>
           <li id="section-7.1-4.5">
             <p id="section-7.1-4.5.1"><strong>Verify the CMS SignedData structure</strong> as described in <span><a href="https://rfc-editor.org/rfc/rfc5652#section-5.6" class="relref">Section 5.6</a> of [<a href="#CMS" class="cite xref">CMS</a>]</span>, using the signer's certificate from the <code>SignedData.certificates</code> field or the organisation certificate if the signer is the organisation itself.<a href="#section-7.1-4.5.1" class="pilcrow">¶</a></p>
@@ -2095,7 +2095,7 @@ The signature metadata attribute <span class="bcp14">MUST</span> be present in t
                 <p id="section-7.1-4.5.3.1.1">The service OID <span class="bcp14">MUST</span> match that specified by the verifier.<a href="#section-7.1-4.5.3.1.1" class="pilcrow">¶</a></p>
 </li>
               <li class="normal" id="section-7.1-4.5.3.2">
-                <p id="section-7.1-4.5.3.2.1">The validity period <span class="bcp14">MUST</span> overlap with the verification time window, the X.509 certificate chain and the DNSSEC chain for at least one second.<a href="#section-7.1-4.5.3.2.1" class="pilcrow">¶</a></p>
+                <p id="section-7.1-4.5.3.2.1">The validity period <span class="bcp14">MUST</span> overlap with the verification time window, the X.509 certificate chain and the DNSSEC chain for at least one second, meaning there must be a minimum one-second period during which the signature was valid, all certificates were valid, and the DNSSEC chain was valid.<a href="#section-7.1-4.5.3.2.1" class="pilcrow">¶</a></p>
 </li>
             </ul>
 <p id="section-7.1-4.5.4">

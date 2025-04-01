@@ -682,7 +682,7 @@ Organisations implementing DomainAuth SHOULD maintain comprehensive audit logs o
 
 # Privacy Considerations
 
-DomainAuth is focused on authentication and integrity.  Confidentiality, a key property of privacy, is outside the scope of this protocol.  Services MAY use other complementary mechanisms such as encryption to provide confidentiality where required.
+DomainAuth is focused on authentication and integrity.  Confidentiality, a key property of privacy, is outside the scope of this protocol.
 
 The protocol's PKI design, where each organisation manages its own certificate hierarchy, helps avoid unnecessary information disclosure.  By allowing an organisation to serve as the certificate authority for its members, this approach minimises the data that would otherwise need to be shared with verifiers, thereby reducing the risk of user information leakage or enabling user enumeration attacks.
 

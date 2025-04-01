@@ -44,13 +44,12 @@ normative:
     date: 1994
     seriesinfo:
       ITU-T: Recommendation X.690
-  RFC2826:
   RFC4086:
   RFC7942:
   RFC4055:
   RFC4056:
   RFC4648:
-  RFC6234:
+  NIST.FIPS.180-4:
   RFC8126:
   RFC8265:
   UTR36:
@@ -84,6 +83,7 @@ informative:
       org: Relaycorp
     date: 2019
   JWT: RFC7519
+  RFC2826:
   RFC8017:
 
 --- abstract
@@ -519,7 +519,7 @@ This encoded digest is then used as the Key Id in the TXT record.
 
 This section pertains specifically to the hash functions used within digital signatures themselves (e.g., X.509 certificates, CMS SignedData structures), distinct from their use in key identification.
 
-For ease of adoption and interoperability reasons, this specification only REQUIRES support for SHA2 hash functions ({{RFC6234}}) in digital signatures, with the exception of SHA-224 which MUST NOT be supported.
+For ease of adoption and interoperability reasons, implementations MUST support SHA-256, SHA-384, and SHA-512 as defined in {{NIST.FIPS.180-4}}.
 
 The DomainAuth Key Digest Type Registry, as defined in {{domainauth-key-digest-type-registry}}, separately governs the use of hash functions for key identification.
 
@@ -875,7 +875,7 @@ For testing purposes, implementers should consider establishing a dedicated DNSS
 
 Implementations have to provide the ability to override root zone DS records, which is only intended for local testing environments or to reflect updated IANA trust anchors before the underlying DNSSEC implementation is updated.
 
-The verification procedure should support both verification orders described in {{verification-procedure}}: either starting with the DNSSEC chain and ending with the signature, or vice versa.  A critical aspect is validating that all components in the trust chain—DNSSEC records, certificates, and signature—have validity periods that overlap for at least one second.  Implementations should also handle multiple TXT records correctly, selecting the appropriate one based on key information and service OID.
+The verification procedure should support both verification orders described in {{verification-procedure}}: either starting with the DNSSEC chain and ending with the signature, or vice versa.  A critical aspect is validating that all components in the trust chain (DNSSEC records, certificates, and signatures) have validity periods that overlap for at least one second.  Implementations should also handle multiple TXT records correctly, selecting the appropriate one based on key information and service OID.
 
 Error handling should categorise failures based on verification steps ({{verification-procedure}}), with different diagnostic detail levels for debugging versus production.  Performance optimisations may include caching verified DNSSEC chains, using efficient ASN.1 parsing libraries, ensuring thread safety, and optimising certificate validation operations.
 

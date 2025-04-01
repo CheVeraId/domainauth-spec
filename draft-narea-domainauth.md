@@ -300,9 +300,6 @@ All X.509 certificates MUST comply with {{X.509}}. Additionally, each certificat
 
 - Have a validity period of at least 1 second and not exceeding the limit specified in {{maximum-validity-period}}.
 - Only use the algorithms specified in {{cryptographic-algorithms}}.
-- Contain the following extensions marked as critical:
-  - Authority Key Identifier from {{Section 4.2.1.1 of X.509}}.
-  - Subject Key Identifier from {{Section 4.2.1.2 of X.509}}.
 
 Additional requirements and recommendations apply to specific certificate types as described in the following sections.
 
@@ -364,6 +361,7 @@ DomainAuth signatures use CMS SignedData structures as defined in {{Section 5 of
     - Content Type attribute as defined in {{Section 11.1 of CMS}}.
     - Message Digest attribute as defined in {{Section 11.2 of CMS}}.
     - DomainAuth signature metadata attribute as defined in {{signature-metadata}}.
+  - The `SignerInfo.sid` field MUST use the `issuerAndSerialNumber` choice as defined in {{Section 5.3 of CMS}}.
 - `certificates` field:
   - Any intermediate certificates between the organisation and the signer MUST be included.
   - The organisation certificate SHOULD NOT be included, since it is already included in the Signature Bundle.
@@ -570,6 +568,7 @@ DomainAuth is the successor to the VeraId protocol as defined in {{VERAID}}. Dom
   - Key identification: VeraId only supports key digests (equivalent to Key Digest Types 1-3 in DomainAuth) as a consequence of its support for RSA keys only, and does not support direct use of public keys (Key Digest Type 0) for key identification.
 - VeraId does not offer protection against IDN homograph attacks (see {{phishing-attacks}}).
 - VeraId only disallows at-signs (`@`), tabs, and new lines in user names.  Otherwise, user names are case-sensitive and may contain spaces in VeraId.
+- VeraId unnecessarily requires X.509 certificates to have the Authority Key Identifier and Subject Key Identifier extensions.
 
 VeraId is led by the author of this document, who intends to deprecate the VeraId specification in favour of DomainAuth and update the reference implementations to fully comply with this specification.
 

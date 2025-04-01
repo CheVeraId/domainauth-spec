@@ -118,12 +118,13 @@ Table of Contents
      13.5.  Denial of Service
      13.6.  Key Management
      13.7.  Audit Trails
-   14. IANA Considerations
-     14.1.  DomainAuth Signature Algorithm Registry
-     14.2.  DomainAuth Hash Function Registry
-   15. References
-     15.1.  Normative References
-     15.2.  Informative References
+   14. Privacy Considerations
+   15. IANA Considerations
+     15.1.  DomainAuth Signature Algorithm Registry
+     15.2.  DomainAuth Hash Function Registry
+   16. References
+     16.1.  Normative References
+     16.2.  Informative References
    Appendix A.  ASN.1 Schemas
    Appendix B.  OID Registry
    Appendix C.  Service Design Guidance
@@ -523,11 +524,11 @@ Table of Contents
 
    2.  *Key Algorithm* (required): An integer denoting the key algorithm
        as registered in the "DomainAuth Signature Algorithm Registry"
-       (Section 14.1).  See also Section 8.1.
+       (Section 15.1).  See also Section 8.1.
 
    3.  *Key Id Type* (required): An integer denoting how the key is
        identified, as registered in the "DomainAuth Hash Function
-       Registry" (Section 14.2).  See also Section 8.2.
+       Registry" (Section 15.2).  See also Section 8.2.
 
    4.  *Key Id* (required): The Base64-encoded (unpadded) representation
        of the key digest, as specified by the Key Id Type.
@@ -1002,7 +1003,7 @@ _domainauth.example.com. IN TXT "0 1 3 dGhpcyBpcyBub3QgYSByZWFsIGtleSBkaWdlc3Q 8
    only requires support for RSA Signature Scheme with Appendix -
    Probabilistic Signature Scheme (RSA-PSS), as defined in Section 8.1
    of [RFC8017].  The DomainAuth Signature Algorithm Registry, as
-   defined in Section 14.1, MAY introduce support for additional
+   defined in Section 15.1, MAY introduce support for additional
    signature algorithms and restrict the use of RSA-PSS (including its
    deprecation).
 
@@ -1018,7 +1019,7 @@ _domainauth.example.com. IN TXT "0 1 3 dGhpcyBpcyBub3QgYSByZWFsIGtleSBkaWdlc3Q 8
    For ease of adoption and interoperability reasons, this specification
    only requires support for SHA2 hash functions, as defined in
    [RFC6234], in digital signatures.  The DomainAuth Hash Function
-   Registry, as defined in Section 14.2, MAY introduce support for
+   Registry, as defined in Section 15.2, MAY introduce support for
    additional hash functions and restrict the use of SHA2 hash functions
    (including their deprecation).
 
@@ -1391,12 +1392,32 @@ _domainauth.example.com. IN TXT "0 1 3 dGhpcyBpcyBub3QgYSByZWFsIGtleSBkaWdlc3Q 8
       -  In high-risk environments, organisations SHOULD implement
          tamper-evident logging.
 
-14.  IANA Considerations
+14.  Privacy Considerations
+
+   DomainAuth is focused on authentication and integrity.
+   Confidentiality, a key property of privacy, is outside the scope of
+   this protocol.  Services MAY use other complementary mechanisms such
+   as encryption to provide confidentiality where required.
+
+   The protocol's PKI design, where each organisation manages its own
+   certificate hierarchy, helps avoid unnecessary information
+   disclosure.  By allowing an organisation to serve as the certificate
+   authority for its members, this approach minimises the data that
+   would otherwise need to be shared with verifiers, thereby reducing
+   the risk of user information leakage or enabling user enumeration
+   attacks.
+
+   Signature bundles do not contain sensitive personal data beyond what
+   is necessary for identity verification, following the principle of
+   data minimisation.  The protocol also supports the use of bot
+   signatures that do not identify specific individuals.
+
+15.  IANA Considerations
 
    This document requests IANA to create a new registry group called
    "DomainAuth Protocol Parameters".
 
-14.1.  DomainAuth Signature Algorithm Registry
+15.1.  DomainAuth Signature Algorithm Registry
 
    IANA is requested to create a new registry titled "DomainAuth
    Signature Algorithm Registry" under the "DomainAuth Protocol
@@ -1447,7 +1468,7 @@ _domainauth.example.com. IN TXT "0 1 3 dGhpcyBpcyBub3QgYSByZWFsIGtleSBkaWdlc3Q 8
    vulnerabilities.  Implementers SHOULD NOT use deprecated algorithms
    for new signatures and MUST NOT use obsolete algorithms.
 
-14.2.  DomainAuth Hash Function Registry
+15.2.  DomainAuth Hash Function Registry
 
    IANA is requested to create a new registry titled "DomainAuth Hash
    Function Registry" under the "DomainAuth Protocol Parameters"
@@ -1500,9 +1521,9 @@ _domainauth.example.com. IN TXT "0 1 3 dGhpcyBpcyBub3QgYSByZWFsIGtleSBkaWdlc3Q 8
    _Note to RFC Editor: Please replace all instances of (This document)
    with the RFC number of this document upon publication._
 
-15.  References
+16.  References
 
-15.1.  Normative References
+16.1.  Normative References
 
    [ASN.1]    International Telecommunications Union, "Information
               Technology — ASN.1 encoding rules: Specification of Basic
@@ -1584,7 +1605,7 @@ _domainauth.example.com. IN TXT "0 1 3 dGhpcyBpcyBub3QgYSByZWFsIGtleSBkaWdlc3Q 8
               (CRL) Profile", RFC 5280, DOI 10.17487/RFC5280, May 2008,
               <https://www.rfc-editor.org/rfc/rfc5280>.
 
-15.2.  Informative References
+16.2.  Informative References
 
    [AWALA]    Narea, G., "Awala", 2019, <https://specs.awala.network/>.
 

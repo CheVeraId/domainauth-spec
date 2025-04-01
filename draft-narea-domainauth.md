@@ -477,7 +477,7 @@ Implementations MUST verify every syntactically-valid signature bundle as follow
 
    If present, the member attribution attribute MUST be in the signed attributes of the SignerInfo structure, and its value MUST be a valid member name as specified in {{phishing-attacks}}. If absent, the signer MUST be a member whose certificate meets the requirements specified in {{member-certificate}}.
 6. **Produce verification output:**
-    - The organisation name without a trailing dot (e.g. `example.com`). This string MUST be represented using Unicode, coverting from Punycode if necessary.
+    - The organisation name without a trailing dot (e.g. `example.com`). This string MUST be represented using Unicode, converting from Punycode if necessary.
     - If the signer is a user, their name MUST be a Unicode string. The name MUST be taken from the signer certificate in the case of member signatures, or from the member attribution in the case of organisation signatures. If the signer is a bot, no name MUST be produced (not even an empty string).
     - Whether the signature was produced by the member or the organisation.
 
@@ -556,7 +556,7 @@ DomainAuth is the successor to the VeraId protocol as defined in {{VERAID}}. Dom
 - VeraId does not explicitly support intermediate certificates, and its implementations do not support them. Consequently, the `intermediateCertificates` field in the Member Id Bundle is not present in VeraId.
 - VeraId only allows ASN.1 DER serialisation.
 - Cryptographic algorithms:
-  - Signature algorithms: VeraId only supports RSA-PSS with modulus sizes of 2048, 3072, and 4096 bits. Support for EdDSA signatures was considered, but not implemented due to lack of support in the target Hardware Security Modules (HSMs), as documented in https://issuetracker.google.com/issues/232422224.
+  - Signature algorithms: VeraId only supports RSA-PSS with modulus sizes of 2048, 3072, and 4096 bits. Support for EdDSA signatures was considered, but not implemented due to lack of support in the target Hardware Security Modules (HSMs), as documented in <https://issuetracker.google.com/issues/232422224>.
   - Hash functions: VeraId only supports SHA-256, SHA-384, and SHA-512.
 - VeraId does not offer protection against IDN homograph attacks (see {{phishing-attacks}}).
 - VeraId only disallows at-signs (`@`), tabs, and new lines in user names. Otherwise, user names are case-sensitive and may contain spaces in VeraId.
@@ -566,17 +566,17 @@ VeraId is led by the author of this document, who intends to deprecate the VeraI
 The following reference implementations of VeraId are available, all implemented by Relaycorp and undergoing independent security audits with reports expected by mid-April 2025:
 
 1. **VeraId JavaScript Library**
-   - URL: https://github.com/relaycorp/veraid-js
+   - URL: <https://github.com/relaycorp/veraid-js>
    - Maturity: Used in production in the VeraId Authority application.
    - Coverage: The entire protocol as defined in {{VERAID}}.
    - Licensing: MIT licence.
 2. **VeraId JVM Library**
-   - URL: https://github.com/relaycorp/veraid-jvm
+   - URL: <https://github.com/relaycorp/veraid-jvm>
    - Maturity: Used in the Android version of Letro {{LETRO}}.
    - Coverage: The entire protocol except for Organisation Signature Bundles.
    - Licensing: Apache 2.0 licence.
 3. **VeraId Authority**
-   - URL: https://github.com/relaycorp/veraid-authority
+   - URL: <https://github.com/relaycorp/veraid-authority>
    - Description: A multi-tenant, cloud-native application for managing organisation members and issuing Member Id Bundles.
    - Maturity: Used in production in Letro {{LETRO}}.
    - Coverage: Uses the VeraId JavaScript Library to issue Member Id Bundles and Organisation Signature Bundles.
@@ -763,7 +763,8 @@ MemberIdBundle ::= SEQUENCE {
     version                  [0] INTEGER,
     dnssecChain              [1] DnssecChain,
     organisationCertificate  [2] Certificate,
-    memberCertificate        [3] Certificate
+    memberCertificate        [3] Certificate,
+    intermediateCertificates [4] SET OF Certificate OPTIONAL
 }
 
 -- Signature Bundle

@@ -146,7 +146,7 @@ The following terms are used:
 - **Organisation Certificate:** A self-signed X.509 certificate owned by an organisation that serves as the root of trust for all signatures produced on behalf of that organisation.
 - **Member Certificate:** An X.509 certificate issued by the organisation certificate to a member.
 - **Member Id Bundle:** A data structure containing a member certificate, its issuing organisation certificate, and the DNSSEC chain proving the authenticity of the organisation's DomainAuth TXT record.
-- **Signature Bundle:** A data structure containing a digital signature and all the information needed to verify it offline.  There are two types of signature bundles:
+- **Signature Bundle:** A data structure containing a digital signature and chain of trust that enables offline verification.  There are two types of signature bundles:
   - **Member Signature Bundle:** A signature bundle containing a signature produced by a member using their private key.
   - **Organisation Signature Bundle:** A signature bundle containing a signature produced directly by an organisation using its private key, with a required member attribution that assigns authorship of the content to a specific member.
 - **DNSSEC Chain:** A sequence of DNS responses that allows a verifier to cryptographically validate the authenticity of a DNS record.
@@ -308,7 +308,7 @@ Additional requirements and recommendations apply to specific certificate types 
 
 ## Organisation Certificate
 
-This is certificate whose subject key is referenced by the DomainAuth TXT record.  The following requirements and recommendations apply:
+This is a certificate whose subject key is referenced by the DomainAuth TXT record.  The following requirements and recommendations apply:
 
 - Its Subject Distinguished Name MUST contain the Common Name attribute (OID `2.5.4.3`) set to the organisation's domain name with a trailing dot (e.g. `example.com.`).
 - When the certificate is used to issue other certificates, the Basic Constraints extension from {{Section 4.2.1.9 of X.509}} MUST be present and marked as critical.  Additionally, the CA flag MUST be enabled, and the Path Length Constraint SHOULD be set to the lowest possible value for the length of the intended certificate chains.

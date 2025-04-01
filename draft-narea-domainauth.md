@@ -193,20 +193,20 @@ Multiple such records are allowed, which can be useful for key rotation or bindi
 
 The organisation must issue an X.509 certificate using its private key, or reuse an existing certificate valid during the intended validity period.
 
-When issuing a member certificate, the organisation must distribute it along with the organisation certificate.  This can be done with a member id bundle as defined in {{member-id-bundle}}, which is desirable in services meant to be used offline as it also contains the DNSSEC chain.
+When issuing a member certificate, the organisation must distribute it along with the organisation certificate.  This can be done with a Member Id Bundle as defined in {{member-id-bundle}}, which is desirable in services meant to be used offline as it also contains the DNSSEC chain.
 
 ### Signature Bundle Production
 
 A member would produce a signature bundle as follows:
 
 1. Use their private key to produce a CMS SignedData structure, encapsulating the member's certificate.
-2. Obtain the DNSSEC chain from the DomainAuth TXT record.  If not provided by the organisation (e.g. in the form of a member id bundle), the member will have to resolve it or retrieve it from a cache.
+2. Obtain the DNSSEC chain from the DomainAuth TXT record. This chain could be provided by the organisation (e.g. in the form of a Member Id Bundle), retrieved from a cache, or resolved from DNS if online.
 3. Construct a signature bundle with the CMS SignedData structure, the organisation certificate, and the DNSSEC chain.
 
 Similarly, an organisation would produce a signature bundle as follows:
 
 1. Use its private key to produce a CMS SignedData structure, without encapsulating the organisation's certificate.
-2. Resolve the DNSSEC chain from the DomainAuth TXT record, or use a cached chain valid during the intended validity period.
+2. Obtain the DNSSEC chain from the DomainAuth TXT record, either from a cache or by resolving it from DNS if online.
 3. Construct a signature bundle with the CMS SignedData structure, the organisation certificate, and the DNSSEC chain.
 
 In both cases, the signer can choose to encapsulate the plaintext in the CMS SignedData structure or distribute it separately.

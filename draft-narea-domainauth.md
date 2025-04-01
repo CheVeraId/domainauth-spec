@@ -143,7 +143,7 @@ The following terms are used:
   - **Users:** Identified by a unique user name within an organisation.
   - **Bots:** Acting on behalf of the organisation as a whole.
 - **DomainAuth TXT Record:** A DNS TXT record at `_domainauth.<domain>` that contains the organisation's public key information.
-- **Organisation Certificate:** A self-signed X.509 certificate owned by an organisation that serves as the root of trust for all signatures produced on behalf of that organisation.
+- **Organisation Certificate:** An X.509 certificate owned by an organisation that serves as the root of trust for all signatures produced on behalf of that organisation.
 - **Member Certificate:** An X.509 certificate issued by the organisation certificate to a member.
 - **Member Id Bundle:** A data structure containing a member certificate, its issuing organisation certificate, and the DNSSEC chain proving the authenticity of the organisation's DomainAuth TXT record.
 - **Signature Bundle:** A data structure containing a digital signature and chain of trust that enables offline verification.  There are two types of signature bundles:
@@ -191,7 +191,7 @@ Multiple such records are allowed, which can be useful for key rotation or bindi
 
 ### Certificate Issuance
 
-The organisation must issue an X.509 certificate using its private key, or reuse an existing certificate valid during the intended validity period.
+The organisation must obtain an X.509 certificate for its public key, or reuse an existing certificate valid during the intended validity period.
 
 When issuing a member certificate, the organisation must distribute it along with the organisation certificate.  This can be done with a Member Id Bundle as defined in {{member-id-bundle}}, which is desirable in services meant to be used offline as it also contains the DNSSEC chain.
 
@@ -310,6 +310,8 @@ This is a certificate whose subject key is referenced by the DomainAuth TXT reco
 - Its Subject Distinguished Name MUST contain the Common Name attribute (OID `2.5.4.3`) set to the organisation's domain name with a trailing dot (e.g. `example.com.`).
 - When the certificate is used to issue other certificates, the Basic Constraints extension from {{Section 4.2.1.9 of X.509}} MUST be present and marked as critical.  Additionally, the CA flag MUST be enabled, and the Path Length Constraint SHOULD be set to the lowest possible value for the length of the intended certificate chains.
 - When the certificate is used directly to sign CMS SignedData structures, the Basic Constraints extension MAY be absent.  If present, it SHOULD have the CA flag disabled.
+
+Whilst the organisation certificate is typically self-issued, it MAY be issued by another certificate authority. In such cases, the issuer of the organisation certificate and any other certificates in the certification path to the organisation certificate are not considered part of the DomainAuth protocol, and any such parent certificates SHOULD NOT be included in the Signature Bundle. Verification of the organisation certificate is performed solely using the public key referenced in the DomainAuth TXT record.
 
 ## Member Certificate
 

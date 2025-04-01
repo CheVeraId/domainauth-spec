@@ -2037,7 +2037,7 @@ SignatureBundle ::= SEQUENCE {
 </li>
             </ul>
 <p id="section-7.1-4.1.3">
-The verifier <span class="bcp14">MAY</span> override the root zone DNSSEC DS record(s) for testing purposes only.<a href="#section-7.1-4.1.3" class="pilcrow">¶</a></p>
+The verifier <span class="bcp14">MAY</span> override the root zone DS record(s) only for testing purposes or to reflect updated IANA trust anchors before the underlying DNSSEC implementation updates its copy.<a href="#section-7.1-4.1.3" class="pilcrow">¶</a></p>
 </li>
           <li id="section-7.1-4.2">
             <p id="section-7.1-4.2.1"><strong>Identify the relevant DomainAuth TXT record and determine the verification time window for the DNSSEC chain:</strong><a href="#section-7.1-4.2.1" class="pilcrow">¶</a></p>
@@ -2376,6 +2376,9 @@ If present, the member attribution attribute <span class="bcp14">MUST</span> be 
 </li>
               <li class="normal" id="section-13.1-2.1.2.3">
                 <p id="section-13.1-2.1.2.3.1">Implementations <span class="bcp14">MUST</span> securely manage and update DNSSEC trust anchors.<a href="#section-13.1-2.1.2.3.1" class="pilcrow">¶</a></p>
+</li>
+              <li class="normal" id="section-13.1-2.1.2.4">
+                <p id="section-13.1-2.1.2.4.1">Whilst the protocol allows overriding root zone DS records, this <span class="bcp14">MUST</span> only be done for testing or to reflect updated IANA trust anchors. Using alternative DNS roots in production contradicts the unique DNS root principle outlined in <span>[<a href="#RFC2826" class="cite xref">RFC2826</a>]</span>.<a href="#section-13.1-2.1.2.4.1" class="pilcrow">¶</a></p>
 </li>
             </ul>
 </li>
@@ -2737,6 +2740,10 @@ If present, the member attribution attribute <span class="bcp14">MUST</span> be 
         <dd>
 <span class="refAuthor">Bradner, S.</span>, <span class="refTitle">"Key words for use in RFCs to Indicate Requirement Levels"</span>, <span class="seriesInfo">BCP 14</span>, <span class="seriesInfo">RFC 2119</span>, <span class="seriesInfo">DOI 10.17487/RFC2119</span>, <time datetime="1997-03" class="refDate">March 1997</time>, <span>&lt;<a href="https://www.rfc-editor.org/rfc/rfc2119">https://www.rfc-editor.org/rfc/rfc2119</a>&gt;</span>. </dd>
 <dd class="break"></dd>
+<dt id="RFC2826">[RFC2826]</dt>
+        <dd>
+<span class="refAuthor">IAB</span>, <span class="refTitle">"IAB Technical Comment on the Unique DNS Root"</span>, <span class="seriesInfo">RFC 2826</span>, <span class="seriesInfo">DOI 10.17487/RFC2826</span>, <time datetime="2000-05" class="refDate">May 2000</time>, <span>&lt;<a href="https://www.rfc-editor.org/rfc/rfc2826">https://www.rfc-editor.org/rfc/rfc2826</a>&gt;</span>. </dd>
+<dd class="break"></dd>
 <dt id="RFC4055">[RFC4055]</dt>
         <dd>
 <span class="refAuthor">Schaad, J.</span>, <span class="refAuthor">Kaliski, B.</span>, and <span class="refAuthor">R. Housley</span>, <span class="refTitle">"Additional Algorithms and Identifiers for RSA Cryptography for use in the Internet X.509 Public Key Infrastructure Certificate and Certificate Revocation List (CRL) Profile"</span>, <span class="seriesInfo">RFC 4055</span>, <span class="seriesInfo">DOI 10.17487/RFC4055</span>, <time datetime="2005-06" class="refDate">June 2005</time>, <span>&lt;<a href="https://www.rfc-editor.org/rfc/rfc4055">https://www.rfc-editor.org/rfc/rfc4055</a>&gt;</span>. </dd>
@@ -2906,19 +2913,20 @@ MemberAttribution ::= UTF8String
         </h3>
 <p id="appendix-C.1-1">The validity period for signatures, specified in the signature metadata (<a href="#signature-metadata" class="auto internal xref">Section 6.2</a>), is required to adhere to the maximum limit defined in <a href="#maximum-validity-period" class="auto internal xref">Section 9</a>. It is recommended that services define their own maximum validity period, as short as possible for their use case, to enhance security (<a href="#maximum-validity-period" class="auto internal xref">Section 9</a>).<a href="#appendix-C.1-1" class="pilcrow">¶</a></p>
 <p id="appendix-C.1-2">DomainAuth specifies mandatory-to-implement cryptographic algorithms (<a href="#cryptographic-algorithms" class="auto internal xref">Section 8</a>). Services have the option to recommend specific algorithms from the allowed set but cannot mandate unsupported ones.<a href="#appendix-C.1-2" class="pilcrow">¶</a></p>
-<p id="appendix-C.1-3">Services designers should also consider the following potential attack vectors:<a href="#appendix-C.1-3" class="pilcrow">¶</a></p>
+<p id="appendix-C.1-3">Service implementations must not override root zone DS records except for testing or to reflect updated IANA trust anchors. Services using DomainAuth should clearly distinguish test environments from production.<a href="#appendix-C.1-3" class="pilcrow">¶</a></p>
+<p id="appendix-C.1-4">Services designers should also consider the following potential attack vectors:<a href="#appendix-C.1-4" class="pilcrow">¶</a></p>
 <ul class="normal">
-<li class="normal" id="appendix-C.1-4.1">
-            <p id="appendix-C.1-4.1.1"><strong>Replay attacks:</strong> DomainAuth provides authenticity and integrity but does not inherently mitigate replay attacks. Services may need to implement additional measures, such as nonces, depending on the application's sensitivity to replays (<a href="#offline-verification-limitations" class="auto internal xref">Section 13.4</a>).<a href="#appendix-C.1-4.1.1" class="pilcrow">¶</a></p>
+<li class="normal" id="appendix-C.1-5.1">
+            <p id="appendix-C.1-5.1.1"><strong>Replay attacks:</strong> DomainAuth provides authenticity and integrity but does not inherently mitigate replay attacks. Services may need to implement additional measures, such as nonces, depending on the application's sensitivity to replays (<a href="#offline-verification-limitations" class="auto internal xref">Section 13.4</a>).<a href="#appendix-C.1-5.1.1" class="pilcrow">¶</a></p>
 </li>
-          <li class="normal" id="appendix-C.1-4.2">
-            <p id="appendix-C.1-4.2.1"><strong>Phishing attacks:</strong> Service logic built upon the verified identity ought to correctly handle the required Unicode representation of domain names, and the specific normalisation and character restrictions applicable to user names (<a href="#phishing-attacks" class="auto internal xref">Section 13.2</a>, <a href="#verification-procedure" class="auto internal xref">Section 7.1</a>). Adhering to guidelines like those in <span>[<a href="#UTR36" class="cite xref">UTR36</a>]</span> for displaying Internationalised Domain Names can help mitigate homograph attacks.<a href="#appendix-C.1-4.2.1" class="pilcrow">¶</a></p>
+          <li class="normal" id="appendix-C.1-5.2">
+            <p id="appendix-C.1-5.2.1"><strong>Phishing attacks:</strong> Service logic built upon the verified identity ought to correctly handle the required Unicode representation of domain names, and the specific normalisation and character restrictions applicable to user names (<a href="#phishing-attacks" class="auto internal xref">Section 13.2</a>, <a href="#verification-procedure" class="auto internal xref">Section 7.1</a>). Adhering to guidelines like those in <span>[<a href="#UTR36" class="cite xref">UTR36</a>]</span> for displaying Internationalised Domain Names can help mitigate homograph attacks.<a href="#appendix-C.1-5.2.1" class="pilcrow">¶</a></p>
 </li>
-          <li class="normal" id="appendix-C.1-4.3">
-            <p id="appendix-C.1-4.3.1"><strong>Denial of service:</strong> Service designers should establish limits on signature bundle size to mitigate resource exhaustion attacks (<a href="#denial-of-service" class="auto internal xref">Section 13.5</a>).<a href="#appendix-C.1-4.3.1" class="pilcrow">¶</a></p>
+          <li class="normal" id="appendix-C.1-5.3">
+            <p id="appendix-C.1-5.3.1"><strong>Denial of service:</strong> Service designers should establish limits on signature bundle size to mitigate resource exhaustion attacks (<a href="#denial-of-service" class="auto internal xref">Section 13.5</a>).<a href="#appendix-C.1-5.3.1" class="pilcrow">¶</a></p>
 </li>
         </ul>
-<p id="appendix-C.1-5">Services may define their own requirements for logging signature events, which would complement the organisation-level audit trails recommended in <a href="#audit-trails" class="auto internal xref">Section 13.7</a>.<a href="#appendix-C.1-5" class="pilcrow">¶</a></p>
+<p id="appendix-C.1-6">Services may define their own requirements for logging signature events, which would complement the organisation-level audit trails recommended in <a href="#audit-trails" class="auto internal xref">Section 13.7</a>.<a href="#appendix-C.1-6" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="service-user-experience-considerations">
@@ -2965,8 +2973,9 @@ MemberAttribution ::= UTF8String
 <p id="appendix-D-1">This non-normative section provides guidance for developers implementing DomainAuth libraries.<a href="#appendix-D-1" class="pilcrow">¶</a></p>
 <p id="appendix-D-2">Implementations should ensure strict compliance with the ASN.1 schemas (<a href="#asn1-schemas" class="auto internal xref">Appendix A</a>), serialisation formats (<a href="#data-serialisation" class="auto internal xref">Section 10</a>), and cryptographic algorithms (<a href="#cryptographic-algorithms" class="auto internal xref">Section 8</a>). Separating core protocol functionality from service-specific logic enables reuse across multiple services.<a href="#appendix-D-2" class="pilcrow">¶</a></p>
 <p id="appendix-D-3">For testing purposes, implementers should consider establishing a dedicated DNSSEC-enabled test domain with a DomainAuth TXT record whose private key is publicly available, bound specifically to the test service OID (<code>1.3.6.1.4.1.58708.1.1</code>). This approach is secure when properly scoped: the domain is controlled by the implementation team, the key is bound only to the test service, and documentation clearly indicates these are for testing only. Serialised DNSSEC chains can also serve as test fixtures, allowing offline testing.<a href="#appendix-D-3" class="pilcrow">¶</a></p>
-<p id="appendix-D-4">The verification procedure should support both verification orders described in <a href="#verification-procedure" class="auto internal xref">Section 7.1</a>: either starting with the DNSSEC chain and ending with the signature, or vice versa. A critical aspect is validating that all components in the trust chain—DNSSEC records, certificates, and signature—have validity periods that overlap for at least one second. Implementations should also handle multiple TXT records correctly, selecting the appropriate one based on key information and service OID.<a href="#appendix-D-4" class="pilcrow">¶</a></p>
-<p id="appendix-D-5">Error handling should categorise failures based on verification steps (<a href="#verification-procedure" class="auto internal xref">Section 7.1</a>), with different diagnostic detail levels for debugging versus production. Performance optimisations may include caching verified DNSSEC chains, using efficient ASN.1 parsing libraries, ensuring thread safety, and optimising certificate validation operations.<a href="#appendix-D-5" class="pilcrow">¶</a></p>
+<p id="appendix-D-4">Implementations have to provide the ability to override root zone DS records, which is only intended for local testing environments or to reflect updated IANA trust anchors before the underlying DNSSEC implementation is updated.<a href="#appendix-D-4" class="pilcrow">¶</a></p>
+<p id="appendix-D-5">The verification procedure should support both verification orders described in <a href="#verification-procedure" class="auto internal xref">Section 7.1</a>: either starting with the DNSSEC chain and ending with the signature, or vice versa. A critical aspect is validating that all components in the trust chain—DNSSEC records, certificates, and signature—have validity periods that overlap for at least one second. Implementations should also handle multiple TXT records correctly, selecting the appropriate one based on key information and service OID.<a href="#appendix-D-5" class="pilcrow">¶</a></p>
+<p id="appendix-D-6">Error handling should categorise failures based on verification steps (<a href="#verification-procedure" class="auto internal xref">Section 7.1</a>), with different diagnostic detail levels for debugging versus production. Performance optimisations may include caching verified DNSSEC chains, using efficient ASN.1 parsing libraries, ensuring thread safety, and optimising certificate validation operations.<a href="#appendix-D-6" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="organisation-operation-guidance">

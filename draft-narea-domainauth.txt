@@ -875,8 +875,9 @@ _domainauth.example.com. IN TXT "0 1 3 dGhpcyBpcyBub3QgYSByZWFsIGtleSBkaWdlc3Q 8
           converted to a 1-second period where the start and end are the
           same as the specified time.
 
-       The verifier MAY override the root zone DNSSEC DS record(s) for
-       testing purposes only.
+       The verifier MAY override the root zone DS record(s) only for
+       testing purposes or to reflect updated IANA trust anchors before
+       the underlying DNSSEC implementation updates its copy.
 
    2.  *Identify the relevant DomainAuth TXT record and determine the
        verification time window for the DNSSEC chain:*
@@ -1227,6 +1228,12 @@ _domainauth.example.com. IN TXT "0 1 3 dGhpcyBpcyBub3QgYSByZWFsIGtleSBkaWdlc3Q 8
        *  Implementations MUST securely manage and update DNSSEC trust
           anchors.
 
+       *  Whilst the protocol allows overriding root zone DS records,
+          this MUST only be done for testing or to reflect updated IANA
+          trust anchors.  Using alternative DNS roots in production
+          contradicts the unique DNS root principle outlined in
+          [RFC2826].
+
    2.  *TLD Control:*
 
        *  Many TLDs are controlled by governments or private entities.
@@ -1548,6 +1555,10 @@ _domainauth.example.com. IN TXT "0 1 3 dGhpcyBpcyBub3QgYSByZWFsIGtleSBkaWdlc3Q 8
               DOI 10.17487/RFC2119, March 1997,
               <https://www.rfc-editor.org/rfc/rfc2119>.
 
+   [RFC2826]  IAB, "IAB Technical Comment on the Unique DNS Root",
+              RFC 2826, DOI 10.17487/RFC2826, May 2000,
+              <https://www.rfc-editor.org/rfc/rfc2826>.
+
    [RFC4055]  Schaad, J., Kaliski, B., and R. Housley, "Additional
               Algorithms and Identifiers for RSA Cryptography for use in
               the Internet X.509 Public Key Infrastructure Certificate
@@ -1735,6 +1746,11 @@ C.1.  Service Security Considerations
    (Section 8).  Services have the option to recommend specific
    algorithms from the allowed set but cannot mandate unsupported ones.
 
+   Service implementations must not override root zone DS records except
+   for testing or to reflect updated IANA trust anchors.  Services using
+   DomainAuth should clearly distinguish test environments from
+   production.
+
    Services designers should also consider the following potential
    attack vectors:
 
@@ -1818,6 +1834,11 @@ Appendix D.  Implementation Guidance
    team, the key is bound only to the test service, and documentation
    clearly indicates these are for testing only.  Serialised DNSSEC
    chains can also serve as test fixtures, allowing offline testing.
+
+   Implementations have to provide the ability to override root zone DS
+   records, which is only intended for local testing environments or to
+   reflect updated IANA trust anchors before the underlying DNSSEC
+   implementation is updated.
 
    The verification procedure should support both verification orders
    described in Section 7.1: either starting with the DNSSEC chain and

@@ -590,12 +590,12 @@ To facilitate functional testing, VeraId implementations use a dedicated VeraId 
 
 - Organisation: Relaycorp
 - URLs:
-  - https://github.com/relaycorp/letro-android
-  - https://docs.relaycorp.tech/letro-server/
+  - <https://github.com/relaycorp/letro-android>
+  - <https://docs.relaycorp.tech/letro-server/>
 - Maturity: Experimental.
 - Coverage: The implementation exercises the entire protocol as defined in {{VERAID}}, except for organisation signatures and bot members.  It uses the VeraId JVM Library to issue member signatures on Android, and the VeraId Authority to issue Member Id Bundles under a variety of domain names operated by Relaycorp (e.g. `applepie.rocks`, `cuppa.fans`).
 - Licensing: Freely distributable with acknowledgement (GNU GPLv3 and GNU AGPLv3 licences).
-- Contact: https://relaycorp.tech/
+- Contact: <https://relaycorp.tech/>
 - Last updated: 2024
 
 # Security Considerations

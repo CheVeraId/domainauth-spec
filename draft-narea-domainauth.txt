@@ -263,9 +263,9 @@ Table of Contents
    *  *DomainAuth TXT Record:* A DNS TXT record at _domainauth.<domain>
       that contains the organisation's public key information.
 
-   *  *Organisation Certificate:* A self-signed X.509 certificate owned
-      by an organisation that serves as the root of trust for all
-      signatures produced on behalf of that organisation.
+   *  *Organisation Certificate:* An X.509 certificate owned by an
+      organisation that serves as the root of trust for all signatures
+      produced on behalf of that organisation.
 
    *  *Member Certificate:* An X.509 certificate issued by the
       organisation certificate to a member.
@@ -370,9 +370,9 @@ Table of Contents
 
 2.2.2.  Certificate Issuance
 
-   The organisation must issue an X.509 certificate using its private
-   key, or reuse an existing certificate valid during the intended
-   validity period.
+   The organisation must obtain an X.509 certificate for its public key,
+   or reuse an existing certificate valid during the intended validity
+   period.
 
    When issuing a member certificate, the organisation must distribute
    it along with the organisation certificate.  This can be done with a
@@ -629,6 +629,15 @@ _domainauth.example.com. IN TXT "0 1 3 dGhpcyBpcyBub3QgYSByZWFsIGtleSBkaWdlc3Q 8
    *  When the certificate is used directly to sign CMS SignedData
       structures, the Basic Constraints extension MAY be absent.  If
       present, it SHOULD have the CA flag disabled.
+
+   Whilst the organisation certificate is typically self-issued, it MAY
+   be issued by another certificate authority.  In such cases, the
+   issuer of the organisation certificate and any other certificates in
+   the certification path to the organisation certificate are not
+   considered part of the DomainAuth protocol, and any such parent
+   certificates SHOULD NOT be included in the Signature Bundle.
+   Verification of the organisation certificate is performed solely
+   using the public key referenced in the DomainAuth TXT record.
 
 4.2.  Member Certificate
 

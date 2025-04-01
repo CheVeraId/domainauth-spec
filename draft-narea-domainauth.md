@@ -193,7 +193,7 @@ Multiple such records are allowed, which can be useful for key rotation or bindi
 
 The organisation must obtain an X.509 certificate for its public key, or reuse an existing certificate valid during the intended validity period.
 
-When issuing a member certificate, the organisation must distribute it along with the organisation certificate.  This can be done with a Member Id Bundle as defined in {{member-id-bundle}}, which is desirable in services meant to be used offline as it also contains the DNSSEC chain.
+When issuing a member certificate, the organisation must distribute it along with the organisation certificate.  This can be done with a Member Id Bundle as specified in {{member-id-bundle}}, which is desirable in services meant to be used offline as it also contains the DNSSEC chain.
 
 ### Signature Bundle Production
 
@@ -279,7 +279,7 @@ For example, if a DNSSEC signature has a standard validity period of 3600 second
 
 ## DNSSEC Chain Serialisation
 
-The serialised chain MUST be encoded as the ASN.1 `DnssecChain` structure below, where each `OCTET STRING` contains a complete DNS message as defined in {{DNS}}:
+The serialised chain MUST be encoded as the ASN.1 `DnssecChain` structure below, where each `OCTET STRING` contains a complete DNS message as detailed in {{DNS}}:
 
 ~~~~~~~
 DnssecChain ::= SET OF OCTET STRING
@@ -349,16 +349,16 @@ Member Id Bundles are not inherently confidential, as they contain only public i
 
 # CMS SignedData Structure
 
-DomainAuth signatures use CMS SignedData structures as defined in {{Section 5 of CMS}}, with additional requirements and recommendations:
+DomainAuth signatures use CMS SignedData structures as specified in {{Section 5 of CMS}}, with additional requirements and recommendations:
 
 - `signerInfos` field:
   - There MUST be exactly one `SignerInfo`.
   - The digest and signature algorithms MUST comply with {{cryptographic-algorithms}}.
   - The following signed attributes MUST be included:
-    - Content Type attribute as defined in {{Section 11.1 of CMS}}.
-    - Message Digest attribute as defined in {{Section 11.2 of CMS}}.
-    - DomainAuth signature metadata attribute as defined in {{signature-metadata}}.
-  - The `SignerInfo.sid` field MUST use the `issuerAndSerialNumber` choice as defined in {{Section 5.3 of CMS}}.
+    - Content Type attribute described in {{Section 11.1 of CMS}}.
+    - Message Digest attribute described in {{Section 11.2 of CMS}}.
+    - DomainAuth signature metadata attribute as outlined in {{signature-metadata}}.
+  - The `SignerInfo.sid` field MUST use the `issuerAndSerialNumber` choice specified in {{Section 5.3 of CMS}}.
 - `certificates` field:
   - Any intermediate certificates between the organisation and the signer MUST be included.
   - The organisation certificate SHOULD NOT be included, since it is already included in the Signature Bundle.
@@ -496,9 +496,9 @@ Services MAY recommend specific algorithms within the set of algorithms allowed 
 
 ## Digital Signature Algorithms
 
-For ease of adoption and interoperability reasons, this specification only requires support for RSA Signature Scheme with Appendix - Probabilistic Signature Scheme (RSA-PSS), as defined in {{Section 8.1 of RFC8017}}.  The DomainAuth Signature Algorithm Registry, as defined in {{domainauth-signature-algorithm-registry}}, MAY introduce support for additional signature algorithms and restrict the use of RSA-PSS (including its deprecation).
+For ease of adoption and interoperability reasons, this specification only requires support for RSA Signature Scheme with Appendix - Probabilistic Signature Scheme (RSA-PSS), as detailed in {{Section 8.1 of RFC8017}}.  The DomainAuth Signature Algorithm Registry, as specified in {{domainauth-signature-algorithm-registry}}, MAY introduce support for additional signature algorithms and restrict the use of RSA-PSS (including its deprecation).
 
-Implementations MUST support RSA-PSS in X.509 certificates as defined in {{RFC4055}} and CMS SignedData structures as defined in {{RFC4056}}.
+Implementations MUST support RSA-PSS in X.509 certificates as specified in {{RFC4055}} and CMS SignedData structures according to {{RFC4056}}.
 
 RSA keys with moduli less than 2048 bits MUST be rejected.  RSA keys with modulus size of 2048 MUST be supported, and greater sizes SHOULD be supported.
 
@@ -514,9 +514,9 @@ This encoded digest is then used as the Key Id in the TXT record.
 
 This section pertains specifically to the hash functions used within digital signatures themselves (e.g., X.509 certificates, CMS SignedData structures), distinct from their use in key identification.
 
-For ease of adoption and interoperability reasons, implementations MUST support SHA-256, SHA-384, and SHA-512 as defined in {{NIST.FIPS.180-4}}.
+For ease of adoption and interoperability reasons, implementations MUST support SHA-256, SHA-384, and SHA-512 as established in {{NIST.FIPS.180-4}}.
 
-The DomainAuth Key Digest Type Registry, as defined in {{domainauth-key-digest-type-registry}}, separately governs the use of hash functions for key identification.
+The DomainAuth Key Digest Type Registry, as described in {{domainauth-key-digest-type-registry}}, separately governs the use of hash functions for key identification.
 
 # Maximum Validity Period
 
@@ -532,7 +532,7 @@ Applications built on DomainAuth services MAY impose even shorter validity perio
 
 All data structures in the DomainAuth protocol are defined using Abstract Syntax Notation One (ASN.1), as referenced in {{ASN.1}}.
 
-Implementations MUST support Distinguished Encoding Rules (DER) as defined in {{ASN.1}}.
+Implementations MUST support Distinguished Encoding Rules (DER) as presented in {{ASN.1}}.
 
 Services MAY require or recommend additional ASN.1 encoding rules.
 
@@ -552,7 +552,7 @@ According to {{RFC7942}}, "this will allow reviewers and working groups to assig
 
 ## VeraId
 
-DomainAuth is the successor to the VeraId protocol as defined in {{VERAID}}. DomainAuth and VeraId are functionally identical, except for the following differences:
+DomainAuth is the successor to the VeraId protocol described in {{VERAID}}. DomainAuth and VeraId are functionally identical, except for the following differences:
 
 - DNS TXT record:
   - Name: DomainAuth uses `_domainauth.example.com.`, whilst VeraId uses `_veraid.example.com.`.
@@ -574,7 +574,7 @@ The following reference implementations of VeraId are available, all implemented
 1. **VeraId JavaScript Library**
    - URL: <https://github.com/relaycorp/veraid-js>
    - Maturity: Used in production in the VeraId Authority application.
-   - Coverage: The entire protocol as defined in {{VERAID}}.
+   - Coverage: The entire protocol as outlined in {{VERAID}}.
    - Licensing: MIT licence.
 2. **VeraId JVM Library**
    - URL: <https://github.com/relaycorp/veraid-jvm>
@@ -599,7 +599,7 @@ To facilitate functional testing, VeraId implementations use a dedicated VeraId 
   - <https://github.com/relaycorp/letro-android>
   - <https://docs.relaycorp.tech/letro-server/>
 - Maturity: Experimental.
-- Coverage: The implementation exercises the entire protocol as defined in {{VERAID}}, except for organisation signatures and bot members.  It uses the VeraId JVM Library to issue member signatures on Android, and the VeraId Authority to issue Member Id Bundles under a variety of domain names operated by Relaycorp (e.g. `applepie.rocks`, `cuppa.fans`).
+- Coverage: The implementation exercises the entire protocol specified in {{VERAID}}, except for organisation signatures and bot members.  It uses the VeraId JVM Library to issue member signatures on Android, and the VeraId Authority to issue Member Id Bundles under a variety of domain names operated by Relaycorp (e.g. `applepie.rocks`, `cuppa.fans`).
 - Licensing: Freely distributable with acknowledgement (GNU GPLv3 and GNU AGPLv3 licences).
 - Contact: <https://relaycorp.tech/>
 - Last updated: 2024
@@ -702,7 +702,7 @@ This document requests IANA to create a new registry group called "DomainAuth Pr
 
 IANA is requested to create a new registry titled "DomainAuth Signature Algorithm Registry" under the "DomainAuth Protocol Parameters" registry group.
 
-The registry policy is Specification Required as defined in {{RFC8126}}.
+The registry policy is Specification Required as set forth in {{RFC8126}}.
 
 Each entry in this registry includes the following fields:
 
@@ -728,7 +728,7 @@ Algorithms MUST be marked as "Deprecated" if cryptographic vulnerabilities are d
 
 IANA is requested to create a new registry titled "DomainAuth Key Digest Type Registry" under the "DomainAuth Protocol Parameters" registry group.
 
-The registry policy is Specification Required as defined in [RFC8126].
+The registry policy is Specification Required as set forth in [RFC8126].
 
 Each entry in this registry includes the following fields:
 

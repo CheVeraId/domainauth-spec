@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2025-04-03T01:12:43.916234+00:00",
+  "timestamp": "2025-04-06T01:17:09.310613+00:00",
   "repo": "CheVeraId/domainauth-spec",
   "labels": [
     {
@@ -100,9 +100,9 @@
       "authorAssociation": "CONTRIBUTOR",
       "assignees": [],
       "labels": [],
-      "body": "Give them a field value in the TXT record, and make sure to use the actual public key instead of a digest.",
+      "body": "Give them a field value in the TXT record, and make sure to use the actual public key instead of a digest.\n\nFor context, the reason why I didn't previously for this is [the lack of support in GCP HSMs](https://issuetracker.google.com/issues/232422224), which we use at Relaycorp. They only support EdDSA in their software-backed keys.",
       "createdAt": "2025-03-25T16:56:06Z",
-      "updatedAt": "2025-03-25T16:56:06Z",
+      "updatedAt": "2025-04-05T16:09:49Z",
       "closedAt": null,
       "comments": []
     },

@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2025-04-06T01:17:09.310613+00:00",
+  "timestamp": "2025-04-08T01:12:59.518770+00:00",
   "repo": "CheVeraId/domainauth-spec",
   "labels": [
     {
@@ -263,6 +263,22 @@
       "body": "For example:\n\n- Organisation certificates: [`Domain Component` from RFC 2247](https://datatracker.ietf.org/doc/html/rfc2247#section-4).\n- Member certificates: [`Userid` from RFC 1274](https://www.rfc-editor.org/rfc/rfc1274.html#section-9.3.1).",
       "createdAt": "2025-04-02T09:18:58Z",
       "updatedAt": "2025-04-02T09:19:21Z",
+      "closedAt": null,
+      "comments": []
+    },
+    {
+      "number": 14,
+      "id": "I_kwDOON8AXs6xZgut",
+      "title": "Consider replacing DNSSEC with the WebPKI as the trust anchor",
+      "url": "https://github.com/CheVeraId/domainauth-spec/issues/14",
+      "state": "OPEN",
+      "author": "gnarea",
+      "authorAssociation": "MEMBER",
+      "assignees": [],
+      "labels": [],
+      "body": "# Advantages of WebPKI\n\n- No reliance on DNSSEC, which has a rather small adoption rate: https://blog.apnic.net/2024/05/28/calling-time-on-dnssec/\n- No need to override TTLs. Certificates are typically valid for **at least** several weeks/months.\n\n# Disadvantages of WebPKI\n\n- It could pose a barrier to adoption because we should **ideally** get certificates explicitly marked for use in this protocol and not usable on the Web, which would require partnering with a WebPKI CA. Alternatively, we could mandate a specific subdomain (e.g. `_domainauth.example.com`), which we'd omit in the verification output.\n\n# Credits\n\nThanks to Eric Rescorla for bringing this to my attention.",
+      "createdAt": "2025-04-07T09:38:27Z",
+      "updatedAt": "2025-04-07T09:38:27Z",
       "closedAt": null,
       "comments": []
     }
